@@ -1,0 +1,17 @@
+Package: kokudosuuchi
+Type: Package
+Title: WKokudo Suuchi Joho - Download Japanese National Land Numerical
+    Information
+Version: 0.1
+Date: 2015-12-08
+Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
+Description: Use the Kokudo Suuchi Joho API
+License: MIT + file LICENSE
+Imports:
+    httr,
+    xml2,
+    purrr,
+    dplyr
+LazyData: TRUE
+RoxygenNote: 5.0.1
+Encoding: UTF-8

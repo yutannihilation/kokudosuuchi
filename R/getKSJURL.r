@@ -45,7 +45,7 @@ getKSJURL <- function(identifier, prefCode = NULL, meshCode = NULL, metroArea = 
   }
 
   res_list$KSJ_URL %>%
-    purrr::map(purrr::zip_n) %>%
-    purrr::flatten(.) %>%
-    dplyr::bind_rows(.)
+    purrr::map(purrr::flatten) %>%
+    unname() %>%
+    dplyr::bind_rows()
 }

@@ -6,8 +6,15 @@
 \usage{
 getKSJSummary(appId = "ksjapibeta1", lang = "J", dataformat = 1)
 }
+\arguments{
+\item{appId}{Application ID. Currently, no per-user appId is proveded. \code{"ksjapibeta1"} is the only choice.}
+
+\item{lang}{Language. Currently \code{J} (Japansese) is the only choice.}
+
+\item{dataformat}{Data format. Currently \code{1} (JPGIS2.1) is the only choice.}
+}
 \description{
-getKSJSummary API
+Get summary information via Kokudo Suuchi API.
 }
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}

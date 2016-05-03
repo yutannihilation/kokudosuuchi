@@ -12,7 +12,8 @@ Imports:
     httr,
     xml2,
     purrr (>= 0.2),
-    dplyr
+    dplyr,
+    shiny
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Encoding: UTF-8

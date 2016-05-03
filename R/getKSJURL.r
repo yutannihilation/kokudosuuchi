@@ -1,5 +1,17 @@
 #' getKSJURL API
 #'
+#' Get Information about the URL
+#'
+#' @param identifier Data identifier. (e.g. \code{"NO2"})
+#' @param prefCode Prefecture code. You can easily get the codes by using \code{\link{choose_prefecture_code}}.
+#'        This is valid only when \code{areaType} is \code{3}.
+#' @param meshCode Mesh code. This is valid only when \code{areaType} is \code{4}.
+#' @param metroArea Metro-area code. This is valid only when \code{areaType} is \code{2}.
+#' @param fiscalyer Fiscal year. (e.g. \code{"2014"}, \code{"2014,2015"}, \code{"2005-2015"}, \code{"2000,2005-2015"})
+#' @param appId Application ID. Currently, no per-user appId is proveded. \code{"ksjapibeta1"} is the only choice.
+#' @param lang Language. Currently \code{J} (Japansese) is the only choice.
+#' @param dataformat Data format. Currently \code{1} (JPGIS2.1) is the only choice.
+#'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @export
 getKSJURL <- function(identifier, prefCode = NULL, meshCode = NULL, metroArea = NULL, fiscalyer = NULL,

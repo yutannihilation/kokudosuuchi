@@ -17,3 +17,4 @@ Imports:
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Encoding: UTF-8
+Suggests: testthat

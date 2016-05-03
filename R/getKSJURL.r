@@ -2,7 +2,7 @@
 #'
 #' Get Information about the URL
 #'
-#' @param identifier Data identifier. (e.g. \code{"NO2"})
+#' @param identifier Data identifier. (e.g. \code{"N02"})
 #' @param prefCode Prefecture code. You can easily get the codes by using \code{\link{choose_prefecture_code}}.
 #'        This is valid only when \code{areaType} is \code{3}.
 #' @param meshCode Mesh code. This is valid only when \code{areaType} is \code{4}.

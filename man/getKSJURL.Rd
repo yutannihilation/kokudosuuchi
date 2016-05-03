@@ -8,7 +8,7 @@ getKSJURL(identifier, prefCode = NULL, meshCode = NULL, metroArea = NULL,
   fiscalyer = NULL, appId = "ksjapibeta1", lang = "J", dataformat = 1)
 }
 \arguments{
-\item{identifier}{Data identifier. (e.g. \code{"NO2"})}
+\item{identifier}{Data identifier. (e.g. \code{"N02"})}
 
 \item{prefCode}{Prefecture code. You can easily get the codes by using \code{\link{choose_prefecture_code}}.
 This is valid only when \code{areaType} is \code{3}.}

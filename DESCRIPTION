@@ -1,12 +1,13 @@
 Package: kokudosuuchi
 Type: Package
-Title: WKokudo Suuchi Joho - Download Japanese National Land Numerical
-    Information
+Title: R Interface to e-Stat API
 Version: 0.1
 Date: 2015-12-08
 Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
-Description: Use the Kokudo Suuchi Joho API
+Description: Provides an interface to Kokudo Suuchi API, which provides GIS data of the Japanese government.
 License: MIT + file LICENSE
+Depends:
+    R (>= 2.10)
 Imports:
     httr,
     xml2,

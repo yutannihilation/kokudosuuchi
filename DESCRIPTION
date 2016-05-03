@@ -11,7 +11,7 @@ Depends:
 Imports:
     httr,
     xml2,
-    purrr,
+    purrr (>= 0.2),
     dplyr
 LazyData: TRUE
 RoxygenNote: 5.0.1

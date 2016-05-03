@@ -27,7 +27,7 @@ getKSJSummary <- function(appId = "ksjapibeta1", lang = "J", dataformat = 1) {
   }
 
   res_list$KSJ_SUMMARY %>%
-    purrr::map(purrr::zip_n) %>%
-    purrr::flatten(.) %>%
-    dplyr::bind_rows(.)
+    purrr::map(purrr::flatten) %>%
+    unname() %>%
+    dplyr::bind_rows()
 }

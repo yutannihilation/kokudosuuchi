@@ -12,6 +12,12 @@
 #' @param lang Language. Currently \code{J} (Japansese) is the only choice.
 #' @param dataformat Data format. Currently \code{1} (JPGIS2.1) is the only choice.
 #'
+#' @examples
+#' \dontrun{
+#' getKSJURL("W05", prefCode = c(27, 28))
+#' getKSJURL("W05", prefCode = choose_prefecture_code())
+#' }
+#'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @export
 getKSJURL <- function(identifier, prefCode = NULL, meshCode = NULL, metroArea = NULL, fiscalyer = NULL,

@@ -28,6 +28,13 @@ This is valid only when \code{areaType} is \code{3}.}
 \description{
 Get Information about the URL
 }
+\examples{
+\dontrun{
+getKSJURL("W05", prefCode = c(27, 28))
+getKSJURL("W05", prefCode = choose_prefecture_code())
+}
+
+}
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }

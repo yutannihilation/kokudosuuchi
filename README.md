@@ -28,7 +28,7 @@ devtools::install_github("yutannihilation/kokudosuuchi")
 
 ## 使用方法
 
-※詳しいパラメータの意味は公式ドキュメント（[http://nlftp.mlit.go.jp/ksj/api/specification_api_ksj.pdf]）をご参照ください
+※詳しいパラメータの意味は公式ドキュメント（http://nlftp.mlit.go.jp/ksj/api/specification_api_ksj.pdf）をご参照ください
 
 ### 国土数値情報の概要情報取得
 

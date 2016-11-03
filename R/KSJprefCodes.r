@@ -4,3 +4,6 @@
 #'
 #' @source \url{http://nlftp.mlit.go.jp/ksj/gml/codelist/PrefCd.html}
 "KSJprefCodes"
+
+# Suppres notes with R CMD check; see http://stackoverflow.com/a/12429344/5397672
+globalVariables("KSJprefCodes")

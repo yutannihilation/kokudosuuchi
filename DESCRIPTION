@@ -1,10 +1,12 @@
 Package: kokudosuuchi
 Type: Package
 Title: R Interface to e-Stat API
-Version: 0.1
-Date: 2015-12-08
+Version: 0.2
+Date: 2016-11-03
 Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
-Description: Provides an interface to Kokudo Suuchi API, which provides GIS data of the Japanese government.
+Description: Provides an interface to Kokudo Suuchi API, the GIS data service of the Japanese government.
+URL: https://githu.com/yutannihilation/kokudosuuchi
+BugReports: https://githu.com/yutannihilation/kokudosuuchi/issues
 License: MIT + file LICENSE
 Depends:
     R (>= 2.10)
@@ -13,7 +15,9 @@ Imports:
     xml2,
     purrr (>= 0.2),
     dplyr,
-    shiny
+    shiny,
+    rgdal,
+    digest
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Encoding: UTF-8

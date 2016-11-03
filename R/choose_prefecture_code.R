@@ -11,7 +11,7 @@ choose_prefecture_code <- function() {
         shiny::checkboxGroupInput(
           inputId = "prefecture",
           label = "Check prefectures",
-          choices = purrr::set_names(KSJprefCodes$prefCode, KSJprefCodes$prefName),
+          choices = purrr::set_names(KSJPrefCodes$prefCode, KSJPrefCodes$prefName),
           inline = TRUE,
           width = '400px'
         ),

@@ -4,6 +4,12 @@ language: r
 r:
   - release
   - devel
+addons:
+  apt:
+    packages:
+      - libgeos-dev
+      - libgdal-dev
+      - libproj-dev
 sudo: false
 cache: packages
 cran: https://cran.rstudio.com/

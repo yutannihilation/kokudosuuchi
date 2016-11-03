@@ -24,5 +24,6 @@ choose_prefecture_code <- function() {
             shiny::stopApp(shiny::isolate(input$prefecture))
         })
       }
-    ))
+    )
+  )
 }

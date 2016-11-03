@@ -26,7 +26,7 @@ This is valid only when \code{areaType} is \code{3}.}
 \item{dataformat}{Data format. Currently \code{1} (JPGIS2.1) is the only choice.}
 }
 \description{
-Get Information about the URL
+Get the URLs of the data via Kokudo Suuchi API.
 }
 \examples{
 \dontrun{

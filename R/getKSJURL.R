@@ -1,6 +1,6 @@
 #' getKSJURL API
 #'
-#' Get Information about the URL
+#' Get the URLs of the data via Kokudo Suuchi API.
 #'
 #' @param identifier Data identifier. (e.g. \code{"N02"})
 #' @param prefCode Prefecture code. You can easily get the codes by using \code{\link{choose_prefecture_code}}.

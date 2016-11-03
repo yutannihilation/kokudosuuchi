@@ -8,7 +8,7 @@ addons:
   apt:
     packages:
       - libgeos-dev
-      - libgdal-dev
+      - libgdal1-dev
       - libproj-dev
 sudo: false
 cache: packages

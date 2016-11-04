@@ -1,15 +1,19 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
-r:
-  - release
-  - devel
-addons:
-  apt:
-    packages:
-      - libgeos-dev
-      - libgdal1-dev
-      - libproj-dev
-sudo: false
+matrix:
+  include:
+    - os: linux
+      r: release
+      sudo: required
+      before_install:
+        - sudo apt-get install libproj-dev
+        - curl http://download.osgeo.org/gdal/2.0.1/gdal-2.0.1.tar.gz | tar zxf -
+        - cd gdal-2.0.1
+        - ./configure
+        - make
+        - sudo make install
+        - sudo ldconfig
+        - cd -
 cache: packages
 cran: https://cran.rstudio.com/

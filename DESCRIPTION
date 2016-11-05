@@ -5,8 +5,8 @@ Version: 0.2
 Date: 2016-11-03
 Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
 Description: Provides an interface to Kokudo Suuchi API, the GIS data service of the Japanese government.
-URL: https://githu.com/yutannihilation/kokudosuuchi
-BugReports: https://githu.com/yutannihilation/kokudosuuchi/issues
+URL: https://github.com/yutannihilation/kokudosuuchi
+BugReports: https://github.com/yutannihilation/kokudosuuchi/issues
 License: MIT + file LICENSE
 Depends:
     R (>= 2.10)

@@ -5,6 +5,8 @@ kokudosuuchi
 
 [![Travis-CI Build Status](https://travis-ci.org/yutannihilation/kokudosuuchi.svg?branch=master)](https://travis-ci.org/yutannihilation/kokudosuuchi) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&svg=true)](https://ci.appveyor.com/project/yutannihilation/kokudosuuchi) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
 
+**(Sorry, English version of README is not availavle for now.)**
+
 国土数値情報ダウンロードサービス Web APIの情報を取得するRパッケージです。
 
 国土数値情報ダウンロードサービス Web APIとは
@@ -32,7 +34,7 @@ devtools::install_github("yutannihilation/kokudosuuchi")
 使用方法
 --------
 
-※詳しいパラメータの意味は公式ドキュメント（[http://nlftp.mlit.go.jp/ksj/api/specification\_api\_ksj.pdf）をご参照ください](http://nlftp.mlit.go.jp/ksj/api/specification_api_ksj.pdf）をご参照ください)
+詳しいパラメータの意味は[公式ドキュメント](http://nlftp.mlit.go.jp/ksj/api/specification_api_ksj.pdf)（PDF）をご参照ください
 
 ### 国土数値情報の概要情報取得
 
@@ -82,11 +84,11 @@ library(kokudosuuchi)
 options(max.print = 20)
 getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\user1\AppData\Local\Temp\Rtmpqe6WNb/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_RiverNode"
+#> Source: "C:\Users\user1\AppData\Local\Temp\RtmpCY5ScU/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_RiverNode"
 #> with 7534 features
 #> It has 3 fields
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\user1\AppData\Local\Temp\Rtmpqe6WNb/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_Stream"
+#> Source: "C:\Users\user1\AppData\Local\Temp\RtmpCY5ScU/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_Stream"
 #> with 7597 features
 #> It has 10 fields
 #> $`W05-07_03-g_RiverNode`

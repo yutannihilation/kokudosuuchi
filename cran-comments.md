@@ -5,3 +5,11 @@
 
 ## R CMD check results
 There were no ERRORs or WARNINGs.
+
+## Resubmission
+This is second resubmission. In this version I have:
+
+* Put the URL in the Description in angle brackets
+
+* Manually confirmed that the URLs marked as "(possibly) invalid URLs" in NOTE
+are valid and accessible via Web browsers.

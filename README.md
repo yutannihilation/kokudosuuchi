@@ -27,6 +27,14 @@ APIの利用やAPIで得られるURL先のGISデータの利用にあたって�
 インストール方法
 ----------------
 
+kokudosuuchiはCRANからインストールできます。
+
+``` r
+install.packages("kokudosuuchi")
+```
+
+開発版をインストールするには`devtools::install_github()`でインストールしてください。
+
 ``` r
 devtools::install_github("yutannihilation/kokudosuuchi")
 ```
@@ -68,7 +76,7 @@ getKSJSummary()
 library(kokudosuuchi)
 
 # prefCodeが3で、年が2000-2010の河川のデータ
-getKSJURL("W05", prefCode = 3, fiscalyer = 2000:2010)
+getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 #> # A tibble: 1 × 9
 #>   identifier title            field  year areaType areaCode datum
 #>        <chr> <chr>            <chr> <chr>    <chr>    <chr> <chr>
@@ -84,11 +92,11 @@ library(kokudosuuchi)
 options(max.print = 20)
 getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\user1\AppData\Local\Temp\RtmpCY5ScU/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_RiverNode"
+#> Source: "C:\Users\HIROAK~1\AppData\Local\Temp\Rtmp8OYr3A/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_RiverNode"
 #> with 7534 features
 #> It has 3 fields
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\user1\AppData\Local\Temp\RtmpCY5ScU/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_Stream"
+#> Source: "C:\Users\HIROAK~1\AppData\Local\Temp\Rtmp8OYr3A/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_Stream"
 #> with 7597 features
 #> It has 10 fields
 #> $`W05-07_03-g_RiverNode`

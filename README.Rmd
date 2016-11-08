@@ -39,7 +39,15 @@ APIの利用やAPIで得られるURL先のGISデータの利用にあたって�
 
 ## インストール方法
 
-```r
+kokudosuuchiはCRANからインストールできます。
+
+```{r, eval=FALSE}
+install.packages("kokudosuuchi")
+```
+
+開発版をインストールするには`devtools::install_github()`でインストールしてください。
+
+```{r, eval=FALSE}
 devtools::install_github("yutannihilation/kokudosuuchi")
 ```
 
@@ -61,7 +69,7 @@ getKSJSummary()
 library(kokudosuuchi)
 
 # prefCodeが3で、年が2000-2010の河川のデータ
-getKSJURL("W05", prefCode = 3, fiscalyer = 2000:2010)
+getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 ```
 
 ### 国土数値情報のGISデータ取得

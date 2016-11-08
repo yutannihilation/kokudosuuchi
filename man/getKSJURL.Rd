@@ -5,7 +5,7 @@
 \title{getKSJURL API}
 \usage{
 getKSJURL(identifier, prefCode = NULL, meshCode = NULL, metroArea = NULL,
-  fiscalyer = NULL, appId = "ksjapibeta1", lang = "J", dataformat = 1)
+  fiscalyear = NULL, appId = "ksjapibeta1", lang = "J", dataformat = 1)
 }
 \arguments{
 \item{identifier}{Data identifier. (e.g. \code{"N02"})}
@@ -17,7 +17,7 @@ This is valid only when \code{areaType} is \code{3}.}
 
 \item{metroArea}{Metro-area code. This is valid only when \code{areaType} is \code{2}.}
 
-\item{fiscalyer}{Fiscal year. (e.g. \code{"2014"}, \code{"2014,2015"}, \code{"2005-2015"}, \code{"2000,2005-2015"})}
+\item{fiscalyear}{Fiscal year. (e.g. \code{"2014"}, \code{"2014,2015"}, \code{"2005-2015"}, \code{"2000,2005-2015"})}
 
 \item{appId}{Application ID. Currently, no per-user appId is proveded. \code{"ksjapibeta1"} is the only choice.}
 

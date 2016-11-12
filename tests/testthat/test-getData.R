@@ -1,15 +1,12 @@
 context("getData")
 
 test_that("getKSJData works", {
-  if (!identical(Sys.getenv("TRAVIS"), "true")) {
-    skip("RUN only on Travis")
-  }
+  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/L01/L01-01/L01-01_36_GML.zip")
 
-  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
-
-  expect_equal(names(d), c("W05-07_03-g_RiverNode", "W05-07_03-g_Stream"))
-  expect_equal(nrow(d$`W05-07_03-g_RiverNode`), 7534)
-  expect_equal(nrow(d$`W05-07_03-g_Stream`), 7597)
+  expect_equal(names(d), "L01-01_36-g_LandPrice")
+  expect_equal(nrow(d$`L01-01_36-g_LandPrice`), 162)
+  expect_true(inherits(d$`L01-01_36-g_LandPrice`, "SpatialPointsDataFrame"))
+  expect_true(inherits(d$`L01-01_36-g_LandPrice`@data, "data.frame"))
 })
 
 

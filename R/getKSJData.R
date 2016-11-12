@@ -49,7 +49,7 @@ read_ogr_layer <- function(data_dir, layer, translate_columns = FALSE) {
   if (translate_columns) {
     codes_wo_corresp_names <- col_codes[!(col_codes %in% corresp_table$code)]
     if(length(codes_wo_corresp_names) != 0)
-      warning(sprintf("No corresponding names are available for these columns: %s",
+      message(sprintf("No corresponding names are available for these columns: %s",
                       paste(codes_wo_corresp_names, collapse = ", ")))
 
     corresp_names <- purrr::set_names(corresp_table$code, corresp_table$name)

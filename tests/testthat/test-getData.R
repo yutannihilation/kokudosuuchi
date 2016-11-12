@@ -20,7 +20,7 @@ test_that("getKSJData randomly works", {
 
   ksj_summary <- getKSJSummary()
   ksj_urls <- getKSJURL(identifier = sample(ksj_summary$identifier, 1))
-  suppressWarnings(d <- getKSJData(sample(ksj_urls$zipFileUrl, 1)))
+  d <- getKSJData(sample(ksj_urls$zipFileUrl, 1))
 
   expect_true(all(purrr::map_lgl(d, ~ class(.) %in% c("SpatialPointsDataFrame",
                                                       "SpatialLinesDataFrame",

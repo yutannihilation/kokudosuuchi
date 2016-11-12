@@ -47,15 +47,20 @@ read_ogr_layer <- function(data_dir, layer, translate_columns = FALSE) {
   message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
 
   if (translate_columns) {
-    codes_wo_corresp_names <- col_codes[!(col_codes %in% corresp_table$code)]
-    if(length(codes_wo_corresp_names) != 0)
-      message(sprintf("No corresponding names are available for these columns: %s",
-                      paste(codes_wo_corresp_names, collapse = ", ")))
-
+    warn_no_corresp_names(col_codes, corresp_table)
     corresp_names <- purrr::set_names(corresp_table$code, corresp_table$name)
 
     l@data <- dplyr::rename_(l@data, .dots = corresp_names)
   }
 
   l
+}
+
+# For tests on Travis with with_mock(). Warnings are treated as errors there.
+warn_no_corresp_names <- function(col_codes, corresp_table) {
+  codes_wo_corresp_names <- col_codes[!(col_codes %in% corresp_table$code)]
+  if(length(codes_wo_corresp_names) != 0)
+    warnings(sprintf("No corresponding names are available for these columns: %s",
+                     paste(codes_wo_corresp_names, collapse = ", ")))
+
 }

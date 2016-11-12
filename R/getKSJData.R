@@ -3,7 +3,10 @@
 #' Download and load spatial data from ZIP file downloaded from Kokudo Suuchi service. Note that this function does
 #' not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
 #'
-#' @param zip_url The URL of the Zip file.
+#' @param zip_url
+#'   The URL of the Zip file.
+#' @param translate_columns
+#'   If \code{TRUE}, try to use human-readable column names.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples
@@ -13,7 +16,7 @@
 #' str(l, max.level = 1)
 #' }
 #' @export
-getKSJData <- function(zip_url) {
+getKSJData <- function(zip_url, translate_columns = TRUE) {
   tmp_dir_parent <- tempdir()
   url_hash <- digest::digest(zip_url)
   data_dir <- file.path(tmp_dir_parent, url_hash)
@@ -29,7 +32,30 @@ getKSJData <- function(zip_url) {
   }
 
   layers <- rgdal::ogrListLayers(data_dir)
-  result <- purrr::map(layers, ~ rgdal::readOGR(data_dir, ., encoding = "UTF-8"))
+  result <- purrr::map(layers, ~ read_ogr_layer(data_dir, ., translate_columns = translate_columns))
   names(result) <- layers
   result
+}
+
+
+read_ogr_layer <- function(data_dir, layer, translate_columns = FALSE) {
+  l <- rgdal::readOGR(data_dir, layer, encoding = "UTF-8")
+
+  col_codes <- colnames(l@data)
+  corresp_table <- KSJShapeProperty[KSJShapeProperty$code %in% col_codes,]
+  urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", unique(corresp_table$category))
+  message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
+
+  if (translate_columns) {
+    codes_wo_corresp_names <- col_codes[!(col_codes %in% corresp_table$code)]
+    if(length(codes_wo_corresp_names) != 0)
+      warning(sprintf("No corresponding names are available for these columns: %s",
+                      paste(codes_wo_corresp_names, collapse = ", ")))
+
+    corresp_names <- purrr::set_names(corresp_table$code, corresp_table$name)
+
+    l@data <- dplyr::rename_(l@data, .dots = corresp_names)
+  }
+
+  l
 }

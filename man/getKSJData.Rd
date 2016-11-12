@@ -4,10 +4,12 @@
 \alias{getKSJData}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_url)
+getKSJData(zip_url, translate_columns = TRUE)
 }
 \arguments{
 \item{zip_url}{The URL of the Zip file.}
+
+\item{translate_columns}{If \code{TRUE}, try to use human-readable column names.}
 }
 \description{
 Download and load spatial data from ZIP file downloaded from Kokudo Suuchi service. Note that this function does

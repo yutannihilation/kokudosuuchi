@@ -19,7 +19,11 @@ test_that("getKSJData randomly works", {
   ksj_urls <- getKSJURL(identifier = sample(ksj_summary$identifier, 1))
   with_mock(
     warn_no_corresp_names = function(...) TRUE,
-    d <- getKSJData(sample(ksj_urls$zipFileUrl, 1))
+    {
+      url <- sample(ksj_urls$zipFileUrl, 1)
+      cat(url)
+      d <- getKSJData(url)
+    }
   )
 
   expect_true(all(purrr::map_lgl(d, ~ class(.) %in% c("SpatialPointsDataFrame",

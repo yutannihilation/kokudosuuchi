@@ -7,6 +7,7 @@
 #'   The URL of the Zip file.
 #' @param translate_columns
 #'   If \code{TRUE}, try to use human-readable column names.
+#'   See \link{KSJShapeProperty} for more information about the corresponding table.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples

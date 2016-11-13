@@ -50,7 +50,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   }
 
   layers <- rgdal::ogrListLayers(data_dir)
-  Sys.getlocale()
+  print(Sys.getlocale())
   # Workaround for Windows
   # Encoding(layers) <- "UTF-8"
 

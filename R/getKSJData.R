@@ -38,8 +38,16 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   if (length(meta_file) > 1) stop("The data contains multiple META file!")
   data_dir <- dirname(meta_file)
 
+  # CP932 filenames cannot be handled on non-CP932 systems. Rename them.
+  if (!identical(localeToCharset(), "CP932")) {
+    file_names_cp932 <- list.files(data_dir)
+    file_names_utf8 <- iconv(file_names_cp932, from = "CP932", to = "UTF-8")
+    file.rename(file.path(data_dir, file_names_cp932),
+                file.path(data_dir, file_names_utf8))
+  }
+
   layers <- rgdal::ogrListLayers(data_dir)
-  # workaround for Windows
+  # Workaround for Windows
   Encoding(layers) <- "UTF-8"
 
   result <- purrr::map(layers, ~ read_ogr_layer(data_dir, ., translate_columns = translate_columns))

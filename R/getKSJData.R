@@ -33,9 +33,10 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   }
 
   # rebase data_dir
-  shp_files <- list.files(data_dir, pattern = "*.shp", recursive = TRUE, full.names = TRUE)
-  if (length(shp_files) == 0) stop("The data contains no shape file!")
-  data_dir <- unique(dirname(shp_files))
+  meta_file <- list.files(data_dir, pattern = "KS-META.*\\.xml", recursive = TRUE, full.names = TRUE)
+  if (length(meta_file) == 0) stop("The data contains no META file!")
+  if (length(meta_file) > 1) stop("The data contains multiple META file!")
+  data_dir <- dirname(meta_file)
 
   layers <- rgdal::ogrListLayers(data_dir)
   # workaround for Windows

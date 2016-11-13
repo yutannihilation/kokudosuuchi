@@ -42,7 +42,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   data_dir <- dirname(meta_file)
 
   # CP932 filenames cannot be handled on non-CP932 systems. Rename them.
-  if (!identical(.Platform$OS.type, "CP932") && !use_cached) {
+  if (!identical(.Platform$OS.type, "windows") && !use_cached) {
     file_names_cp932 <- list.files(data_dir)
     file_names_utf8 <- iconv(file_names_cp932, from = "CP932", to = "UTF-8")
     file.rename(file.path(data_dir, file_names_cp932),

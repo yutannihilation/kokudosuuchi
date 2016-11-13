@@ -28,7 +28,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   if(!dir.exists(data_dir)) {
     dir.create(data_dir)
     tmp_file <- tempfile(fileext = "zip")
-    utils::download.file(zip_url, destfile = tmp_file)
+    curl::curl_download(zip_url, destfile = tmp_file)
     utils::unzip(tmp_file, exdir = data_dir)
     unlink(tmp_file)
   } else {

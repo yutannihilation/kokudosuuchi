@@ -12,16 +12,17 @@ License: MIT + file LICENSE
 Depends:
     R (>= 2.10)
 Imports:
-    httr,
-    xml2,
-    purrr (>= 0.2),
+    curl,
+    digest,
     dplyr,
-    shiny,
+    httr,
+    purrr (>= 0.2),
     rgdal,
-    digest
+    shiny,
+    xml2
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Encoding: UTF-8
 Suggests:
-    testthat,
-    readr
+    readr,
+    testthat

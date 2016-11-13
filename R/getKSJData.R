@@ -17,7 +17,6 @@
 #' str(l, max.level = 1)
 #' }
 #'
-#' @importFrom util localeToCharset
 #' @export
 getKSJData <- function(zip_url, translate_columns = TRUE) {
   tmp_dir_parent <- tempdir()
@@ -43,7 +42,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   data_dir <- dirname(meta_file)
 
   # CP932 filenames cannot be handled on non-CP932 systems. Rename them.
-  if (!identical(localeToCharset(), "CP932") && !use_cached) {
+  if (!identical(utils::localeToCharset(), "CP932") && !use_cached) {
     file_names_cp932 <- list.files(data_dir)
     file_names_utf8 <- iconv(file_names_cp932, from = "CP932", to = "UTF-8")
     file.rename(file.path(data_dir, file_names_cp932),
@@ -55,7 +54,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   Encoding(layers) <- "UTF-8"
 
   # THIS IS NOT A MISTAKE. I don't understand why though...
-  encoding <- if(!identical(localeToCharset(), "CP932")) "CP932" else "UTF-8"
+  encoding <- if(!identical(utils::localeToCharset(), "CP932")) "CP932" else "UTF-8"
   layers <- sort(layers)
   result <- purrr::map(layers,
                        ~ read_ogr_layer(data_dir, ., encoding = encoding,

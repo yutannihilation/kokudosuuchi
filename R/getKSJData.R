@@ -1,7 +1,8 @@
 #' Get JPGIS2.1 Data
 #'
-#' Download and load spatial data from ZIP file downloaded from Kokudo Suuchi service. Note that this function does
-#' not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
+#' Tries to download and load spatial data from Kokudo Suuchi service. Note that this function
+#' does not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
+#' (This is experimental and might not work well for all data.)
 #'
 #' @param zip_url
 #'   The URL of the Zip file.
@@ -50,10 +51,8 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   }
 
   layers <- rgdal::ogrListLayers(data_dir)
-  print(stringi::stri_escape_unicode(layers))
-  print(Sys.getlocale())
   # Workaround for Windows
-  # Encoding(layers) <- "UTF-8"
+  Encoding(layers) <- "UTF-8"
 
   # THIS IS NOT A MISTAKE. I don't understand why though...
   encoding <- if(identical(.Platform$OS.type, "windows")) "UTF-8" else "CP932"

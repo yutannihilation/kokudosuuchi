@@ -18,8 +18,7 @@ Imports:
     dplyr,
     shiny,
     rgdal,
-    digest,
-    stringi
+    digest
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Encoding: UTF-8

@@ -13,8 +13,9 @@ getKSJData(zip_url, translate_columns = TRUE)
 See \link{KSJShapeProperty} for more information about the corresponding table.}
 }
 \description{
-Download and load spatial data from ZIP file downloaded from Kokudo Suuchi service. Note that this function does
-not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
+Tries to download and load spatial data from Kokudo Suuchi service. Note that this function
+does not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
+(This is experimental and might not work well for all data.)
 }
 \examples{
 \dontrun{

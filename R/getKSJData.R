@@ -32,7 +32,15 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
     cat("Using cached data.\n\n")
   }
 
+  # rebase data_dir
+  shp_files <- list.files(data_dir, pattern = "*.shp", recursive = TRUE, full.names = TRUE)
+  if (length(shp_files) == 0) stop("The data contains no shape file!")
+  data_dir <- unique(dirname(shp_files))
+
   layers <- rgdal::ogrListLayers(data_dir)
+  # workaround for Windows
+  Encoding(layers) <- "UTF-8"
+
   result <- purrr::map(layers, ~ read_ogr_layer(data_dir, ., translate_columns = translate_columns))
   names(result) <- layers
   result

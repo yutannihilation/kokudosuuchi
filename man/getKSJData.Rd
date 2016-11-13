@@ -22,6 +22,7 @@ l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd
 names(l)
 str(l, max.level = 1)
 }
+
 }
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}

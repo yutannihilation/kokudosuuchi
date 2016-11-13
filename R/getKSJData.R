@@ -16,6 +16,8 @@
 #' names(l)
 #' str(l, max.level = 1)
 #' }
+#'
+#' @importFrom util localeToCharset
 #' @export
 getKSJData <- function(zip_url, translate_columns = TRUE) {
   tmp_dir_parent <- tempdir()
@@ -54,7 +56,8 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
 
   # THIS IS NOT A MISTAKE. I don't understand why though...
   encoding <- if(!identical(localeToCharset(), "CP932")) "CP932" else "UTF-8"
-  result <- purrr::map(sort(layers),
+  layers <- sort(layers)
+  result <- purrr::map(layers,
                        ~ read_ogr_layer(data_dir, ., encoding = encoding,
                                         translate_columns = translate_columns))
   names(result) <- layers

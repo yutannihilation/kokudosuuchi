@@ -51,7 +51,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
 
   layers <- rgdal::ogrListLayers(data_dir)
   # Workaround for Windows
-  Encoding(layers) <- "UTF-8"
+  # Encoding(layers) <- "UTF-8"
 
   # THIS IS NOT A MISTAKE. I don't understand why though...
   encoding <- if(identical(.Platform$OS.type, "windows")) "UTF-8" else "CP932"

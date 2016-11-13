@@ -12,6 +12,7 @@
 * Fix typo in `getKSJURL()`.
 * Fix issue with `getKSJData()` when the data contains UTF-8 layer names.
 * Fix issue with `getKSJData()` when the data has subdirectory.
+* Fix issue with `getKSJData()` on macOS, as `download.file()` won't work well with Kokudo Suuchi API.
 
 # kokudosuuchi 0.2.0
 

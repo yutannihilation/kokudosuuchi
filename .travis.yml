@@ -1,20 +1,5 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: c
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      before_install:
-        - sudo add-apt-repository "deb https://cran.rstudio.com/bin/linux/ubuntu trusty/"
-        - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-        - sudo add-apt-repository -y "ppa:marutter/rrutter"
-        - sudo add-apt-repository -y "ppa:marutter/c2d4u"
-        - sudo apt-get update -qq
-        - sudo apt-get install -y --no-install-recommends r-base-dev
-        - sudo apt-get install r-cran-httr r-cran-xml2 r-cran-purrr r-cran-dplyr r-cran-shiny r-cran-rgdal r-cran-digest r-cran-testthat r-cran-readr
-      script:
-        - R CMD build ${R_BUILD_ARGS} .
-        - FILE=$(ls -1t *.tar.gz | head -n 1)
-        - _R_CHECK_CRAN_INCOMING_=FALSE R CMD check "${FILE}" --no-build-vignettes --no-manual --as-cran
+language: R
+sudo: false
+cache: packages

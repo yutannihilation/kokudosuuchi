@@ -17,7 +17,7 @@ Imports:
     dplyr,
     httr,
     purrr (>= 0.2),
-    rgdal,
+    maptools,
     shiny,
     xml2
 LazyData: TRUE

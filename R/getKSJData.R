@@ -1,7 +1,7 @@
 #' Get JPGIS2.1 Data
 #'
 #' Tries to download and load spatial data from Kokudo Suuchi service. Note that this function
-#' does not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
+#' does not use API; directly download ZIP file and load the data by \link[maptools]{readShapeSpatial}.
 #' (This is experimental and might not work well for all data.)
 #'
 #' @param zip_url
@@ -50,22 +50,17 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
                 file.path(data_dir, file_names_utf8))
   }
 
-  layers <- rgdal::ogrListLayers(data_dir)
-  # Workaround for Windows
-  Encoding(layers) <- "UTF-8"
+  shape_files <- list.files(data_dir, pattern = ".*\\.shp", full.names = TRUE)
+  shape_files <- sort(shape_files)
 
-  # THIS IS NOT A MISTAKE. I don't understand why though...
-  encoding <- if(identical(.Platform$OS.type, "windows")) "UTF-8" else "CP932"
-  layers <- sort(layers)
-  result <- purrr::map(layers,
-                       ~ read_ogr_layer(data_dir, ., encoding = encoding,
-                                        translate_columns = translate_columns))
-  names(result) <- layers
+  result <- purrr::map(shape_files,
+                       read_shape_spatial, translate_columns = translate_columns)
+  names(result) <- gsub("\\.shp$", "", basename(shape_files))
   result
 }
 
-read_ogr_layer <- function(data_dir, layer, encoding, translate_columns = FALSE) {
-  l <- rgdal::readOGR(data_dir, layer, encoding = encoding)
+read_shape_spatial <- function(shape_file, translate_columns = FALSE) {
+  l <- maptools::readShapeSpatial(shape_file)
 
   col_codes <- colnames(l@data)
   corresp_table <- KSJShapeProperty[KSJShapeProperty$code %in% col_codes,]

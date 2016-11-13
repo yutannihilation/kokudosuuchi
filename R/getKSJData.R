@@ -22,6 +22,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   url_hash <- digest::digest(zip_url)
   data_dir <- file.path(tmp_dir_parent, url_hash)
 
+  use_cached <- FALSE
   if(!dir.exists(data_dir)) {
     dir.create(data_dir)
     tmp_file <- tempfile(fileext = "zip")
@@ -29,6 +30,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
     utils::unzip(tmp_file, exdir = data_dir)
     unlink(tmp_file)
   } else {
+    use_cached <- TRUE
     cat("Using cached data.\n\n")
   }
 
@@ -39,7 +41,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   data_dir <- dirname(meta_file)
 
   # CP932 filenames cannot be handled on non-CP932 systems. Rename them.
-  if (!identical(localeToCharset(), "CP932")) {
+  if (!identical(localeToCharset(), "CP932") && !use_cached) {
     file_names_cp932 <- list.files(data_dir)
     file_names_utf8 <- iconv(file_names_cp932, from = "CP932", to = "UTF-8")
     file.rename(file.path(data_dir, file_names_cp932),
@@ -50,14 +52,16 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   # Workaround for Windows
   Encoding(layers) <- "UTF-8"
 
-  result <- purrr::map(layers, ~ read_ogr_layer(data_dir, ., translate_columns = translate_columns))
+  # THIS IS NOT A MISTAKE. I don't understand why though...
+  encoding <- if(!identical(localeToCharset(), "CP932")) "CP932" else "UTF-8"
+  result <- purrr::map(layers, ~ read_ogr_layer(data_dir, ., encoding = encoding,
+                                                translate_columns = translate_columns))
   names(result) <- layers
   result
 }
 
-
-read_ogr_layer <- function(data_dir, layer, translate_columns = FALSE) {
-  l <- rgdal::readOGR(data_dir, layer, encoding = "UTF-8")
+read_ogr_layer <- function(data_dir, layer, encoding, translate_columns = FALSE) {
+  l <- rgdal::readOGR(data_dir, layer, encoding = encoding)
 
   col_codes <- colnames(l@data)
   corresp_table <- KSJShapeProperty[KSJShapeProperty$code %in% col_codes,]

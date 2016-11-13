@@ -17,6 +17,15 @@ test_that("getKSJData with UTF-8 layers works", {
   expect_equal(names(d), layer_names)
 })
 
+test_that("getKSJData with UTF-8 layers with cached one works", {
+  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
+  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
+
+  layer_names <- c("P12a-14_06\u4e00\u822c\u516c\u958b", "P12b-14_06\u4e00\u822c\u516c\u958b",
+                   "P12c-14_06\u4e00\u822c\u516c\u958b")
+  expect_equal(names(d), layer_names)
+})
+
 
 test_that("getKSJData randomly works", {
   skip_on_travis()

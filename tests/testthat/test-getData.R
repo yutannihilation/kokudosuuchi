@@ -13,8 +13,10 @@ test_that("getKSJData with UTF-8 layers works", {
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
 
   expect_equal(length(d), 3)
-  expect_true(all(purrr::map_lgl(d, ~ inherits(., "SpatialPointsDataFrame"))))
-  expect_equal(purrr::map_int(d, ~ nrow(.@data)), c(10L, 1L, 2L))
+  expect_equal(unname(purrr::map_chr(d, class)),
+               c("SpatialPointsDataFrame", "SpatialLinesDataFrame", "SpatialPolygonsDataFrame"))
+  expect_equal(unname(purrr::map_int(d, ~ nrow(.@data))),
+               c(10L, 1L, 2L))
 
   skip_on_cran()
   # This won't work on windows with non-CP932 locale
@@ -30,8 +32,10 @@ test_that("getKSJData with UTF-8 layers with cached one works", {
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
 
   expect_equal(length(d), 3)
-  expect_true(all(purrr::map_lgl(d, ~ inherits(., "SpatialPointsDataFrame"))))
-  expect_equal(purrr::map_int(d, ~ nrow(.@data)), c(10L, 1L, 2L))
+  expect_equal(unname(purrr::map_chr(d, class)),
+               c("SpatialPointsDataFrame", "SpatialLinesDataFrame", "SpatialPolygonsDataFrame"))
+  expect_equal(unname(purrr::map_int(d, ~ nrow(.@data))),
+               c(10L, 1L, 2L))
 
   skip_on_cran()
   # This won't work on windows with non-CP932 locale

@@ -54,18 +54,18 @@ library(kokudosuuchi)
 #> http://nlftp.mlit.go.jp/ksj/other/yakkan.html
 
 getKSJSummary()
-#> # A tibble: 102 × 5
+#> # A tibble: 102 x 5
 #>    identifier                title           field1       field2 areaType
 #>         <chr>                <chr>            <chr>        <chr>    <chr>
-#> 1         A03   三大都市圏計画区域         政策区域     大都市圏        2
-#> 2         A09             都市地域 国土（水・土地）     土地利用        3
-#> 3         A10         自然公園地域             地域     保護保全        3
-#> 4         A11         自然保全地域             地域     保護保全        3
-#> 5         A12             農業地域 国土（水・土地）     土地利用        3
-#> 6         A13             森林地域 国土（水・土地）     土地利用        3
-#> 7         A15           鳥獣保護区             地域     保護保全        3
-#> 8         A16         人口集中地区         政策区域            -        3
-#> 9         A17             過疎地域         政策区域 条件不利地域        3
+#>  1        A03   三大都市圏計画区域         政策区域     大都市圏        2
+#>  2        A09             都市地域 国土（水・土地）     土地利用        3
+#>  3        A10         自然公園地域             地域     保護保全        3
+#>  4        A11         自然保全地域             地域     保護保全        3
+#>  5        A12             農業地域 国土（水・土地）     土地利用        3
+#>  6        A13             森林地域 国土（水・土地）     土地利用        3
+#>  7        A15           鳥獣保護区             地域     保護保全        3
+#>  8        A16         人口集中地区         政策区域            -        3
+#>  9        A17             過疎地域         政策区域 条件不利地域        3
 #> 10        A18 半島振興対策実施地域         政策区域 条件不利地域        3
 #> # ... with 92 more rows
 ```
@@ -73,11 +73,9 @@ getKSJSummary()
 ### 国土数値情報のURL情報取得
 
 ``` r
-library(kokudosuuchi)
-
 # prefCodeが3で、年が2000-2010の河川のデータ
 getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
-#> # A tibble: 1 × 9
+#> # A tibble: 1 x 9
 #>   identifier title            field  year areaType areaCode datum
 #>        <chr> <chr>            <chr> <chr>    <chr>    <chr> <chr>
 #> 1        W05  河川 国土（水・土地）  2007        3        3     1
@@ -87,33 +85,6 @@ getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 ### 国土数値情報のGISデータ取得
 
 ``` r
-library(kokudosuuchi)
-
 options(max.print = 20)
 getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
-#> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\HIROAK~1\AppData\Local\Temp\Rtmp8OYr3A/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_RiverNode"
-#> with 7534 features
-#> It has 3 fields
-#> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\HIROAK~1\AppData\Local\Temp\Rtmp8OYr3A/1d9e3cbd8c67c8289c3e955f4a925569", layer: "W05-07_03-g_Stream"
-#> with 7597 features
-#> It has 10 fields
-#> $`W05-07_03-g_RiverNode`
-#>               coordinates W05_001 W05_011      W05_000
-#> 1    (140.9582, 40.08226)  820208     563 gb03_0306894
-#> 2    (140.9408, 40.07295)  820208     707 gb03_0306905
-#> 3    (140.9433, 40.07361)  820208     668 gb03_0306906
-#> 4    (140.9834, 40.21256)  820208     584 gb03_0306909
-#> 5    (140.8866, 40.08491)  820208     360 gb03_0306916
-#>  [ reached getOption("max.print") -- 7529 行を無視しました ] 
-#> 
-#> $`W05-07_03-g_Stream`
-#>                                      geometry W05_001    W05_002 W05_003
-#> 0    MULTILINESTRING((141.6751 39.02211 ...))  030041 0300410001       3
-#>             W05_004 W05_005 W05_006       W05_007       W05_008
-#> 0            浜田川       4    true #gb03_0302521 #gb03_0301996
-#>            W05_009       W05_010
-#> 0    #gb03_0302521 #gb03_0301995
-#>  [ reached getOption("max.print") -- 7596 行を無視しました ]
 ```

@@ -66,17 +66,13 @@ getKSJSummary()
 ### 国土数値情報のURL情報取得
 
 ```{r}
-library(kokudosuuchi)
-
 # prefCodeが3で、年が2000-2010の河川のデータ
 getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 ```
 
 ### 国土数値情報のGISデータ取得
 
-```{r}
-library(kokudosuuchi)
-
+```{r, eval=FALSE}
 options(max.print = 20)
 getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
 ```

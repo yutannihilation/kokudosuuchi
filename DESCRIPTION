@@ -17,7 +17,6 @@ Imports:
     dplyr,
     httr,
     purrr (>= 0.2),
-    maptools,
     shiny,
     xml2
 LazyData: TRUE
@@ -25,4 +24,5 @@ RoxygenNote: 5.0.1
 Encoding: UTF-8
 Suggests:
     readr,
+    sf,
     testthat

@@ -1,7 +1,8 @@
 library(readxl)
 
 # Download by browser; I don't know why download.file won't work...
-xlsfile <- "/path/to/shape_property_table.xls"
+xlsfile <- tempfile(fileext = ".xls")
+curl::curl_download("http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls", destfile = xlsfile)
 sheets <- excel_sheets(xlsfile)
 KSJShapeProperty <- purrr::map_df(sheets, ~ read_excel(xlsfile, sheet = ., skip = 4))
 

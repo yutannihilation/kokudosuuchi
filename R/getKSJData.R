@@ -20,6 +20,8 @@
 #'
 #' @export
 getKSJData <- function(zip_url, translate_columns = TRUE) {
+  if (!is_installed("sf")) stop("Please install sf if you want to use this feature.")
+
   tmp_dir_parent <- tempdir()
   url_hash <- digest::digest(zip_url)
   data_dir <- file.path(tmp_dir_parent, url_hash)
@@ -50,38 +52,42 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
                 file.path(data_dir, file_names_utf8))
   }
 
-  shape_files <- list.files(data_dir, pattern = ".*\\.shp", full.names = TRUE)
-  shape_files <- sort(shape_files)
+  layers <- sf::st_layers(data_dir)
+  layer_names <- purrr::set_names(layers$name)
 
-  result <- purrr::map(shape_files,
-                       read_shape_spatial, translate_columns = translate_columns)
-  names(result) <- gsub("\\.shp$", "", basename(shape_files))
+  result <- purrr::map(layer_names,
+                       read_shape_spatial, dsn = data_dir, translate_columns = translate_columns)
   result
 }
 
-read_shape_spatial <- function(shape_file, translate_columns = FALSE) {
-  l <- maptools::readShapeSpatial(shape_file)
+read_shape_spatial <- function(dsn, layer, translate_columns = FALSE) {
+  d <- sf::read_sf(dsn = dsn, layer = layer)
 
-  col_codes <- colnames(l@data)
-  corresp_table <- KSJShapeProperty[KSJShapeProperty$code %in% col_codes,]
-  urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", unique(corresp_table$category))
+  categories <- KSJShapeProperty %>%
+    filter(.data$code %in% col_nm) %>%
+    pull(category) %>%
+    unique
+
+  urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", categories)
   message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
 
   if (translate_columns) {
-    warn_no_corresp_names(col_codes, corresp_table)
-    corresp_names <- purrr::set_names(corresp_table$code, corresp_table$name)
+    KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
+    colnames_orig <- colnames(d)
+    colnames_readable <- KSJ_code_to_name[colnames_orig]
+    if (any(is.na(colnames_readable))) {
+      warning(sprintf("No corresponding names are available for these columns: %s",
+                      paste(colnames_orig[is.na(colnames_readable)], collapse = ", ")))
+      # fill with the original names
+      colnames_readable <- dplyr::coalesce(colnames_readable, colnames_orig)
+    }
 
-    l@data <- dplyr::rename_(l@data, .dots = corresp_names)
+    colnames(d) <- colnames_readable
   }
 
-  l
+  d
 }
 
-# For tests on Travis with with_mock(). Warnings are treated as errors there.
-warn_no_corresp_names <- function(col_codes, corresp_table) {
-  codes_wo_corresp_names <- col_codes[!(col_codes %in% corresp_table$code)]
-  if(length(codes_wo_corresp_names) != 0)
-    warnings(sprintf("No corresponding names are available for these columns: %s",
-                     paste(codes_wo_corresp_names, collapse = ", ")))
-
+is_installed <- function(pkg) {
+  system.file(package = pkg) != ""
 }

@@ -78,9 +78,11 @@ translate_KSJ_colnames <- function(d) {
   KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
 
   # some column names cannot be converted, so fill it with the original name
-  colnames_readable <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
+  colnames_readable_not_tidy <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
+  # TODO: some codes share the same name (e.g. P12_003 and P12_004)
+  colnames_readable <- tibble::tidy_names(colnames_readable_not_tidy, quiet = TRUE)
 
-  message("converted:")
+  message("The colnames are translated:")
   message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
 
   colnames(d) <- colnames_readable

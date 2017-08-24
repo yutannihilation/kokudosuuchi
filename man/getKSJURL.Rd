@@ -38,4 +38,3 @@ getKSJURL("W05", prefCode = choose_prefecture_code())
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }
-

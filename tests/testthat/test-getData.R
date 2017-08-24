@@ -5,45 +5,26 @@ test_that("getKSJData works", {
 
   expect_equal(names(d), "L01-01_36-g_LandPrice")
   expect_equal(nrow(d$`L01-01_36-g_LandPrice`), 162)
-  expect_true(inherits(d$`L01-01_36-g_LandPrice`, "SpatialPointsDataFrame"))
-  expect_true(inherits(d$`L01-01_36-g_LandPrice`@data, "data.frame"))
+  expect_s3_class(d$`L01-01_36-g_LandPrice`, "sf")
 })
 
 test_that("getKSJData with UTF-8 layers works", {
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
 
   expect_equal(length(d), 3)
-  expect_equal(unname(purrr::map_chr(d, class)),
-               c("SpatialPointsDataFrame", "SpatialLinesDataFrame", "SpatialPolygonsDataFrame"))
-  expect_equal(unname(purrr::map_int(d, ~ nrow(.@data))),
-               c(10L, 1L, 2L))
-
-  skip_on_cran()
-  # This won't work on windows with non-CP932 locale
-  skip_on_appveyor()
-
-  layer_names <- c("P12a-14_06\u4e00\u822c\u516c\u958b", "P12b-14_06\u4e00\u822c\u516c\u958b",
-                   "P12c-14_06\u4e00\u822c\u516c\u958b")
-  expect_equal(names(d), layer_names)
+  purrr::walk(d, expect_s3_class, class = "sf")
+  expect_equal(unname(purrr::map_int(d, nrow)), c(10L, 1L, 2L))
+  expect_equal(names(d), c("P12a-14_06", "P12b-14_06", "P12c-14_06"))
 })
 
 test_that("getKSJData with UTF-8 layers with cached one works", {
-  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
-  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
+  expect_message({d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")},
+                 "Using cached data.")
 
   expect_equal(length(d), 3)
-  expect_equal(unname(purrr::map_chr(d, class)),
-               c("SpatialPointsDataFrame", "SpatialLinesDataFrame", "SpatialPolygonsDataFrame"))
-  expect_equal(unname(purrr::map_int(d, ~ nrow(.@data))),
-               c(10L, 1L, 2L))
-
-  skip_on_cran()
-  # This won't work on windows with non-CP932 locale
-  skip_on_appveyor()
-
-  layer_names <- c("P12a-14_06\u4e00\u822c\u516c\u958b", "P12b-14_06\u4e00\u822c\u516c\u958b",
-                   "P12c-14_06\u4e00\u822c\u516c\u958b")
-  expect_equal(names(d), layer_names)
+  purrr::walk(d, expect_s3_class, class = "sf")
+  expect_equal(unname(purrr::map_int(d, nrow)), c(10L, 1L, 2L))
+  expect_equal(names(d), c("P12a-14_06", "P12b-14_06", "P12c-14_06"))
 })
 
 
@@ -61,8 +42,5 @@ test_that("getKSJData randomly works", {
   url <- sample(ksj_urls_lite$zipFileUrl, 1)
   cat(url)
   d <- getKSJData(url)
-  expect_true(all(purrr::map_lgl(d, ~ class(.) %in% c("SpatialPointsDataFrame",
-                                                      "SpatialLinesDataFrame",
-                                                      "SpatialPolygonsDataFrame"))))
-  expect_true(inherits(d[[1]]@data, "data.frame"))
+  purrr::walk(d, expect_s3_class, class = "sf")
 })

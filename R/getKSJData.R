@@ -1,7 +1,7 @@
 #' Get JPGIS2.1 Data
 #'
 #' Tries to download and load spatial data from Kokudo Suuchi service. Note that this function
-#' does not use API; directly download ZIP file and load the data by \link[rgdal]{readOGR}.
+#' does not use API; directly download ZIP file and load the data by \link[maptools]{readShapeSpatial}.
 #' (This is experimental and might not work well for all data.)
 #'
 #' @param zip_url
@@ -20,6 +20,8 @@
 #'
 #' @export
 getKSJData <- function(zip_url, translate_columns = TRUE) {
+  if (!is_installed("sf")) stop("Please install sf if you want to use this feature.")
+
   tmp_dir_parent <- tempdir()
   url_hash <- digest::digest(zip_url)
   data_dir <- file.path(tmp_dir_parent, url_hash)
@@ -33,7 +35,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
     unlink(tmp_file)
   } else {
     use_cached <- TRUE
-    cat("Using cached data.\n\n")
+    message("Using cached data.\n")
   }
 
   # rebase data_dir
@@ -50,43 +52,51 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
                 file.path(data_dir, file_names_utf8))
   }
 
-  layers <- rgdal::ogrListLayers(data_dir)
-  # Workaround for Windows
-  Encoding(layers) <- "UTF-8"
+  layers <- sf::st_layers(data_dir)
+  layer_names <- purrr::set_names(layers$name)
 
-  # THIS IS NOT A MISTAKE. I don't understand why though...
-  encoding <- if(identical(.Platform$OS.type, "windows")) "UTF-8" else "CP932"
-  layers <- sort(layers)
-  result <- purrr::map(layers,
-                       ~ read_ogr_layer(data_dir, ., encoding = encoding,
-                                        translate_columns = translate_columns))
-  names(result) <- layers
+  result <- purrr::map(layer_names,
+                       read_shape_spatial, dsn = data_dir, translate_columns = translate_columns)
   result
 }
 
-read_ogr_layer <- function(data_dir, layer, encoding, translate_columns = FALSE) {
-  l <- rgdal::readOGR(data_dir, layer, encoding = encoding)
+read_shape_spatial <- function(dsn, layer, translate_columns = TRUE) {
+  d <- sf::read_sf(dsn = dsn, layer = layer)
 
-  col_codes <- colnames(l@data)
-  corresp_table <- KSJShapeProperty[KSJShapeProperty$code %in% col_codes,]
-  urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", unique(corresp_table$category))
-  message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
+  suggest_useful_links(colnames(d))
 
   if (translate_columns) {
-    warn_no_corresp_names(col_codes, corresp_table)
-    corresp_names <- purrr::set_names(corresp_table$code, corresp_table$name)
-
-    l@data <- dplyr::rename_(l@data, .dots = corresp_names)
+    translate_KSJ_colnames(d)
+  } else {
+    d
   }
-
-  l
 }
 
-# For tests on Travis with with_mock(). Warnings are treated as errors there.
-warn_no_corresp_names <- function(col_codes, corresp_table) {
-  codes_wo_corresp_names <- col_codes[!(col_codes %in% corresp_table$code)]
-  if(length(codes_wo_corresp_names) != 0)
-    warnings(sprintf("No corresponding names are available for these columns: %s",
-                     paste(codes_wo_corresp_names, collapse = ", ")))
+translate_KSJ_colnames <- function(d) {
+  colnames_orig <- colnames(d)
 
+  KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
+
+  # some column names cannot be converted, so fill it with the original name
+  colnames_readable <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
+
+  message("converted:")
+  message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
+
+  colnames(d) <- colnames_readable
+  d
+}
+
+suggest_useful_links <- function(codes) {
+  categories <- KSJShapeProperty %>%
+    dplyr::filter(.data$code %in% codes) %>%
+    dplyr::pull(category) %>%
+    unique
+
+  urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", categories)
+  message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
+}
+
+is_installed <- function(pkg) {
+  system.file(package = pkg) != ""
 }

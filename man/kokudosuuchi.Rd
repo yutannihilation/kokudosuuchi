@@ -11,4 +11,3 @@ Use the Kokudo Suuchi Joho API
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }
-

@@ -15,4 +15,3 @@ KSJShapeProperty
 Corresponding Table Of Shapefile Properties
 }
 \keyword{datasets}
-

@@ -62,32 +62,39 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
 
 read_shape_spatial <- function(dsn, layer, translate_columns = TRUE) {
   d <- sf::read_sf(dsn = dsn, layer = layer)
+
+  suggest_useful_links(colnames(d))
+
+  if (translate_columns) {
+    translate_KSJ_colnames(d)
+  } else {
+    d
+  }
+}
+
+translate_KSJ_colnames <- function(d) {
   colnames_orig <- colnames(d)
 
+  KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
+
+  # some column names cannot be converted, so fill it with the original name
+  colnames_readable <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
+
+  message("converted:")
+  message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
+
+  colnames(d) <- colnames_readable
+  d
+}
+
+suggest_useful_links <- function(codes) {
   categories <- KSJShapeProperty %>%
-    dplyr::filter(.data$code %in% colnames_orig) %>%
+    dplyr::filter(.data$code %in% codes) %>%
     dplyr::pull(category) %>%
     unique
 
   urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", categories)
   message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
-
-  if (translate_columns) {
-    KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
-    KSJ_code_to_name["geometry"] <- "geometry"
-    colnames_readable <- KSJ_code_to_name[colnames_orig]
-
-    if (any(is.na(colnames_readable))) {
-      message(sprintf("Note: no corresponding names are available for these columns: %s",
-                      paste(colnames_orig[is.na(colnames_readable)], collapse = ", ")))
-      # fill with the original names
-      colnames_readable <- dplyr::coalesce(colnames_readable, colnames_orig)
-    }
-
-    colnames(d) <- colnames_readable
-  }
-
-  d
 }
 
 is_installed <- function(pkg) {

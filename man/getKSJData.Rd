@@ -28,4 +28,3 @@ str(l, max.level = 1)
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }
-

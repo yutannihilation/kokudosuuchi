@@ -35,7 +35,7 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
     unlink(tmp_file)
   } else {
     use_cached <- TRUE
-    cat("Using cached data.\n\n")
+    message("Using cached data.\n")
   }
 
   # rebase data_dir
@@ -60,12 +60,13 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   result
 }
 
-read_shape_spatial <- function(dsn, layer, translate_columns = FALSE) {
+read_shape_spatial <- function(dsn, layer, translate_columns = TRUE) {
   d <- sf::read_sf(dsn = dsn, layer = layer)
+  colnames_orig <- colnames(d)
 
   categories <- KSJShapeProperty %>%
-    filter(.data$code %in% col_nm) %>%
-    pull(category) %>%
+    dplyr::filter(.data$code %in% colnames_orig) %>%
+    dplyr::pull(category) %>%
     unique
 
   urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", categories)
@@ -73,10 +74,11 @@ read_shape_spatial <- function(dsn, layer, translate_columns = FALSE) {
 
   if (translate_columns) {
     KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
-    colnames_orig <- colnames(d)
+    KSJ_code_to_name["geometry"] <- "geometry"
     colnames_readable <- KSJ_code_to_name[colnames_orig]
+
     if (any(is.na(colnames_readable))) {
-      warning(sprintf("No corresponding names are available for these columns: %s",
+      message(sprintf("Note: no corresponding names are available for these columns: %s",
                       paste(colnames_orig[is.na(colnames_readable)], collapse = ", ")))
       # fill with the original names
       colnames_readable <- dplyr::coalesce(colnames_readable, colnames_orig)

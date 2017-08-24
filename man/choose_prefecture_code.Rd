@@ -9,4 +9,3 @@ choose_prefecture_code()
 \description{
 Display a popup window with prefectures checkboxes, and return the codes of checked prefectures.
 }
-

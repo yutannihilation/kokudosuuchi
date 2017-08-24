@@ -17,10 +17,11 @@ Imports:
     dplyr,
     httr,
     purrr (>= 0.2),
+    rlang,
     shiny,
     xml2
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1.9000
 Encoding: UTF-8
 Suggests:
     readr,

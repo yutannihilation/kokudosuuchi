@@ -15,4 +15,3 @@ KSJPrefCodes
 Corresponding Table Of Names And Codes Of Prefectures
 }
 \keyword{datasets}
-

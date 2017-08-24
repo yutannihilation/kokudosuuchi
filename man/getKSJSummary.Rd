@@ -19,4 +19,3 @@ Get summary information via Kokudo Suuchi API.
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }
-

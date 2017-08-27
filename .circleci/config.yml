@@ -21,3 +21,4 @@ jobs:
 
        - store_artifacts:
            path: "{{ .Environment.RCHECK_DIR }}"
+           when: "always"

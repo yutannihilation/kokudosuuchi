@@ -20,5 +20,5 @@ jobs:
        - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"
 
        - store_artifacts:
-           path: "{{ .Environment.RCHECK_DIR }}"
+           path: ${RCHECK_DIR}
            when: "always"

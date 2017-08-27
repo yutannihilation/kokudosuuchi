@@ -2,26 +2,38 @@
 % Please edit documentation in R/getKSJData.R
 \name{getKSJData}
 \alias{getKSJData}
+\alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_url, translate_columns = TRUE)
+getKSJData(zip_url, translate_colnames = TRUE)
+
+translateKSJColnames(x, quiet = FALSE)
 }
 \arguments{
 \item{zip_url}{The URL of the Zip file.}
 
-\item{translate_columns}{If \code{TRUE}, try to use human-readable column names.
+\item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
 See \link{KSJShapeProperty} for more information about the corresponding table.}
+
+\item{x}{Object of class \link[sf]{sf}}
+
+\item{quiet}{If \code{TRUE}, suppress messages.}
 }
 \description{
-Tries to download and load spatial data from Kokudo Suuchi service. Note that this function
-does not use API; directly download ZIP file and load the data by \link[maptools]{readShapeSpatial}.
-(This is experimental and might not work well for all data.)
+\code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function
+does not use API; directly download ZIP file and load the data by \link[sf]{read_sf}.
+\code{translateKSJColnames} translates the column names of data (e.g. W05_001) into human readable ones.
+By default, this is automatically done in \code{getKSJData}.
 }
 \examples{
 \dontrun{
 l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip")
 names(l)
 str(l, max.level = 1)
+
+l_raw <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip",
+                    translate_colnames = FALSE)
+translateKSJColnames(l_raw)
 }
 
 }

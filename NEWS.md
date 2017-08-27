@@ -1,10 +1,11 @@
-# kokudosuuchi 0.3.0
+# kokudosuuchi 0.4.0
 
 * Added a `NEWS.md` file to track changes to the package.
 
 ## New Feature
 
-* `getKSJData()` now translates column codes to human-redable names.
+* `getKSJData()` now uses sf.
+* `getKSJData()` now translates the codes in the column names of data into human-readable ones.
 
 ## Bug fixes
 
@@ -13,6 +14,8 @@
 * Fix issue with `getKSJData()` when the data contains UTF-8 layer names.
 * Fix issue with `getKSJData()` when the data has subdirectory.
 * Fix issue with `getKSJData()` on macOS, as `download.file()` won't work well with Kokudo Suuchi API.
+
+# kokudosuuchi 0.3.0 (not released)
 
 # kokudosuuchi 0.2.0
 

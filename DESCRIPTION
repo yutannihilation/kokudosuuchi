@@ -22,6 +22,7 @@ Imports:
     tools,
     shiny,
     stringi,
+    tibble,
     xml2
 LazyData: TRUE
 RoxygenNote: 6.0.1.9000

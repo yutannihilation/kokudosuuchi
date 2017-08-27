@@ -15,9 +15,11 @@ Imports:
     curl,
     digest,
     dplyr,
+    glue,
     httr,
     purrr (>= 0.2),
     rlang,
+    tools,
     shiny,
     xml2
 LazyData: TRUE

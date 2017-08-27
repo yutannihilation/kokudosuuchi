@@ -1,64 +1,44 @@
+defaults: &defaults
+  steps:
+     # setup
+     - checkout
+     - run:
+         name: Set environmental variables
+         command: |
+           Rscript --vanilla \
+             -e 'dsc <- read.dcf("DESCRIPTION")' \
+             -e 'cat(sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"]))' \
+             -e 'cat(sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"]))' \
+             >> ${BASH_ENV}
+
+     # build and test
+     - run: R CMD build .
+     - run: R CMD check "${PKG_TARBALL}" --as-cran --no-manual
+     - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"
+
+     # store artifacts
+     - run:
+         command: mv ${RCHECK_DIR} /tmp/Rcheck
+         when: always
+     - store_artifacts:
+         path: /tmp/Rcheck
+       when: always
+
 version: 2
 jobs:
    "r-release":
      docker:
        - image: rocker/geospatial:latest
-     steps:
-       # setup
-       - checkout
-       - run:
-           name: Set environmental variables
-           command: |
-             Rscript --vanilla \
-               -e 'dsc <- read.dcf("DESCRIPTION")' \
-               -e 'cat(sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"]))' \
-               -e 'cat(sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"]))' \
-               >> ${BASH_ENV}
-
-       # build and test
-       - run: R CMD build .
-       - run: R CMD check "${PKG_TARBALL}" --as-cran --no-manual
-       - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"
-
-       # store artifacts
-       - run:
-           command: mv ${RCHECK_DIR} /tmp/Rcheck
-           when: always
-       - store_artifacts:
-           path: /tmp/Rcheck
-           when: always
+     <<: *defaults
 
    "r-devel":
      docker:
        - image: rocker/geospatial:devel
-     steps:
-       # setup
-       - checkout
-       - run:
-           name: Set environmental variables
-           command: |
-             Rscript --vanilla \
-               -e 'dsc <- read.dcf("DESCRIPTION")' \
-               -e 'cat(sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"]))' \
-               -e 'cat(sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"]))' \
-               >> ${BASH_ENV}
-
-       # build and test
-       - run: R CMD build .
-       - run: R CMD check "${PKG_TARBALL}" --as-cran --no-manual
-       - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"
-
-       # store artifacts
-       - run:
-           command: mv ${RCHECK_DIR} /tmp/Rcheck
-           when: always
-       - store_artifacts:
-           path: /tmp/Rcheck
-           when: always
+     <<: *defaults
 
 workflows:
   version: 2
-  build:
+  build_and_test:
     jobs:
       - "r-release"
       - "r-devel"

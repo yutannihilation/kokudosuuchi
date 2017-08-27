@@ -11,8 +11,10 @@ test_that("getKSJData works", {
 verify_p12_14_06_gml <- function(d) {
   expect_equal(length(d), 3)
   purrr::walk(d, expect_s3_class, class = "sf")
-  expect_equal(unname(purrr::map_int(d, nrow)), c(10L, 1L, 2L))
-  expect_equal(names(d), c("P12a-14_06", "P12b-14_06", "P12c-14_06"))
+  expect_equal(sort(unname(purrr::map_int(d, nrow))),
+               sort(c(10L, 1L, 2L)))
+  expect_equal(sort(names(d)),
+               sort(c("P12a-14_06", "P12b-14_06", "P12c-14_06")))
 }
 
 test_that("getKSJData with UTF-8 layers works", {

@@ -22,7 +22,7 @@ defaults: &defaults
          when: always
      - store_artifacts:
          path: /tmp/Rcheck
-       when: always
+         when: always
 
 version: 2
 jobs:

@@ -1,0 +1,27 @@
+version: 2
+jobs:
+   build:
+     docker:
+       - image: rocker/geospatial:latest
+     steps:
+       - checkout
+
+       - run: R CMD build .
+
+       - run: |
+           Rscript --vanilla \
+             -e 'dsc <- read.dcf("DESCRIPTION")' \
+             -e 'cat(sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"]))' \
+             -e 'cat(sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"]))' \
+             >> ${BASH_ENV}
+
+       - run: R CMD check "${PKG_TARBALL}" --as-cran --no-manual
+
+       - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"
+
+       - run:
+           command: mv ${RCHECK_DIR} /tmp/Rcheck
+           when: always
+       - store_artifacts:
+           path: /tmp/Rcheck
+           when: always

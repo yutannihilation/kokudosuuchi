@@ -1,9 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.travis\.yml$
-^data-raw$
+^\.circleci$
 ^appveyor\.yml$
 ^cran-comments\.md$
 ^README\.Rmd$
 ^README-.*\.png$
 ^update_KSJShapeProperty.R$
+^data-raw$
+^docs$

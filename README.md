@@ -3,7 +3,9 @@
 kokudosuuchi
 ============
 
-[![Travis-CI Build Status](https://travis-ci.org/yutannihilation/kokudosuuchi.svg?branch=master)](https://travis-ci.org/yutannihilation/kokudosuuchi) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&svg=true)](https://ci.appveyor.com/project/yutannihilation/kokudosuuchi) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
+
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&svg=true)](https://ci.appveyor.com/project/yutannihilation/kokudosuuchi)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
 
 **(Sorry, English version of README is not availavle for now.)**
 

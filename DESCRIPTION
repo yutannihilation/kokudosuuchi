@@ -21,6 +21,7 @@ Imports:
     rlang,
     tools,
     shiny,
+    stringi,
     xml2
 LazyData: TRUE
 RoxygenNote: 6.0.1.9000

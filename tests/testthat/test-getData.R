@@ -8,23 +8,53 @@ test_that("getKSJData works", {
   expect_s3_class(d$`L01-01_36-g_LandPrice`, "sf")
 })
 
-test_that("getKSJData with UTF-8 layers works", {
-  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
-
+verify_p12_14_06_gml <- function(d) {
   expect_equal(length(d), 3)
   purrr::walk(d, expect_s3_class, class = "sf")
   expect_equal(unname(purrr::map_int(d, nrow)), c(10L, 1L, 2L))
   expect_equal(names(d), c("P12a-14_06", "P12b-14_06", "P12c-14_06"))
+}
+
+test_that("getKSJData with UTF-8 layers works", {
+  d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
+
+  verify_p12_14_06_gml(d)
 })
 
 test_that("getKSJData with UTF-8 layers with cached one works", {
   expect_message({d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")},
-                 "Using cached data.")
+                 "Using the cached zip file")
 
-  expect_equal(length(d), 3)
-  purrr::walk(d, expect_s3_class, class = "sf")
-  expect_equal(unname(purrr::map_int(d, nrow)), c(10L, 1L, 2L))
-  expect_equal(names(d), c("P12a-14_06", "P12b-14_06", "P12c-14_06"))
+  verify_p12_14_06_gml(d)
+})
+
+zip_file <- tempfile()
+curl::curl_download("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip",
+                    destfile = zip_file)
+
+test_that("getKSJData with UTF-8 layers with a zip file works", {
+  d <- getKSJData(zip_file)
+
+  verify_p12_14_06_gml(d)
+})
+
+data_dir <- tempfile()
+utils::unzip(zip_file, exdir = data_dir)
+
+test_that("getKSJData with UTF-8 layers with a directory works", {
+  d <- getKSJData(data_dir)
+
+  verify_p12_14_06_gml(d)
+})
+
+data_dir2 <- tempfile()
+dir.create(data_dir2)
+file.rename(data_dir, file.path(data_dir2, "nested"))
+
+test_that("getKSJData with UTF-8 layers with a nested directory works", {
+  d <- getKSJData(data_dir2)
+
+  verify_p12_14_06_gml(d)
 })
 
 

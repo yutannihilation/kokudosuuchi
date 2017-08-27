@@ -5,12 +5,12 @@
 \alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_url, translate_colnames = TRUE)
+getKSJData(zip_file, translate_colnames = TRUE)
 
 translateKSJColnames(x, quiet = FALSE)
 }
 \arguments{
-\item{zip_url}{The URL of the Zip file.}
+\item{zip_file}{Either a URL, a path to a zip file, or a path to a directory which contains shape files.}
 
 \item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
 See \link{KSJShapeProperty} for more information about the corresponding table.}

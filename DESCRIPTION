@@ -15,10 +15,13 @@ Imports:
     curl,
     digest,
     dplyr,
+    glue,
     httr,
     purrr (>= 0.2),
     rlang,
+    tools,
     shiny,
+    stringi,
     xml2
 LazyData: TRUE
 RoxygenNote: 6.0.1.9000

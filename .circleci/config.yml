@@ -19,6 +19,9 @@ jobs:
 
        - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"
 
+       - run:
+           command: mv ${RCHECK_DIR} /tmp/Rcheck
+           when: always
        - store_artifacts:
-           path: ${RCHECK_DIR}
-           when: "always"
+           path: /tmp/Rcheck
+           when: always

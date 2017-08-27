@@ -5,5 +5,16 @@ jobs:
        - image: rocker/geospatial:latest
      steps:
        - checkout
+
        - run: R CMD build .
-       - run: R CMD check "kokudosuuchi_0.3.0.9000.tar.gz" --as-cran --no-manual
+
+       - run: |
+           Rscript --vanilla \
+             -e 'dsc <- read.dcf("DESCRIPTION")' \
+             -e 'sprintf("export PKG_TARBALL=%s_%s.tar.gz\n", dsc[,"Package"], dsc[,"Version"])' \
+             -e 'sprintf("export RCHECK_DIR=%s.Rcheck\n", dsc[,"Package"])' \
+             >> ${BASH_ENV}
+
+       - run: R CMD check "${PKG_TARBALL}" --as-cran --no-manual
+
+       - run: Rscript -e "message(devtools::check_failures(path = '${RCHECK_DIR}'))"

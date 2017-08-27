@@ -1,12 +1,13 @@
 #' Get JPGIS2.1 Data
 #'
-#' Tries to download and load spatial data from Kokudo Suuchi service. Note that this function
-#' does not use API; directly download ZIP file and load the data by \link[maptools]{readShapeSpatial}.
-#' (This is experimental and might not work well for all data.)
+#' \code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function
+#' does not use API; directly download ZIP file and load the data by \link[sf]{read_sf}.
+#' \code{translateKSJColnames} translates the column names of data (e.g. W05_001) into human readable ones.
+#' By default, this is automatically done in \code{getKSJData}.
 #'
 #' @param zip_url
 #'   The URL of the Zip file.
-#' @param translate_columns
+#' @param translate_colnames
 #'   If \code{TRUE}, try to use human-readable column names.
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
 #'
@@ -16,10 +17,14 @@
 #' l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip")
 #' names(l)
 #' str(l, max.level = 1)
+#'
+#' l_raw <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip",
+#'                     translate_colnames = FALSE)
+#' translateKSJColnames(l_raw)
 #' }
 #'
 #' @export
-getKSJData <- function(zip_url, translate_columns = TRUE) {
+getKSJData <- function(zip_url, translate_colnames = TRUE) {
   if (!is_installed("sf")) stop("Please install sf if you want to use this feature.")
 
   tmp_dir_parent <- tempdir()
@@ -56,24 +61,30 @@ getKSJData <- function(zip_url, translate_columns = TRUE) {
   layer_names <- purrr::set_names(layers$name)
 
   result <- purrr::map(layer_names,
-                       read_shape_spatial, dsn = data_dir, translate_columns = translate_columns)
+                       read_shape_spatial,
+                       dsn = data_dir,
+                       translate_colnames = translate_colnames)
   result
 }
 
-read_shape_spatial <- function(dsn, layer, translate_columns = TRUE) {
+read_shape_spatial <- function(dsn, layer, translate_colnames = TRUE) {
   d <- sf::read_sf(dsn = dsn, layer = layer)
 
   suggest_useful_links(colnames(d))
 
-  if (translate_columns) {
-    translate_KSJ_colnames(d)
+  if (translate_colnames) {
+    translateKSJColnames(d, quiet = TRUE)
   } else {
     d
   }
 }
 
-translate_KSJ_colnames <- function(d) {
-  colnames_orig <- colnames(d)
+#' @rdname getKSJData
+#' @param x Object of class \link[sf]{sf}
+#' @param quiet If \code{TRUE}, suppress messages.
+#' @export
+translateKSJColnames <- function(x, quiet = FALSE) {
+  colnames_orig <- colnames(x)
 
   KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
 
@@ -82,11 +93,13 @@ translate_KSJ_colnames <- function(d) {
   # TODO: some codes share the same name (e.g. P12_003 and P12_004)
   colnames_readable <- tibble::tidy_names(colnames_readable_not_tidy, quiet = TRUE)
 
-  message("The colnames are translated:")
-  message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
+  if (!quiet) {
+    message("The colnames are translated:")
+    message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
+  }
 
-  colnames(d) <- colnames_readable
-  d
+  colnames(x) <- colnames_readable
+  x
 }
 
 suggest_useful_links <- function(codes) {

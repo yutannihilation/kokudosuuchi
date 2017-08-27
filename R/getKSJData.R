@@ -169,6 +169,9 @@ suggest_useful_links <- function(codes) {
 
 
 copy_files_recursively <- function(from, to) {
+  # to must not exist
+  if (file.exists(to)) stop(glue::glue("{to} already exists."))
+
   tmp_to <- tempfile()
   on.exit(unlink(tmp_to, recursive = TRUE))
   dir.create(tmp_to)

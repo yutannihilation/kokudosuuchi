@@ -5,4 +5,5 @@ jobs:
        - image: rocker/geospatial:latest
      steps:
        - checkout
-       - run: Rscript -e "devtools::check()"
+       - run: R CMD build .
+       - run: R CMD check "kokudosuuchi_0.3.0.9000.tar.gz" --as-cran --no-manual

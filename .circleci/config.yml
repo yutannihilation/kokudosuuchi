@@ -5,4 +5,4 @@ jobs:
        - image: rocker/geospatial:latest
      steps:
        - checkout
-       - run: echo "hello world"
+       - run: Rscript -e "devtools::check()"

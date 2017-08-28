@@ -121,6 +121,7 @@ purify_KSJ_non_utf8_layers <- function(data_dir) {
               file.path(data_dir, file_names_utf8))
 }
 
+
 read_shape_spatial <- function(dsn, layer, translate_colnames = TRUE) {
   d <- sf::read_sf(dsn = dsn, layer = layer)
 
@@ -133,6 +134,7 @@ read_shape_spatial <- function(dsn, layer, translate_colnames = TRUE) {
     d
   }
 }
+
 
 #' @rdname getKSJData
 #' @param x Object of class \link[sf]{sf}
@@ -196,4 +198,9 @@ is_file <- function(x) {
   file_info <- file.info(x)
   if (is.na(file_info$isdir)) stop(glue::glue("{x} doesn't exist!"))
   !file_info$isdir
+}
+
+# can be converted to CP932
+is_non_utf8_character <- function(x) {
+  is.character(x) && any(!stringi::stri_enc_isutf8(x))
 }

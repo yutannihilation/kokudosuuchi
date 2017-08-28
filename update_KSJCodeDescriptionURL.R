@@ -14,7 +14,7 @@ d
 
 KSJCodeDescriptionURL <- d %>%
   filter(startsWith(url, "gml/datalist")) %>%
-  mutate(code = stringi::stri_extract(url, stringi::regex("[A-Z][0-9]+")),
+  mutate(code = stringi::stri_extract_first_regex(url, "[A-Z][0-9]+"),
          url  = glue::glue('http://nlftp.mlit.go.jp/ksj/{url}')) %>%
   arrange(code)
 

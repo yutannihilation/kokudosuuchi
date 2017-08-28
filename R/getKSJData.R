@@ -208,5 +208,5 @@ is_file <- function(x) {
 
 # can be converted to CP932
 is_non_utf8_character <- function(x) {
-  is.character(x) && any(!stringi::stri_enc_isutf8(x))
+  is.character(x) && any(!stringi::stri_enc_isutf8(x), na.rm = TRUE)
 }

@@ -18,6 +18,8 @@ See \link{KSJShapeProperty} for more information about the corresponding table.}
 \item{x}{Object of class \link[sf]{sf}}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
+
+\item{reencode_attributes_to_native}{If \code{TRUE}, convert attributes into the native encoding.}
 }
 \description{
 \code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function

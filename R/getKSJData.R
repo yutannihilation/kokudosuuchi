@@ -10,6 +10,8 @@
 #' @param translate_colnames
 #'   If \code{TRUE}, try to use human-readable column names.
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
+#' @param reencode_attributes_to_native
+#'   If \code{TRUE}, convert attributes into the native encoding.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples
@@ -55,7 +57,7 @@ getKSJData <- function(zip_file, translate_colnames = TRUE) {
   layer_names <- purrr::set_names(layers$name)
 
   result <- purrr::map(layer_names,
-                       read_shape_spatial,
+                       read_KSJ_layer,
                        dsn = data_dir,
                        translate_colnames = translate_colnames)
   result
@@ -122,17 +124,23 @@ purify_KSJ_non_utf8_layers <- function(data_dir) {
 }
 
 
-read_shape_spatial <- function(dsn, layer, translate_colnames = TRUE) {
+read_KSJ_layer <- function(dsn, layer,
+                           translate_colnames = TRUE,
+                           reencode_attributes_to_native = TRUE) {
   d <- sf::read_sf(dsn = dsn, layer = layer)
 
   codes <- stringi::stri_extract_first_regex(colnames(d), "[A-Z][0-9]+")
   suggest_useful_links(codes)
 
   if (translate_colnames) {
-    translateKSJColnames(d, quiet = TRUE)
-  } else {
-    d
+    d <- translateKSJColnames(d, quiet = TRUE)
   }
+
+  if (reencode_attributes_to_native) {
+    d <- dplyr::mutate_if(d, is_non_utf8_character, iconv, from = "CP932")
+  }
+
+  d
 }
 
 

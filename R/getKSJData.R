@@ -124,7 +124,8 @@ purify_KSJ_non_utf8_layers <- function(data_dir) {
 read_shape_spatial <- function(dsn, layer, translate_colnames = TRUE) {
   d <- sf::read_sf(dsn = dsn, layer = layer)
 
-  suggest_useful_links(colnames(d))
+  codes <- stringi::stri_extract_first_regex(colnames(d), "[A-Z][0-9]+")
+  suggest_useful_links(codes)
 
   if (translate_colnames) {
     translateKSJColnames(d, quiet = TRUE)
@@ -158,13 +159,12 @@ translateKSJColnames <- function(x, quiet = FALSE) {
 
 
 suggest_useful_links <- function(codes) {
-  categories <- KSJShapeProperty %>%
+  useful_links <- KSJCodeDescriptionURL %>%
     dplyr::filter(.data$code %in% codes) %>%
-    dplyr::pull(category) %>%
+    dplyr::pull(.data$url) %>%
     unique
 
-  urls <- sprintf("http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-%s.html", categories)
-  message(sprintf("\nDetails about this data may be found at %s\n", paste(urls, collapse = ", ")))
+  message(sprintf("\nDetails about this data may be found at %s\n", paste(useful_links, collapse = ", ")))
 }
 
 

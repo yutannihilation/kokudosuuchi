@@ -27,8 +27,6 @@
 #'
 #' @export
 getKSJData <- function(zip_file, translate_colnames = TRUE) {
-  if (!is_installed("sf")) stop("Please install sf if you want to use this feature.")
-
   # if zip_file is a URL, download it
   if (is_url(zip_file)) {
     zip_file <- download_KSJ_zip(zip_file, use_cached = TRUE)

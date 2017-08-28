@@ -19,15 +19,15 @@ Imports:
     httr,
     purrr (>= 0.2),
     rlang,
-    tools,
+    sf,
     shiny,
     stringi,
     tibble,
+    tools,
     xml2
+Suggests:
+    readr,
+    testthat
 LazyData: TRUE
 RoxygenNote: 6.0.1.9000
 Encoding: UTF-8
-Suggests:
-    readr,
-    sf,
-    testthat

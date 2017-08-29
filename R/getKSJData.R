@@ -68,17 +68,17 @@ getKSJData <- function(zip_file,
   # suggest useful links
   suggest_useful_links(result_colnames)
 
+  # try to set the correct encoding of the attributes
+  if (reencode_attributes_to_native) {
+    result <- purrr::map(result,
+                         reencode_KSJ_data_to_native)
+  }
+
   # translate colnames to human readable ones
   if (translate_colnames) {
     result <- purrr::map(result,
                          translateKSJColnames,
                          quiet = TRUE)
-  }
-
-  # try to set the correct encoding of the attributes
-  if (reencode_attributes_to_native) {
-    result <- purrr::map(result,
-                         reencode_KSJ_data_to_native)
   }
 
   result

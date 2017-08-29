@@ -130,12 +130,12 @@ read_KSJ_layer <- function(dsn, layer,
   codes <- stringi::stri_extract_first_regex(colnames(d), "[A-Z][0-9]+")
   suggest_useful_links(codes)
 
-  if (translate_colnames) {
-    d <- translateKSJColnames(d, quiet = TRUE)
-  }
-
   if (reencode_attributes_to_native) {
     d <- dplyr::mutate_if(d, is_non_utf8_character, iconv, from = "CP932")
+  }
+
+  if (translate_colnames) {
+    d <- translateKSJColnames(d, quiet = TRUE)
   }
 
   d

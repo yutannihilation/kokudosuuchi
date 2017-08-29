@@ -10,6 +10,8 @@
 #' @param translate_colnames
 #'   If \code{TRUE}, try to use human-readable column names.
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
+#' @param cache_dir
+#'   Path to a directory for caching zip files.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples
@@ -25,7 +27,8 @@
 #'
 #' @export
 getKSJData <- function(zip_file,
-                       translate_colnames = TRUE) {
+                       translate_colnames = TRUE,
+                       cache_dir = tempdir()) {
 
   if (!rlang::is_scalar_character(zip_file)) {
     stop("zip_file must be eighter a character of URL, path to file, or path to directory!")
@@ -33,15 +36,19 @@ getKSJData <- function(zip_file,
 
   # if zip_file is a URL, download it
   if (is_url(zip_file)) {
-    zip_file <- download_KSJ_zip(zip_file, use_cached = TRUE)
+    zip_file <- download_KSJ_zip(zip_file, cache_dir)
+  }
+
+  if (!file.exists(zip_file)) {
+    stop(glue::glue("{zip_file} doesn't exist"))
   }
 
   if (is_file(zip_file)) {
     # extract the zip file
-    data_dir_orig <- paste0(zip_file, ".tmp")
+    data_dir_orig <- tempfile()
     on.exit(unlink(data_dir_orig, recursive = TRUE))
 
-    extract_KSJ_zip(zip_file, data_dir_orig)
+    utils::unzip(zip_file, exdir = data_dir_orig)
     data_dir <- rebase_KSJ_data_dir(data_dir_orig)
   } else {
     data_dir_orig <- rebase_KSJ_data_dir(zip_file)
@@ -84,27 +91,27 @@ getKSJData <- function(zip_file,
 }
 
 
-download_KSJ_zip <- function(zip_url, use_cached = TRUE) {
-  tmp_dir_parent <- tempdir()
+get_zip_filepath_from_url <- function(dir, zip_url) {
   url_hash <- digest::digest(zip_url)
-  zip_file <- file.path(tmp_dir_parent, glue::glue('{url_hash}.zip'))
+  file.path(dir, glue::glue('{url_hash}.zip'))
+}
 
-  if (file.exists(zip_file) && use_cached) {
-    message("Using the cached zip file")
+
+download_KSJ_zip <- function(zip_url, cache_dir) {
+  # if it doesn't esist, create it.
+  if (!file.exists(cache_dir)) dir.create(cache_dir)
+  # if it is not directory, something is wrong...
+  if (!is_dir(cache_dir)) stop(glue::glue("{cache_dir} is not directory!"))
+
+  zip_file <- get_zip_filepath_from_url(cache_dir, zip_url)
+
+  if (file.exists(zip_file)) {
+    message(glue::glue("Using the cached zip file: {zip_file}"))
   } else {
     curl::curl_download(zip_url, destfile = zip_file)
   }
 
   zip_file
-}
-
-
-extract_KSJ_zip <- function(zip_file, data_dir) {
-  if (file.exists(data_dir)) stop(glue::glue("{data_dir} is not empty."))
-
-  utils::unzip(zip_file, exdir = data_dir)
-
-  data_dir
 }
 
 
@@ -207,8 +214,11 @@ is_installed <- function(pkg) {
 
 is_url <- function(x) grepl("^https?:", x)
 
-is_file <- function(x) {
+must_get_file_info <- function(x) {
   file_info <- file.info(x)
   if (is.na(file_info$isdir)) stop(glue::glue("{x} doesn't exist!"))
-  !file_info$isdir
+  file_info
 }
+
+is_file <- function(x) file.exists(x) && !dir.exists(x)
+is_dir  <- function(x) file.exists(x) && dir.exists(x)

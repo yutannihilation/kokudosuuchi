@@ -9,3 +9,4 @@
 ^scripts$
 ^data-raw$
 ^docs$
+^cached_zip$

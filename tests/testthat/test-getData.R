@@ -1,6 +1,6 @@
 context("getData")
 
-cache_dir <- "cached_zip"
+cache_dir <- "../../cached_zip"
 
 test_that("getKSJData works", {
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/L01/L01-01/L01-01_36_GML.zip",
@@ -78,6 +78,6 @@ test_that("getKSJData randomly works", {
   ksj_urls_lite <- dplyr::filter(ksj_urls, readr::parse_number(zipFileSize) < 0.1)
   url <- sample(ksj_urls_lite$zipFileUrl, 1)
   cat(url)
-  d <- getKSJData(url)
+  d <- getKSJData(url, cache_dir = cache_dir)
   purrr::walk(d, expect_s3_class, class = "sf")
 })

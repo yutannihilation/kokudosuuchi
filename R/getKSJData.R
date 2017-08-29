@@ -25,8 +25,7 @@
 #'
 #' @export
 getKSJData <- function(zip_file,
-                       translate_colnames = TRUE,
-                       reencode_attributes_to_native = TRUE) {
+                       translate_colnames = TRUE) {
 
   if (!rlang::is_scalar_character(zip_file)) {
     stop("zip_file must be eighter a character of URL, path to file, or path to directory!")

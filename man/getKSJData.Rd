@@ -5,8 +5,7 @@
 \alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_file, translate_colnames = TRUE,
-  reencode_attributes_to_native = TRUE)
+getKSJData(zip_file, translate_colnames = TRUE)
 
 translateKSJColnames(x, quiet = FALSE)
 }

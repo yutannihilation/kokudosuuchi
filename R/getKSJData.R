@@ -26,7 +26,9 @@
 #' }
 #'
 #' @export
-getKSJData <- function(zip_file, translate_colnames = TRUE) {
+getKSJData <- function(zip_file,
+                       translate_colnames = TRUE,
+                       reencode_attributes_to_native = TRUE) {
   # if zip_file is a URL, download it
   if (is_url(zip_file)) {
     zip_file <- download_KSJ_zip(zip_file, use_cached = TRUE)
@@ -54,10 +56,31 @@ getKSJData <- function(zip_file, translate_colnames = TRUE) {
   layers <- sf::st_layers(data_dir)
   layer_names <- purrr::set_names(layers$name)
 
+  # read all data
   result <- purrr::map(layer_names,
-                       read_KSJ_layer,
-                       dsn = data_dir,
-                       translate_colnames = translate_colnames)
+                       sf::read_sf,
+                       dsn = data_dir)
+
+  result_colnames <- result %>%
+    purrr::map(colnames) %>%
+    purrr::flatten_chr()
+
+  # suggest useful links
+  suggest_useful_links(result_colnames)
+
+  # translate colnames to human readable ones
+  if (translate_colnames) {
+    result <- purrr::map(result,
+                         translateKSJColnames,
+                         quiet = TRUE)
+  }
+
+  # try to set the correct encoding of the attributes
+  if (reencode_attributes_to_native) {
+    result <- purrr::map(result,
+                         reencode_KSJ_data_to_native)
+  }
+
   result
 }
 
@@ -122,26 +145,6 @@ purify_KSJ_non_utf8_layers <- function(data_dir) {
 }
 
 
-read_KSJ_layer <- function(dsn, layer,
-                           translate_colnames = TRUE,
-                           reencode_attributes_to_native = TRUE) {
-  d <- sf::read_sf(dsn = dsn, layer = layer)
-
-  codes <- stringi::stri_extract_first_regex(colnames(d), "[A-Z][0-9]+")
-  suggest_useful_links(codes)
-
-  if (reencode_attributes_to_native) {
-    d <- dplyr::mutate_if(d, is_non_utf8_character, iconv, from = "CP932")
-  }
-
-  if (translate_colnames) {
-    d <- translateKSJColnames(d, quiet = TRUE)
-  }
-
-  d
-}
-
-
 #' @rdname getKSJData
 #' @param x Object of class \link[sf]{sf}
 #' @param quiet If \code{TRUE}, suppress messages.
@@ -165,8 +168,22 @@ translateKSJColnames <- function(x, quiet = FALSE) {
   x
 }
 
+# TODO: This function assumes that, if the data is CP932, it contains at least one invalid
+# UTF-8 chracter. This assumption may not be true...
+reencode_KSJ_data_to_native <- function(x) {
+  dplyr::mutate_if(x,
+                   is_non_utf8_character,
+                   iconv, from = "CP932")
+}
 
-suggest_useful_links <- function(codes) {
+
+suggest_useful_links <- function(x) {
+  # extract codes from x
+  codes <- x %>%
+    stringi::stri_extract_first_regex("[A-Z][0-9]+") %>%
+    purrr::discard(is.na) %>%
+    unique
+
   useful_links <- KSJCodeDescriptionURL %>%
     dplyr::filter(.data$code %in% codes) %>%
     dplyr::pull(.data$url) %>%

@@ -15,7 +15,7 @@ translateKSJColnames(x, quiet = FALSE)
 \item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
 See \link{KSJShapeProperty} for more information about the corresponding table.}
 
-\item{cache_dir}{Path to a directory to cache.}
+\item{cache_dir}{Path to a directory for caching zip files.}
 
 \item{x}{Object of class \link[sf]{sf}}
 

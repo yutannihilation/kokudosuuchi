@@ -11,7 +11,7 @@
 #'   If \code{TRUE}, try to use human-readable column names.
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
 #' @param cache_dir
-#'   Path to a directory to cache.
+#'   Path to a directory for caching zip files.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples

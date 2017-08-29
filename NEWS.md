@@ -7,6 +7,7 @@
 * `getKSJData()` now uses sf.
 * `getKSJData()` now translates the codes in the column names of data into human-readable ones.
 * `getKSJData()` now accepts paths in addition to URLs to zip files.
+* `getKSJData()` now tries to set the correct encoding for character attributes.
 
 ## Bug fixes
 

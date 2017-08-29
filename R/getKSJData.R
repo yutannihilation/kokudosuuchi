@@ -211,8 +211,3 @@ is_file <- function(x) {
   if (is.na(file_info$isdir)) stop(glue::glue("{x} doesn't exist!"))
   !file_info$isdir
 }
-
-# can be converted to CP932
-is_non_utf8_character <- function(x) {
-  is.character(x) && any(!stringi::stri_enc_isutf8(x), na.rm = TRUE)
-}

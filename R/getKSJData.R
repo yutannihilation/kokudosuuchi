@@ -211,8 +211,11 @@ is_installed <- function(pkg) {
 
 is_url <- function(x) grepl("^https?:", x)
 
-is_file <- function(x) {
+must_get_file_info <- function(x) {
   file_info <- file.info(x)
   if (is.na(file_info$isdir)) stop(glue::glue("{x} doesn't exist!"))
-  !file_info$isdir
+  file_info
 }
+
+is_file <- function(x) !must_get_file_info(x)$isdir
+is_dir  <- function(x) must_get_file_info(x)$isdir

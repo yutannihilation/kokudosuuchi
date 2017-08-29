@@ -63,6 +63,8 @@ getKSJData <- function(zip_file,
   result <- purrr::map(layer_names,
                        sf::read_sf,
                        dsn = data_dir,
+                       # All data is encoded with Shift_JIS as described here:
+                       # http://nlftp.mlit.go.jp/ksj/old/old_data.html
                        options = "ENCODING=CP932")
 
   result_colnames <- result %>%

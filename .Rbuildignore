@@ -6,6 +6,6 @@
 ^cran-comments\.md$
 ^README\.Rmd$
 ^README-.*\.png$
-^update_KSJShapeProperty.R$
+^scripts$
 ^data-raw$
 ^docs$

@@ -73,12 +73,8 @@ getKSJData <- function(zip_file,
                        # http://nlftp.mlit.go.jp/ksj/old/old_data.html
                        options = "ENCODING=CP932")
 
-  result_colnames <- result %>%
-    purrr::map(colnames) %>%
-    purrr::flatten_chr()
-
   # suggest useful links
-  suggest_useful_links(result_colnames)
+  suggest_useful_links(layer_names)
 
   # translate colnames to human readable ones
   if (translate_colnames) {
@@ -177,7 +173,7 @@ translateKSJColnames <- function(x, quiet = FALSE) {
 suggest_useful_links <- function(x) {
   # extract codes from x
   codes <- x %>%
-    stringi::stri_extract_first_regex("[A-Z][0-9]+") %>%
+    stringi::stri_extract_first_regex(code_regex) %>%
     purrr::discard(is.na) %>%
     unique
 
@@ -186,7 +182,10 @@ suggest_useful_links <- function(x) {
     dplyr::pull(.data$url) %>%
     unique
 
-  message(sprintf("\nDetails about this data may be found at %s\n", paste(useful_links, collapse = ", ")))
+  if (length(useful_links) > 0) {
+    msg <- sprintf("\nDetails about this data can be found at %s\n", paste(useful_links, collapse = ", "))
+    message(msg)
+  }
 }
 
 

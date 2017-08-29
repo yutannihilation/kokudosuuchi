@@ -20,3 +20,6 @@ glimpse(KSJCodeDescriptionURL)
 
 readr::write_csv(KSJCodeDescriptionURL, "data-raw/KSJCodeDescriptionURL.csv")
 devtools::use_data(KSJCodeDescriptionURL, overwrite = TRUE)
+
+# copy this result as code_regex in R/data.R
+paste(KSJCodeDescriptionURL$code, collapse = "|")

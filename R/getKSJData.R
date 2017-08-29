@@ -10,8 +10,6 @@
 #' @param translate_colnames
 #'   If \code{TRUE}, try to use human-readable column names.
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
-#' @param reencode_attributes_to_native
-#'   If \code{TRUE}, convert attributes into the native encoding.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples
@@ -27,8 +25,7 @@
 #'
 #' @export
 getKSJData <- function(zip_file,
-                       translate_colnames = TRUE,
-                       reencode_attributes_to_native = TRUE) {
+                       translate_colnames = TRUE) {
 
   if (!rlang::is_scalar_character(zip_file)) {
     stop("zip_file must be eighter a character of URL, path to file, or path to directory!")
@@ -64,7 +61,10 @@ getKSJData <- function(zip_file,
   # read all data
   result <- purrr::map(layer_names,
                        sf::read_sf,
-                       dsn = data_dir)
+                       dsn = data_dir,
+                       # All data is encoded with Shift_JIS as described here:
+                       # http://nlftp.mlit.go.jp/ksj/old/old_data.html
+                       options = "ENCODING=CP932")
 
   result_colnames <- result %>%
     purrr::map(colnames) %>%
@@ -72,12 +72,6 @@ getKSJData <- function(zip_file,
 
   # suggest useful links
   suggest_useful_links(result_colnames)
-
-  # try to set the correct encoding of the attributes
-  if (reencode_attributes_to_native) {
-    result <- purrr::map(result,
-                         reencode_KSJ_data_to_native)
-  }
 
   # translate colnames to human readable ones
   if (translate_colnames) {
@@ -173,15 +167,6 @@ translateKSJColnames <- function(x, quiet = FALSE) {
   x
 }
 
-# TODO: This function assumes that, if the data is CP932, it contains at least one invalid
-# UTF-8 chracter. This assumption may not be true...
-reencode_KSJ_data_to_native <- function(x) {
-  dplyr::mutate_if(x,
-                   is_non_utf8_character,
-                   iconv, from = "CP932")
-}
-
-
 suggest_useful_links <- function(x) {
   # extract codes from x
   codes <- x %>%
@@ -226,9 +211,4 @@ is_file <- function(x) {
   file_info <- file.info(x)
   if (is.na(file_info$isdir)) stop(glue::glue("{x} doesn't exist!"))
   !file_info$isdir
-}
-
-# can be converted to CP932
-is_non_utf8_character <- function(x) {
-  is.character(x) && any(!stringi::stri_enc_isutf8(x), na.rm = TRUE)
 }

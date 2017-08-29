@@ -10,3 +10,4 @@
 ^data-raw$
 ^docs$
 ^cached_zip$
+^downloaded_html$

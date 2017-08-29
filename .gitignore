@@ -3,4 +3,7 @@
 .RData
 
 # cache dir for zip files
-cached_zip/
+cached_zip
+
+# downloaded htmls
+downloaded_html

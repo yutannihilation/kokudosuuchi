@@ -5,7 +5,7 @@
 \alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_file, translate_colnames = TRUE)
+getKSJData(zip_file, translate_colnames = TRUE, cache_dir = tempdir())
 
 translateKSJColnames(x, quiet = FALSE)
 }
@@ -14,6 +14,8 @@ translateKSJColnames(x, quiet = FALSE)
 
 \item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
 See \link{KSJShapeProperty} for more information about the corresponding table.}
+
+\item{cache_dir}{Path to a directory to cache.}
 
 \item{x}{Object of class \link[sf]{sf}}
 

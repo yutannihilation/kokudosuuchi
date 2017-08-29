@@ -87,11 +87,19 @@ getKSJData <- function(zip_file,
 }
 
 
-download_KSJ_zip <- function(zip_url, cache_dir) {
-
-
+get_zip_filepath_from_url <- function(dir, zip_url) {
   url_hash <- digest::digest(zip_url)
-  zip_file <- file.path(cache_dir, glue::glue('{url_hash}.zip'))
+  file.path(dir, glue::glue('{url_hash}.zip'))
+}
+
+download_KSJ_zip <- function(zip_url, cache_dir) {
+  if (!file.exists(cache_dir)) {
+    dir.create(cache_dir)
+  } else if (!is_dir(cache_dir)) {
+    stop(glue::glue("{cache_dir} is not directory!"))
+  }
+
+  zip_file <- get_zip_filepath_from_url(cache_dir, zip_url)
 
   if (file.exists(zip_file)) {
     message(glue::glue("Using the cached zip file: {zip_file}"))

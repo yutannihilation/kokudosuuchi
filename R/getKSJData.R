@@ -39,12 +39,16 @@ getKSJData <- function(zip_file,
     zip_file <- download_KSJ_zip(zip_file, cache_dir)
   }
 
+  if (!file.exists(zip_file)) {
+    stop(glue::glue("{zip_file} doesn't exist"))
+  }
+
   if (is_file(zip_file)) {
     # extract the zip file
-    data_dir_orig <- paste0(zip_file, ".tmp")
+    data_dir_orig <- tempfile()
     on.exit(unlink(data_dir_orig, recursive = TRUE))
 
-    extract_KSJ_zip(zip_file, data_dir_orig)
+    utils::unzip(zip_file, exdir = data_dir_orig)
     data_dir <- rebase_KSJ_data_dir(data_dir_orig)
   } else {
     data_dir_orig <- rebase_KSJ_data_dir(zip_file)
@@ -92,12 +96,12 @@ get_zip_filepath_from_url <- function(dir, zip_url) {
   file.path(dir, glue::glue('{url_hash}.zip'))
 }
 
+
 download_KSJ_zip <- function(zip_url, cache_dir) {
-  if (!file.exists(cache_dir)) {
-    dir.create(cache_dir)
-  } else if (!is_dir(cache_dir)) {
-    stop(glue::glue("{cache_dir} is not directory!"))
-  }
+  # if it doesn't esist, create it.
+  if (!file.exists(cache_dir)) dir.create(cache_dir)
+  # if it is not directory, something is wrong...
+  if (!is_dir(cache_dir)) stop(glue::glue("{cache_dir} is not directory!"))
 
   zip_file <- get_zip_filepath_from_url(cache_dir, zip_url)
 
@@ -108,15 +112,6 @@ download_KSJ_zip <- function(zip_url, cache_dir) {
   }
 
   zip_file
-}
-
-
-extract_KSJ_zip <- function(zip_file, data_dir) {
-  if (file.exists(data_dir)) stop(glue::glue("{data_dir} is not empty."))
-
-  utils::unzip(zip_file, exdir = data_dir)
-
-  data_dir
 }
 
 
@@ -225,5 +220,5 @@ must_get_file_info <- function(x) {
   file_info
 }
 
-is_file <- function(x) !must_get_file_info(x)$isdir
-is_dir  <- function(x) must_get_file_info(x)$isdir
+is_file <- function(x) file.exists(x) && !dir.exists(x)
+is_dir  <- function(x) file.exists(x) && dir.exists(x)

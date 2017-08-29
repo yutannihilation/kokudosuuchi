@@ -88,71 +88,58 @@ getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 
 ``` r
 options(max.print = 20)
-getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
+getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
 #> 
-#> Details about this data may be found at http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-W05.html
-#> converted:
-#> W05_001 => 水系域
-#> W05_011 => 標高
-#> W05_000 => W05_000
-#> geometry => geometry
-#> 
-#> Details about this data may be found at http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-W05.html
-#> converted:
-#> W05_001 => 水系域
-#> W05_002 => 河川コード
-#> W05_003 => 区間種別
-#> W05_004 => 河川名
-#> W05_005 => 原典資料種別
-#> W05_006 => 流下方向判定
-#> W05_007 => 河川始点
-#> W05_008 => 河川終点
-#> W05_009 => 流路始点
-#> W05_010 => 流路終点
-#> geometry => geometry
-#> $`W05-07_03-g_RiverNode`
-#> Simple feature collection with 7534 features and 3 fields
+#> Details about this data may be found at http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html
+#> $`P12a-14_06`
+#> Simple feature collection with 10 features and 7 fields
 #> geometry type:  POINT
 #> dimension:      XY
-#> bbox:           xmin: 140.6586 ymin: 38.75135 xmax: 142.0721 ymax: 40.44006
+#> bbox:           xmin: 139.706 ymin: 37.8562 xmax: 140.5295 ymax: 39.09917
 #> epsg (SRID):    NA
-#> proj4string:    NA
-#> # A tibble: 7,534 x 4
-#>    水系域  標高      W05_000        geometry
-#>     <chr> <chr>        <chr> <S3: sfc_POINT>
-#>  1 820208   563 gb03_0306894 <S3: sfc_POINT>
-#>  2 820208   707 gb03_0306905 <S3: sfc_POINT>
-#>  3 820208   668 gb03_0306906 <S3: sfc_POINT>
-#>  4 820208   584 gb03_0306909 <S3: sfc_POINT>
-#>  5 820208   360 gb03_0306916 <S3: sfc_POINT>
-#>  6 820208   452 gb03_0306922 <S3: sfc_POINT>
-#>  7 820208   377 gb03_0306923 <S3: sfc_POINT>
-#>  8 820208   327 gb03_0306924 <S3: sfc_POINT>
-#>  9 820208   414 gb03_0306925 <S3: sfc_POINT>
-#> 10 820208   578 gb03_0306926 <S3: sfc_POINT>
-#> # ... with 7,524 more rows
+#> proj4string:    +proj=longlat +ellps=GRS80 +no_defs
+#> # A tibble: 10 x 8
+#>    都道府県コード                   行政コード 資源名称..3
+#>             <int>                        <chr>       <chr>
+#>  1          10009                       飯豊山          06
+#>  2          10010                       鳥海山          06
+#>  3          10005                         月山          06
+#>  4          10006                       最上川          06
+#>  5          10007                   蔵王の樹氷          06
+#>  6          10003               立石寺（山寺）          06
+#>  7          10004                 出羽三山神社          06
+#>  8          10002                   花笠まつり          06
+#>  9          10008 銀山温泉の旅館街と共同浴場群          06
+#> 10          10001 蔵王温泉の酸性泉と源泉浴場群          06
+#> # ... with 5 more variables: 資源名称..4 <chr>, 種別名称 <chr>,
+#> #   P12_006 <chr>, P12_007 <int>, geometry <S3: sfc_POINT>
 #> 
-#> $`W05-07_03-g_Stream`
-#> Simple feature collection with 7597 features and 10 fields
+#> $`P12b-14_06`
+#> Simple feature collection with 1 feature and 7 fields
 #> geometry type:  LINESTRING
 #> dimension:      XY
-#> bbox:           xmin: 140.6586 ymin: 38.75135 xmax: 142.0721 ymax: 40.44006
+#> bbox:           xmin: 139.808 ymin: 38.72274 xmax: 140.1937 ymax: 38.92187
 #> epsg (SRID):    NA
-#> proj4string:    NA
-#> # A tibble: 7,597 x 11
-#>    水系域 河川コード 区間種別 河川名 原典資料種別 流下方向判定
-#>     <chr>      <chr>    <chr>  <chr>        <chr>        <chr>
-#>  1 030041 0300410001        3 浜田川            4         true
-#>  2 030020 0300200001        3 重茂川            3         true
-#>  3 030020 0300200001        3 重茂川            3         true
-#>  4 030017 0300170003        3 近内川            3         true
-#>  5 030017 0300170004        3 長沢川            3         true
-#>  6 030017 0300170004        3 長沢川            3         true
-#>  7 030017 0300170004        3 長沢川            3         true
-#>  8 030017 0300170004        3 長沢川            3         true
-#>  9 030017 0300170004        3 長沢川            3         true
-#> 10 030017 0300170002        3 山口川            3         true
-#> # ... with 7,587 more rows, and 5 more variables: 河川始点 <chr>,
-#> #   河川終点 <chr>, 流路始点 <chr>, 流路終点 <chr>, geometry <S3:
+#> proj4string:    +proj=longlat +ellps=GRS80 +no_defs
+#> # A tibble: 1 x 8
+#>   都道府県コード 行政コード 資源名称..3         資源名称..4   種別名称
+#>            <int>      <chr>       <chr>               <chr>      <chr>
+#> 1          10006     最上川          06 06204、06367、06428 河川・峡谷
+#> # ... with 3 more variables: P12_006 <chr>, P12_007 <int>, geometry <S3:
 #> #   sfc_LINESTRING>
+#> 
+#> $`P12c-14_06`
+#> Simple feature collection with 2 features and 7 fields
+#> geometry type:  POLYGON
+#> dimension:      XY
+#> bbox:           xmin: 139.9805 ymin: 38.31176 xmax: 140.4351 ymax: 38.70308
+#> epsg (SRID):    NA
+#> proj4string:    +proj=longlat +ellps=GRS80 +no_defs
+#> # A tibble: 2 x 8
+#>   都道府県コード     行政コード 資源名称..3 資源名称..4         種別名称
+#>            <int>          <chr>       <chr>       <chr>            <chr>
+#> 1          10003 立石寺（山寺）          06       06201 神社・寺院・教会
+#> 2          10004   出羽三山神社          06       06203 神社・寺院・教会
+#> # ... with 3 more variables: P12_006 <chr>, P12_007 <int>, geometry <S3:
+#> #   sfc_POLYGON>
 ```

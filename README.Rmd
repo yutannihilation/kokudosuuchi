@@ -13,9 +13,10 @@ knitr::opts_chunk$set(
 ```
 kokudosuuchi
 ============
-[![Travis-CI Build Status](https://travis-ci.org/yutannihilation/kokudosuuchi.svg?branch=master)](https://travis-ci.org/yutannihilation/kokudosuuchi)
+	
+[![CircleCI](https://circleci.com/gh/yutannihilation/kokudosuuchi.svg?style=svg)](https://circleci.com/gh/yutannihilation/kokudosuuchi)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&svg=true)](https://ci.appveyor.com/project/yutannihilation/kokudosuuchi)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
 
 __(Sorry, English version of README is not availavle for now.)__
 
@@ -74,5 +75,5 @@ getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 
 ```{r}
 options(max.print = 20)
-getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W05/W05-07/W05-07_03_GML.zip")
+getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
 ```

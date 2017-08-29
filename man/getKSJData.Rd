@@ -5,7 +5,8 @@
 \alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_file, translate_colnames = TRUE)
+getKSJData(zip_file, translate_colnames = TRUE,
+  reencode_attributes_to_native = TRUE)
 
 translateKSJColnames(x, quiet = FALSE)
 }
@@ -15,11 +16,11 @@ translateKSJColnames(x, quiet = FALSE)
 \item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
 See \link{KSJShapeProperty} for more information about the corresponding table.}
 
+\item{reencode_attributes_to_native}{If \code{TRUE}, convert attributes into the native encoding.}
+
 \item{x}{Object of class \link[sf]{sf}}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
-
-\item{reencode_attributes_to_native}{If \code{TRUE}, convert attributes into the native encoding.}
 }
 \description{
 \code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function

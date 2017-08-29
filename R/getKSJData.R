@@ -172,13 +172,13 @@ translateKSJColnames <- function(x, quiet = FALSE) {
 
 suggest_useful_links <- function(x) {
   # extract codes from x
-  codes <- x %>%
-    stringi::stri_extract_first_regex(code_regex) %>%
+  identifiers <- x %>%
+    stringi::stri_extract_first_regex(identifier_regex) %>%
     purrr::discard(is.na) %>%
     unique
 
-  useful_links <- KSJCodeDescriptionURL %>%
-    dplyr::filter(.data$code %in% codes) %>%
+  useful_links <- KSJIdentifierDescriptionURL %>%
+    dplyr::filter(.data$identifier %in% identifiers) %>%
     dplyr::pull(.data$url) %>%
     unique
 

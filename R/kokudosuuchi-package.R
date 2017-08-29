@@ -6,6 +6,5 @@
 #' @name kokudosuuchi
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data
-#' @importFrom sf mutate.sf
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 NULL

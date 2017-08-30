@@ -69,9 +69,10 @@ extract_table <- purrr::safely(function(x) {
 split_table <- function(table) {
   table_refilled <- refill_table(table)
 
-  # force to split them
-  table_chunks <- split(table_refilled, table$X1) %>%
-    keep(stringr::str_detect(names(.), "属性情報"))
+  # split them by rle-manner IDs (c.f. https://github.com/tidyverse/dplyr/issues/1534#issuecomment-326039714)
+  rleid <- cumsum(dplyr::coalesce(table_refilled$X1 != dplyr::lag(table_refilled$X1), FALSE))
+  table_chunks <- split(table_refilled, rleid) %>%
+    keep(~ stringr::str_detect(unique(.$X1), "属性情報"))
 
   # if there are no 属性情報, use 地物情報
   if (length(table_chunks) == 0) {
@@ -105,6 +106,7 @@ coalesce_duplicated_columns <- function(table) {
   for (cn in col_names_duplicated) {
     # the length of colnames may be changed as the table shrinks
     col_names <- table[1, ]
+    print(col_names)
 
     coalesced <- purrr::reduce(table[, col_names == cn, drop = FALSE],
                                function(x, y) {

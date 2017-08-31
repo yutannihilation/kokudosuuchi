@@ -67,7 +67,10 @@ extract_table <- purrr::safely(function(x) {
 })
 
 split_table <- function(table) {
-  table_refilled <- refill_table(table)
+  table_refilled <- table %>%
+    # remove if all cells are NA
+    dplyr::select_if(~ !all(is.na(.))) %>%
+    refill_table
 
   # split them by rle-manner IDs (c.f. https://github.com/tidyverse/dplyr/issues/1534#issuecomment-326039714)
   rleid <- cumsum(dplyr::coalesce(table_refilled$X1 != dplyr::lag(table_refilled$X1), FALSE))
@@ -121,16 +124,18 @@ coalesce_duplicated_columns <- function(table) {
   table[-1, ]
 }
 
-result <- purrr::map(datalist_destfiles, extract_table)
+result_wrapped <- purrr::map(datalist_destfiles, extract_table)
 # check errors
-datalist_destfiles[map_lgl(result, ~ !is.null(.$error))]
+datalist_destfiles[map_lgl(result_wrapped, ~ !is.null(.$error))]
 
-x <- result %>%
-  rlang::set_names(KSJIdentifierDescriptionURL$identifier) %>%
-  purrr::map("result") %>%
+result <- purrr::map(result_wrapped, "result") %>%
+  rlang::set_names(KSJIdentifierDescriptionURL$identifier)
+
+result %>%
   purrr::map(split_table) %>%
   purrr::map(purrr::keep, ~ length(.) > 4) %>%
-  purrr::keep(~ length(.) > 0)
+  purrr::keep(~ length(.) > 0) %>%
+  names
 
 d <- map_dfr(result, "result", .id = "identifier")
 

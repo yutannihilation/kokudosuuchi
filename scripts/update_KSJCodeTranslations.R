@@ -2,7 +2,9 @@ library(rvest)
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
 
-# Functions -----------------------------------------------
+# Download  -----------------------------------------------
+
+### define functions ###
 
 # TRUE: download successfully, FALSE: file already exists, NULL: error
 download_safely <- purrr::safely(function(url, destfile) {
@@ -20,10 +22,10 @@ list_codelist_urls <- function(x) {
     stringr::str_subset("codelist")
 }
 
-# Download all files ---------------------------------------
 
 ### datalist ###
 
+data("KSJIdentifierDescriptionURL")
 datalist_urls <- KSJIdentifierDescriptionURL$url
 datalist_destfiles <- file.path("downloaded_html", paste0("datalist-", basename(datalist_urls)))
 
@@ -53,58 +55,95 @@ if (any(purrr::map_lgl(result, ~ !is.null(.$error)))) {
 }
 
 
-# data wrangling --------------------------------------------------
+# extract tables --------------------------------------------------
 
-extract_table <- purrr::safely(function(x) {
-  html <- read_html(x, encoding = "CP932")
-  tables <- html %>%
+### define functions ###
+
+extract_tables_safely <- purrr::safely(function(x) {
+  read_html(x, encoding = "CP932") %>%
     html_nodes(css = "table table") %>%
     html_table(fill = TRUE) %>%
     purrr::keep(~ any(stringr::str_detect(.$X1, "属性情報|地物情報")))
-
-  bind_rows(tables) %>%
-    dplyr::filter(stringr::str_detect(.data$X1, "属性情報|地物情報"))
 })
 
-split_table <- function(table) {
-  table_refilled <- table %>%
-    # remove if all cells are NA
-    dplyr::select_if(~ !all(is.na(.))) %>%
-    refill_table
+### process HTMLs ###
 
+list_of_tables_wrapped <- purrr::map(datalist_destfiles, extract_tables_safely)
+# check errors
+datalist_destfiles[map_lgl(list_of_tables_wrapped, ~ !is.null(.$error))]
+
+list_of_tables <- purrr::map(list_of_tables_wrapped, "result") %>%
+  rlang::set_names(KSJIdentifierDescriptionURL$identifier)
+
+
+# Re-split tables -----------------------------------------------------
+
+### define functions ###
+
+split_table_by_rleid <- function(table) {
   # split them by rle-manner IDs (c.f. https://github.com/tidyverse/dplyr/issues/1534#issuecomment-326039714)
-  rleid <- cumsum(dplyr::coalesce(table_refilled$X1 != dplyr::lag(table_refilled$X1), FALSE))
-  table_chunks <- split(table_refilled, rleid) %>%
-    keep(~ stringr::str_detect(unique(.$X1), "属性情報"))
+  rleid <- cumsum(dplyr::coalesce(table$X1 != dplyr::lag(table$X1), FALSE))
+  split(table, rleid)
+}
+
+resplit_tables <- function(tables) {
+  tables_resplit <- tables %>%
+    purrr::map(split_table_by_rleid) %>%
+    purrr::flatten()
+
+  tables_filtered <- tables_resplit %>%
+    purrr::keep(~ stringr::str_detect(unique(.$X1), "属性情報"))
 
   # if there are no 属性情報, use 地物情報
-  if (length(table_chunks) == 0) {
-    table_chunks <- split(table_refilled, table$X1) %>%
-      keep(stringr::str_detect(names(.), "属性情報|地物情報"))
+  if (length(tables_filtered) == 0) {
+    tables_filtered <- tables_resplit %>%
+      purrr::keep(~ stringr::str_detect(unique(.$X1), "属性情報|地物情報"))
   }
 
-  purrr::map(table_chunks, coalesce_duplicated_columns)
+  tables_filtered
 }
+
+### split tables ###
+
+list_of_tables_resplit <- purrr::map(list_of_tables, resplit_tables)
+
+# something is wron if some table is zero rows
+list_of_tables_resplit %>%
+  purrr::map(purrr::keep, ~ nrow(.) == 0) %>%
+  purrr::keep(~ length(.) > 0) %>%
+  names
+
+
+# Make tables tidy ---------------------------------------------------------------------
+
+### define functions ###
+
+squash_tables_safely <- purrr::safely(function(tables) {
+  tables %>%
+    purrr::map(refill_table) %>%
+    purrr::map(shrink_table)
+})
 
 # fix cells wrongly filled by rvest::html_table(fill = TRUE)
 refill_table <- function(table) {
   table %>%
+    dplyr::select_if(~ !all(is.na(.))) %>%
     mutate_all(funs(stringr::str_replace(., "(?<=^属性(情報|名|項目))(\\s*[（\\(].*[）\\)])$", ""))) %>%
     # 属性情報 is valid only for the first column
     mutate_at(-1, funs(dplyr::na_if(., "属性情報"))) %>%
     tidyr::fill(-1)
 }
 
-coalesce_duplicated_columns <- function(table) {
+shrink_table <- function(table, debug = FALSE) {
   col_names <- table[1, ]
   colnames(table) <- col_names
 
-  message(glue::glue("col_names: {paste(col_names, collapse = ', ')}"))
+  if (debug) message(glue::glue("col_names: {paste(col_names, collapse = ', ')}"))
 
   col_rle <- rle(col_names)
   col_names_duplicated <- col_rle$values[col_rle$lengths > 1]
 
-  message(glue::glue("col_names_duplicated: {col_names_duplicated}"))
+  if (debug) message(glue::glue("col_names_duplicated: {col_names_duplicated}"))
 
   for (cn in col_names_duplicated) {
     # the length of colnames may be changed as the table shrinks
@@ -124,31 +163,17 @@ coalesce_duplicated_columns <- function(table) {
   table[-1, ]
 }
 
-result_wrapped <- purrr::map(datalist_destfiles, extract_table)
-# check errors
-datalist_destfiles[map_lgl(result_wrapped, ~ !is.null(.$error))]
+### squash ###
 
-result <- purrr::map(result_wrapped, "result") %>%
-  rlang::set_names(KSJIdentifierDescriptionURL$identifier)
+result_wrapped <- purrr::map(list_of_tables_resplit, squash_tables_safely)
 
-result %>%
-  purrr::map(split_table) %>%
-  purrr::map(purrr::keep, ~ length(.) > 4) %>%
-  purrr::keep(~ length(.) > 0) %>%
-  names
+result <- purrr::map(result_wrapped, "result")
 
-d <- map_dfr(result, "result", .id = "identifier")
-
-d %>%
-  filter(!is.na(.data$X5)) %>%
-  filter_at(vars(X5:X7), any_vars(stringr::str_detect(., "コードリスト")))
-View(.Last.value)
-
+map(result, map, colnames)
 
 result %>%
-  map("result") %>%
-  rlang::set_names(KSJIdentifierDescriptionURL$identifier) %>%
-  map(split_table) %>%
-  # discard the identifier which has at least one 属性情報
-  discard(~ any(stringr::str_detect(names(.), "属性情報"))) %>%
-  map(map, colnames)
+  map(map, colnames) %>%
+  map(map, sort, na.last = TRUE) %>%
+  map(discard, identical, sort(c("属性情報", "属性名", "説明", "属性の型"))) %>%
+  keep(~ length(.) > 0)
+

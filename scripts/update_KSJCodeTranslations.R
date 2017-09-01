@@ -132,49 +132,147 @@ list_of_tables_resplit %>%
 
 ### define functions ###
 
-squash_tables_safely <- purrr::safely(function(tables) {
-  tables %>%
-    purrr::map(refill_table) %>%
-    purrr::map(shrink_table)
-})
+extract_data_from_row <- function(row_node) {
+  # lazily assume all child nodes are td
+  cells <- html_children(row_node)
+  col_count <- length(cells)
 
-# fix cells wrongly filled by rvest::html_table(fill = TRUE)
-refill_table <- function(table) {
-  table %>%
-    dplyr::select_if(~ !all(is.na(.))) %>%
-    mutate_all(funs(stringr::str_replace(., "(?<=^属性(情報|名|項目))(\\s*[（\\(].*[）\\)])$", ""))) %>%
-    # 属性情報 is valid only for the first column
-    mutate_at(-1, funs(dplyr::na_if(., "属性情報"))) %>%
-    tidyr::fill(-1)
+  col_order <- seq_len(col_count)
+  colspan   <- as.integer(map_chr(cells, html_attr, "colspan", default = "1"))
+  col_index <- cumsum(c(1L, colspan))[col_order]
+
+  rowspan   <- as.integer(map_chr(cells, html_attr, "rowspan", default = "1"))
+
+  text <- map_chr(cells, html_text)
+  link <- map(cells, html_node, css = "a") %>%
+    map(html_attr, "href") %>%
+    # cell can contain more than 1 links
+    map_chr(stringr::str_c, collapse = ", ")
+
+  tibble::tibble(col_index,
+                 col_order,
+                 colspan,
+                 rowspan,
+                 text,
+                 link)
 }
 
-shrink_table <- function(table, debug = FALSE) {
-  col_names <- table[1, ]
-  colnames(table) <- col_names
+get_colindex_from_colspan <- function(colspans) {
+  cumsum(c(1L, colspans))[seq_along(colspans)]
+}
 
-  if (debug) message(glue::glue("col_names: {paste(col_names, collapse = ', ')}"))
+construct_tables <- function(tables) {
+  map(tables, construct_one_table)
+}
 
-  col_rle <- rle(col_names)
-  col_names_duplicated <- col_rle$values[col_rle$lengths > 1]
+construct_one_table <- function(tr_list) {
+  header <- tr_list[1]
+  content <- tr_list[-1]
 
-  if (debug) message(glue::glue("col_names_duplicated: {col_names_duplicated}"))
+  ### extract header ###
 
-  for (cn in col_names_duplicated) {
-    # the length of colnames may be changed as the table shrinks
-    col_names <- table[1, ]
-    print(col_names)
+  # xml_node has reference semantics, so we don't need to reassign the modified object
+  try_trim_first_td(header)
 
-    coalesced <- purrr::reduce(table[, col_names == cn, drop = FALSE],
-                               function(x, y) {
-                                 y[x == y] <- NA_character_
-                                 joined <- stringr::str_c(x, y, sep = "_")
-                                 dplyr::coalesce(joined, x)
-                               })
-    table[, col_names == cn] <- NULL
-    table[, cn] <- coalesced
+  col_names <- map_chr(html_children(header), html_text) %>%
+    stringr::str_replace("(?<=^属性(情報|名|項目))(\\s*[（\\(].*[）\\)])$", "") %>%
+    recode("属性項目"   = "属性名",
+           "地物名"     = "属性名",
+           "関連役割名" = "属性名",
+           "形状"       = "属性の型")
+
+  col_widths <- get_spans(header, direction = "col")
+
+  ### extract content ###
+
+  table_data_raw <- map_dfr(content, extract_data_from_row, .id = "row_index")
+  table_data <- table_data_raw %>%
+    mutate(row_index = as.integer(row_index),
+           text = dplyr::na_if(text, "&nbsp"))
+
+  num_col <- sum(col_widths)
+  num_row <- length(content)
+
+  # debug:
+  # result <- matrix(NA_character_, ncol = num_col,  nrow = num_row)
+  # result[cbind(table_data$row_index, table_data$col_index)] <- table_data$text
+  # View(result)
+
+  # horizontally-long cells are already refrected in col_index
+  vertically_long_cells_index <- which(table_data$rowspan > 1)
+  table_data_adjusted <- table_data
+
+  for (idx in vertically_long_cells_index) {
+    col_index_top      <- table_data_adjusted$col_index[idx]
+    row_index_top      <- table_data_adjusted$row_index[idx] + 1L
+    row_index_bottom   <- table_data_adjusted$row_index[idx] + table_data_adjusted$rowspan[idx] - 1L
+
+    table_data_adjusted <- mutate(
+      table_data_adjusted,
+      col_index = if_else(
+        col_index >= col_index_top &
+          between(row_index, row_index_top, row_index_bottom),
+        col_index + table_data_adjusted$colspan[idx],
+        col_index
+      )
+    )
   }
 
-  table[-1, ]
+  result <- matrix(NA_character_, ncol = num_col,  nrow = num_row)
+  result[cbind(table_data_adjusted$row_index, table_data_adjusted$col_index)] <- table_data_adjusted$text
+
+  ### fill tables ###
+
+  for (idx in vertically_long_cells_index) {
+    col_idx <- table_data_adjusted$col_index[idx]
+    row_idx <- table_data_adjusted$row_index[idx]
+    colspan <- table_data_adjusted$colspan[idx]
+    rowspan <- table_data_adjusted$rowspan[idx]
+    cell_text <- table_data_adjusted$text[idx]
+
+    # if the cell is NA use the text in the cell above
+    if (is.na(cell_text)) {
+      if (row_idx == 1L) stop("something is wrong")
+      cell_text <- result[row_idx - 1, col_idx]
+    }
+    result[row_idx:(row_idx + rowspan - 1L), col_idx:(col_idx + colspan - 1L)] <- cell_text
+  }
+
+
+  ### coalesce cells ###
+
+  result_list <- list()
+  col_index_groups <- c(cumsum(c(1L, col_widths))) %>% { map2(lag(.)[-1], .[-1] - 1L, seq) }
+
+  for (idx in seq_along(col_names)) {
+    col_name <- col_names[idx]
+    col_index_group <- col_index_groups[[idx]]
+
+    if (length(col_index_group) == 1L) {
+      result_list[[col_name]] <- result[, col_index_group]
+      next
+    }
+
+    result_list[[col_name]] <- purrr::reduce(as_tibble(result[, col_index_group]),
+                                             function(x, y) {
+                                               y[x == y] <- NA_character_
+                                               joined <- stringr::str_c(x, y, sep = "_")
+                                               dplyr::coalesce(joined, x)
+                                             })
+  }
+  as_tibble(result_list)
+}
+
+# first td can be removed as it has no useful infomation
+try_trim_first_td <- function(tr) {
+  first_td <- html_node(tr, "td")
+
+  # in almost all cases, we can remove first td. One exception is this:
+  #    http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P33.html
+  if (stringr::str_detect(html_text(first_td), "属性情報|地物情報") &&
+      !is.na(html_attr(first_td, "rowspan"))) {
+    xml_remove(first_td)
+  }
 }
 
 ### squash ###

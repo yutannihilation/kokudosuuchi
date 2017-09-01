@@ -92,16 +92,23 @@ resplit_one_table_html <- function(table) {
   tr_list_raw <- html_children(table)
 
   # if tr or first td have bgcolor attribute, the rows bellow belongs to new group.
-  has_bgcolor_tr              <- map_lgl(tr_list_raw, ~ !is.na(html_attr(., "bgcolor")))
-  has_bgcolor_first_td        <- map_lgl(tr_list_raw, ~ !is.na(html_attr(html_node(., "td"), "bgcolor")))
+  has_bgcolor_tr  <- map_lgl(tr_list_raw, ~ !is.na(html_attr(., "bgcolor")))
+
+  has_bgcolor_tds <- tr_list_raw %>%
+    map(html_nodes, "td") %>%
+    map(map_chr, html_attr, "bgcolor") %>%
+    map(~ !is.na(.))
+  has_bgcolor_first_td <- map_lgl(has_bgcolor_tds, first)
+  has_bgcolor_all_td   <- map_lgl(has_bgcolor_tds, all)
+
   is_start_of_different_table <- has_bgcolor_tr | has_bgcolor_first_td
 
   table_id <- cumsum(is_start_of_different_table)
-  # if th has bgcolor, it is a header
-  has_header <- has_bgcolor_tr[is_start_of_different_table]
+  # if all td has bgcolor, it is a header
+  has_header <- (has_bgcolor_tr | has_bgcolor_all_td)[is_start_of_different_table]
   # if a table has multiple rows, first td has a rowspan attribute
   expected_rows <- tr_list_raw[is_start_of_different_table] %>%
-    map_chr(~ html_attr(html_node(., "td"), "rowspan"), default = "1") %>%
+    map_chr(~ html_attr(html_node(., "td"), "rowspan", default = "1")) %>%
     as.integer()
 
   tr_list_split <- split(tr_list_raw, table_id) %>%

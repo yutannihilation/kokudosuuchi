@@ -2,6 +2,8 @@ library(rvest)
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
 
+data("KSJIdentifierDescriptionURL")
+
 # Download  -----------------------------------------------
 
 ### define functions ###
@@ -25,7 +27,6 @@ list_codelist_urls <- function(x) {
 
 ### datalist ###
 
-data("KSJIdentifierDescriptionURL")
 datalist_urls <- KSJIdentifierDescriptionURL$url
 datalist_destfiles <- file.path("downloaded_html", paste0("datalist-", basename(datalist_urls)))
 
@@ -59,20 +60,22 @@ if (any(purrr::map_lgl(result, ~ !is.null(.$error)))) {
 
 ### define functions ###
 
-extract_tables_safely <- purrr::safely(function(x) {
-  read_html(x, encoding = "CP932") %>%
+extract_tables_html <- function(html) {
+  read_html(html, encoding = "CP932") %>%
     html_nodes(css = "table table") %>%
-    html_table(fill = TRUE) %>%
-    purrr::keep(~ any(stringr::str_detect(.$X1, "属性情報|地物情報")))
-})
+    keep(~ stringr::str_detect(as.character(.), "属性情報|地物情報"))
+}
+
+extract_tables_html_safely <- purrr::safely(extract_tables_html)
 
 ### process HTMLs ###
 
-list_of_tables_wrapped <- purrr::map(datalist_destfiles, extract_tables_safely)
+datalist_destfiles <- list.files("downloaded_html", pattern = "datalist-.*", full.names = TRUE)
+list_of_tables_html_wrapped <- purrr::map(datalist_destfiles, extract_tables_html_safely)
 # check errors
-datalist_destfiles[map_lgl(list_of_tables_wrapped, ~ !is.null(.$error))]
+datalist_destfiles[map_lgl(list_of_tables_html_wrapped, ~ !is.null(.$error))]
 
-list_of_tables <- purrr::map(list_of_tables_wrapped, "result") %>%
+list_of_tables_html <- purrr::map(list_of_tables_html_wrapped, "result") %>%
   rlang::set_names(KSJIdentifierDescriptionURL$identifier)
 
 
@@ -80,32 +83,43 @@ list_of_tables <- purrr::map(list_of_tables_wrapped, "result") %>%
 
 ### define functions ###
 
-split_table_by_rleid <- function(table) {
-  # split them by rle-manner IDs (c.f. https://github.com/tidyverse/dplyr/issues/1534#issuecomment-326039714)
-  rleid <- cumsum(dplyr::coalesce(table$X1 != dplyr::lag(table$X1), FALSE))
-  split(table, rleid)
+resplit_tables_html <- function(tables) {
+  map(tables, resplit_one_table_html) %>%
+    flatten
 }
 
-resplit_tables <- function(tables) {
-  tables_resplit <- tables %>%
-    purrr::map(split_table_by_rleid) %>%
-    purrr::flatten()
+resplit_one_table_html <- function(table) {
+  tr_list_raw <- html_children(table)
 
-  tables_filtered <- tables_resplit %>%
-    purrr::keep(~ stringr::str_detect(unique(.$X1), "属性情報"))
+  # if tr or first td have bgcolor attribute, the rows bellow belongs to new group.
+  has_bgcolor_tr              <- map_lgl(tr_list_raw, ~ !is.na(html_attr(., "bgcolor")))
+  has_bgcolor_first_td        <- map_lgl(tr_list_raw, ~ !is.na(html_attr(html_node(., "td"), "bgcolor")))
+  is_start_of_different_table <- has_bgcolor_tr | has_bgcolor_first_td
 
-  # if there are no 属性情報, use 地物情報
-  if (length(tables_filtered) == 0) {
-    tables_filtered <- tables_resplit %>%
-      purrr::keep(~ stringr::str_detect(unique(.$X1), "属性情報|地物情報"))
-  }
+  table_id <- cumsum(is_start_of_different_table)
+  # if th has bgcolor, it is a header
+  has_header <- has_bgcolor_tr[is_start_of_different_table]
+  # if a table has multiple rows, first td has a rowspan attribute
+  expected_rows <- tr_list_raw[is_start_of_different_table] %>%
+    map_chr(~ html_attr(html_node(., "td"), "rowspan"), default = "1") %>%
+    as.integer()
 
-  tables_filtered
+  tr_list_split <- split(tr_list_raw, table_id) %>%
+    # some rows belong to no tables; remove them
+    map2(expected_rows, head) %>%
+    # we don't need tables without proper headers
+    keep(has_header)
 }
+
+resplit_tables_html_safely <- purrr::safely(resplit_tables_html)
 
 ### split tables ###
 
-list_of_tables_resplit <- purrr::map(list_of_tables, resplit_tables)
+list_of_tables_resplit_html_wrapped <- purrr::map(list_of_tables_html, resplit_tables_html_safely)
+
+# check errors
+keep(list_of_tables_resplit_html_wrapped, ~ !is.null(.$error))
+list_of_tables_resplit_html <- purrr::map(list_of_tables_resplit_html_wrapped, "result")
 
 # something is wron if some table is zero rows
 list_of_tables_resplit %>%

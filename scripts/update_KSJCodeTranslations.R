@@ -89,7 +89,7 @@ resplit_tables_html <- function(tables) {
 }
 
 resplit_one_table_html <- function(table) {
-  tr_list_raw <- html_children(table)
+  list_of_rows <- html_children(table)
 
   # if tr or first td have bgcolor attribute, the rows bellow belongs to new group.
   has_bgcolor_tr  <- map_lgl(tr_list_raw, ~ !is.na(html_attr(., "bgcolor")))
@@ -139,29 +139,30 @@ list_of_tables_resplit %>%
 
 ### define functions ###
 
-extract_data_from_row <- function(row_node) {
-  # lazily assume all child nodes are td
-  cells <- html_children(row_node)
-  col_count <- length(cells)
-
-  col_order <- seq_len(col_count)
+extract_data_from_row <- function(row_node, row_index) {
+  cells     <- html_nodes(row_node, "td")
   colspan   <- as.integer(map_chr(cells, html_attr, "colspan", default = "1"))
-  col_index <- cumsum(c(1L, colspan))[col_order]
+
+  #  e.g.)
+  #
+  #  colspan  +---- 3 ----+ 1 + 1 +
+  #           |           |   |   |
+  #           +-----------+---+---+
+  # col_index 1           4   5
+  #
+  col_index <- head(cumsum(c(1L, colspan)), length(cells))
 
   rowspan   <- as.integer(map_chr(cells, html_attr, "rowspan", default = "1"))
 
-  text <- map_chr(cells, html_text)
-  link <- map(cells, html_node, css = "a") %>%
-    map(html_attr, "href") %>%
-    # cell can contain more than 1 links
-    map_chr(stringr::str_c, collapse = ", ")
+  text <- html_text(cells) %>%
+    # replace empty cell with NA
+    if_else(stringr::str_detect(., "^\\s+$"), NA_character_, .)
 
-  tibble::tibble(col_index,
-                 col_order,
+  tibble::tibble(row_index,
+                 col_index,
                  colspan,
                  rowspan,
-                 text,
-                 link)
+                 text)
 }
 
 get_colindex_from_colspan <- function(colspans) {
@@ -188,7 +189,10 @@ construct_one_table <- function(tr_list) {
            "関連役割名" = "属性名",
            "形状"       = "属性の型")
 
-  col_widths <- get_spans(header, direction = "col")
+  col_widths <- col_widths <- header %>%
+    html_nodes("td") %>%
+    html_attr("colspan", default = "1") %>%
+    as.integer
 
   ### extract content ###
 

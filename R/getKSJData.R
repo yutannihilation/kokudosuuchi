@@ -104,7 +104,9 @@ download_KSJ_zip <- function(zip_url, cache_dir) {
   if (file.exists(zip_file)) {
     message(glue::glue("Using the cached zip file: {zip_file}"))
   } else {
-    curl::curl_download(zip_url, destfile = zip_file)
+    tmp_zip_file <- tempfile(fileext = ".zip")
+    curl::curl_download(zip_url, destfile = tmp_zip_file)
+    file.rename(tmp_zip_file, zip_file)
   }
 
   zip_file

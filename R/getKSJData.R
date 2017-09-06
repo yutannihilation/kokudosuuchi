@@ -12,6 +12,8 @@
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
 #' @param cache_dir
 #'   Path to a directory for caching zip files.
+#' @param encoding
+#'   Encoding of the data.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 #' @examples
@@ -28,7 +30,8 @@
 #' @export
 getKSJData <- function(zip_file,
                        translate_colnames = TRUE,
-                       cache_dir = tempdir()) {
+                       cache_dir = tempdir(),
+                       encoding = "CP932") {
 
   if (!rlang::is_scalar_character(zip_file)) {
     stop("zip_file must be eighter a character of URL, path to file, or path to directory!")
@@ -43,38 +46,35 @@ getKSJData <- function(zip_file,
     stop(glue::glue("{zip_file} doesn't exist"))
   }
 
+  temp_data_dir <- tempfile()
+  on.exit(unlink(temp_data_dir, recursive = TRUE))
   if (is_file(zip_file)) {
-    # extract the zip file
-    data_dir_orig <- tempfile()
-    on.exit(unlink(data_dir_orig, recursive = TRUE))
-
-    utils::unzip(zip_file, exdir = data_dir_orig)
-    data_dir <- rebase_KSJ_data_dir(data_dir_orig)
+    # when zip file is a file, extract it to a temp directory.
+    utils::unzip(zip_file, exdir = temp_data_dir)
   } else {
-    data_dir_orig <- rebase_KSJ_data_dir(zip_file)
-    data_dir <- tempfile()
-    on.exit(unlink(data_dir, recursive = TRUE))
-
-    message(glue::glue("Copying data from {data_dir_orig} to {data_dir}..."))
-    copy_files_recursively(data_dir_orig, data_dir)
+    # when zip_file is a directory, copy files within it to a temp directory
+    message(glue::glue("Copying data from {zip_file} to {temp_data_dir}..."))
+    copy_files_recursively(zip_file, temp_data_dir)
   }
 
-  # CP932 layer names cannot be handled on non-CP932 systems so we need to rename them
-  purify_KSJ_non_utf8_layers(data_dir)
+  shp_files <- list.files(temp_data_dir, pattern = ".*\\.shp", recursive = TRUE, full.names = TRUE)
 
-  layers <- sf::st_layers(data_dir)
-  layer_names <- purrr::set_names(layers$name)
+  # CP932 layer names cannot be handled on non-CP932 systems so we need to rename them
+  shp_files_utf8 <- rename_shp_files_to_utf8(shp_files)
+
+  # set names to make each layer named
+  shp_files_utf8 <- rlang::set_names(shp_files_utf8,
+                                     tools::file_path_sans_ext(basename(shp_files_utf8)))
 
   # read all data
-  result <- purrr::map(layer_names,
+  result <- purrr::map(shp_files_utf8,
                        sf::read_sf,
-                       dsn = data_dir,
                        # All data is encoded with Shift_JIS as described here:
                        # http://nlftp.mlit.go.jp/ksj/old/old_data.html
-                       options = "ENCODING=CP932")
+                       options = glue::glue("ENCODING={encoding}"))
 
   # suggest useful links
-  suggest_useful_links(layer_names)
+  suggest_useful_links(basename(shp_files_utf8))
 
   # translate colnames to human readable ones
   if (translate_colnames) {
@@ -113,39 +113,21 @@ download_KSJ_zip <- function(zip_url, cache_dir) {
 }
 
 
-rebase_KSJ_data_dir <- function(data_dir) {
-  # check if the KS-META-*.xml is located at the top of data_dir
-  meta_file <- list.files(data_dir, pattern = "KS-META.*\\.xml", full.names = TRUE)
-  # no need to rebase
-  if (length(meta_file) == 1L) return(data_dir)
+rename_shp_files_to_utf8 <- function(shp_files) {
+  if (all(stringi::stri_enc_isutf8(shp_files))) return(shp_files)
 
-  message("It seems the data is nested; try to rebase the directory...")
-  meta_file <- list.files(data_dir, pattern = "KS-META.*\\.xml", recursive = TRUE, full.names = TRUE)
-
-  if (length(meta_file) >  1L) {
-    stop("Multiple META file are found; cannot determine which directory to use!")
-  }
-
-  if (length(meta_file) == 0L) {
-    warning("No META file is found; give up rebasing.")
-    return(meta_file)
-  }
-
-  dirname(meta_file)
-}
-
-
-purify_KSJ_non_utf8_layers <- function(data_dir) {
-  file_names_orig <- list.files(data_dir)
-
-  if (all(stringi::stri_enc_isutf8(file_names_orig))) return()
-
+  shp_files_dirname <- dirname(shp_files)
+  shp_files_basename <- basename(shp_files)
   # assume the original names are cp932
-  file_names_utf8 <- iconv(file_names_orig, from = "CP932", to = "UTF-8")
-  # nohting happens here on windows because a CP932 string without encoding and its UTF-8 version
+  shp_files_utf8 <- file.path(shp_files_dirname,
+                              iconv(shp_files_basename, from = "CP932", to = "UTF-8"))
+
+  # nothing happens here on windows because a CP932 string without encoding and its UTF-8 version
   # marked as UTF-8 are identical for the OS. (e.g. file.rename(x, enc2utf8(x)) does nothing).
-  file.rename(file.path(data_dir, file_names_orig),
-              file.path(data_dir, file_names_utf8))
+  file.rename(shp_files, shp_files_utf8)
+
+  # return renamed names
+  shp_files_utf8
 }
 
 

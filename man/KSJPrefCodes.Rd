@@ -3,7 +3,6 @@
 \docType{data}
 \name{KSJPrefCodes}
 \alias{KSJPrefCodes}
-\alias{KSJPrefCodes}
 \title{Corresponding Table Of Names And Codes Of Prefectures}
 \format{A data.frame with prefecture names and codes}
 \source{

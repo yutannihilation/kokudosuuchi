@@ -5,7 +5,8 @@
 \alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_file, translate_colnames = TRUE, cache_dir = tempdir())
+getKSJData(zip_file, translate_colnames = TRUE, cache_dir = tempdir(),
+  encoding = "CP932")
 
 translateKSJColnames(x, quiet = FALSE)
 }
@@ -16,6 +17,8 @@ translateKSJColnames(x, quiet = FALSE)
 See \link{KSJShapeProperty} for more information about the corresponding table.}
 
 \item{cache_dir}{Path to a directory for caching zip files.}
+
+\item{encoding}{Encoding of the data.}
 
 \item{x}{Object of class \link[sf]{sf}}
 

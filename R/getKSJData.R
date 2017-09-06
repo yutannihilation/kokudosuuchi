@@ -87,12 +87,6 @@ getKSJData <- function(zip_file,
 }
 
 
-get_zip_filepath_from_url <- function(dir, zip_url) {
-  url_hash <- digest::digest(zip_url)
-  file.path(dir, glue::glue('{url_hash}.zip'))
-}
-
-
 download_KSJ_zip <- function(zip_url, cache_dir) {
   # if it doesn't esist, create it.
   if (!file.exists(cache_dir)) dir.create(cache_dir)

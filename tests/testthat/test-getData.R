@@ -36,7 +36,7 @@ test_that("getKSJData with UTF-8 layers with cached one works", {
 })
 
 zip_url <- "http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip"
-zip_file <- get_zip_filepath_from_url(cache_dir, zip_url)
+zip_file <- file.path(cache_dir, basename(zip_url))
 curl::curl_download(zip_url, destfile = zip_file)
 
 test_that("getKSJData with UTF-8 layers with a zip file works", {

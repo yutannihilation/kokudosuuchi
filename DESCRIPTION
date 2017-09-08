@@ -17,7 +17,7 @@ Imports:
     dplyr,
     glue,
     httr,
-    purrr (>= 0.2),
+    purrr (>= 0.2.3),
     rlang,
     sf,
     shiny,

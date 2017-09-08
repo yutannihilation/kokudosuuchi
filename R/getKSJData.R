@@ -132,7 +132,7 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 translateKSJColnames <- function(x, quiet = FALSE) {
   colnames_orig <- colnames(x)
 
-  KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
+  KSJ_code_to_name <- purrr::set_names(KSJMetadata_code$name, KSJMetadata_code$code)
 
   # some column names cannot be converted, so fill it with the original name
   colnames_readable_not_tidy <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
@@ -150,13 +150,13 @@ translateKSJColnames <- function(x, quiet = FALSE) {
 
 suggest_useful_links <- function(x) {
   # extract codes from x
-  codes <- x %>%
-    stringi::stri_extract_first_regex(code_regex) %>%
+  identifiers <- x %>%
+    stringi::stri_extract_first_regex(identifier_regex) %>%
     purrr::discard(is.na) %>%
     unique
 
-  useful_links <- KSJCodeDescriptionURL %>%
-    dplyr::filter(.data$code %in% codes) %>%
+  useful_links <- KSJMetadata_description_url %>%
+    dplyr::filter(.data$identifier %in% identifiers) %>%
     dplyr::pull(.data$url) %>%
     unique
 

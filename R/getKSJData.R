@@ -78,7 +78,7 @@ getKSJData <- function(zip_file,
 
   # translate colnames to human readable ones
   if (translate_colnames) {
-    result <- purrr::map(result,
+    result <- purrr::imap(result,
                          translateKSJColnames,
                          quiet = TRUE)
   }
@@ -127,9 +127,10 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 
 #' @rdname getKSJData
 #' @param x Object of class \link[sf]{sf}
+#' @param layer_name Layer name to filter codes.
 #' @param quiet If \code{TRUE}, suppress messages.
 #' @export
-translateKSJColnames <- function(x, quiet = FALSE) {
+translateKSJColnames <- function(x, layer_name = NULL, quiet = FALSE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
   if (!exists("KSJMetadata_code")) {
     data("KSJMetadata_code", package = "kokudosuuchi")
@@ -137,7 +138,44 @@ translateKSJColnames <- function(x, quiet = FALSE) {
 
   colnames_orig <- colnames(x)
 
-  KSJ_code_to_name <- purrr::set_names(KSJMetadata_code$name, KSJMetadata_code$code)
+  code_filtered <- dplyr::filter(KSJMetadata_code, .data$code %in% !! colnames_orig)
+
+  if (nrow(code_filtered) == 0L) {
+    if (!quiet) {
+      warning("No corresponding names are found for theese codes: ",
+              paste(colnames_orig, collapse = ", "))
+    }
+    return(x)
+  }
+
+  # try to filter codes with the tag extracted from the layer name
+  code_duplicated_indices <- duplicated(code_filtered$code) | duplicated(code_filtered$code, fromLast = TRUE)
+  if (any(code_duplicated_indices) && !is.null(layer_name)) {
+    # construct regex pattern from the possible tags
+    tag_pattern <- paste(unique(code_filtered$tag), collapse = "|")
+    # extract the tag from the layer name
+    tag_from_layer_name <- stringi::stri_extract_first_regex(layer_name, tag_pattern)
+    # filter by tag
+    code_filtered <- dplyr::filter(code_filtered,
+                                   # if the code is not duplicated, no problem
+                                   # if the code is duplicated use only ones of the extracted tag
+                                   code_duplicated_indices || (.data$tag %in% !! tag_from_layer_name))
+
+    # if some codes are still ambiguous, show warnings and remove them
+    code_duplicated_indices <- duplicated(code_filtered$code) | duplicated(code_filtered$code, fromLast = TRUE)
+    if (any(code_duplicated_indices) && !quiet) {
+      code_duplicated <- code_filtered[code_duplicated_indices, ] %>%
+        group_by(.data$code) %>%
+        summarise(candidates = paste0(.data$name, collapse = ", "))
+
+      warn_msg <- sprintf("\tcode: %s (candidates: %s)\n", code_duplicated$code, code_duplicated$candidates)
+      warning("Cannot determine the layer name with these codes :\n", warn_msg)
+
+      code_filtered <- code_filtered[!code_duplicated_indices, ]
+    }
+  }
+
+  KSJ_code_to_name <- purrr::set_names(code_filtered$name, code_filtered$code)
 
   # some column names cannot be converted, so fill it with the original name
   colnames_readable_not_tidy <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)

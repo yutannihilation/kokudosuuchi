@@ -8,7 +8,7 @@
 getKSJData(zip_file, translate_colnames = TRUE, cache_dir = tempdir(),
   encoding = "CP932")
 
-translateKSJColnames(x, quiet = FALSE)
+translateKSJColnames(x, layer_name = NULL, quiet = FALSE)
 }
 \arguments{
 \item{zip_file}{Either a URL, a path to a zip file, or a path to a directory which contains shape files.}
@@ -21,6 +21,8 @@ See \link{KSJShapeProperty} for more information about the corresponding table.}
 \item{encoding}{Encoding of the data.}
 
 \item{x}{Object of class \link[sf]{sf}}
+
+\item{layer_name}{Layer name to filter codes.}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
 }

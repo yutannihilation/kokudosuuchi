@@ -202,4 +202,4 @@ is_installed <- function(pkg) {
 is_url <- function(x) grepl("^https?:", x)
 
 is_file <- function(x) file.exists(x) && !dir.exists(x)
-is_dir  <- function(x) file.exists(x) && dir.exists(x)
+is_dir  <- function(x) dir.exists(x)

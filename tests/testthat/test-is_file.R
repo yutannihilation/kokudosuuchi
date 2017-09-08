@@ -15,3 +15,12 @@ test_that("is_file() and is_dir() works fine with a directory", {
   expect_false(is_file(x))
   expect_true(is_dir(x))
 })
+
+test_that("is_file() and is_dir() works fine with a directory with / at its tail", {
+  x <- tempfile()
+  x <- glue::glue("{x}/")
+  dir.create(x)
+
+  expect_false(is_file(x))
+  expect_true(is_dir(x))
+})

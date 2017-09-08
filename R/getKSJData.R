@@ -7,7 +7,7 @@
 #'
 #' @param zip_file
 #'   Either a URL, a path to a zip file, or a path to a directory which contains shape files.
-#' @param translate_colnames
+#' @param try_translate_colnames
 #'   If \code{TRUE}, try to use human-readable column names.
 #'   See \link{KSJShapeProperty} for more information about the corresponding table.
 #' @param cache_dir
@@ -29,7 +29,7 @@
 #'
 #' @export
 getKSJData <- function(zip_file,
-                       translate_colnames = TRUE,
+                       try_translate_colnames = TRUE,
                        cache_dir = tempdir(),
                        encoding = "CP932") {
 
@@ -77,10 +77,10 @@ getKSJData <- function(zip_file,
   suggest_useful_links(basename(shp_files_utf8))
 
   # translate colnames to human readable ones
-  if (translate_colnames) {
+  if (try_translate_colnames) {
     result <- purrr::imap(result,
-                         translateKSJColnames,
-                         quiet = TRUE)
+                          translateKSJColnames,
+                          quiet = TRUE)
   }
 
   result

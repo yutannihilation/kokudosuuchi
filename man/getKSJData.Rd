@@ -5,7 +5,7 @@
 \alias{translateKSJColnames}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_file, translate_colnames = TRUE, cache_dir = tempdir(),
+getKSJData(zip_file, try_translate_colnames = TRUE, cache_dir = tempdir(),
   encoding = "CP932")
 
 translateKSJColnames(x, layer_name = NULL, quiet = FALSE)
@@ -13,7 +13,7 @@ translateKSJColnames(x, layer_name = NULL, quiet = FALSE)
 \arguments{
 \item{zip_file}{Either a URL, a path to a zip file, or a path to a directory which contains shape files.}
 
-\item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
+\item{try_translate_colnames}{If \code{TRUE}, try to use human-readable column names.
 See \link{KSJShapeProperty} for more information about the corresponding table.}
 
 \item{cache_dir}{Path to a directory for caching zip files.}

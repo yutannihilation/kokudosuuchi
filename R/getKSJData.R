@@ -130,6 +130,11 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 #' @param quiet If \code{TRUE}, suppress messages.
 #' @export
 translateKSJColnames <- function(x, quiet = FALSE) {
+  # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
+  if (!exists("KSJMetadata_code")) {
+    data("KSJMetadata_code", package = "kokudosuuchi")
+  }
+
   colnames_orig <- colnames(x)
 
   KSJ_code_to_name <- purrr::set_names(KSJMetadata_code$name, KSJMetadata_code$code)
@@ -149,6 +154,11 @@ translateKSJColnames <- function(x, quiet = FALSE) {
 }
 
 suggest_useful_links <- function(x) {
+  # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
+  if (!exists("KSJMetadata_description_url")) {
+    data("KSJMetadata_description_url", package = "kokudosuuchi")
+  }
+
   # extract codes from x
   identifiers <- x %>%
     stringi::stri_extract_first_regex(identifier_regex) %>%

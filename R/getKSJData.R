@@ -154,7 +154,7 @@ purify_KSJ_non_utf8_layers <- function(data_dir) {
 translateKSJColnames <- function(x, quiet = FALSE) {
   colnames_orig <- colnames(x)
 
-  KSJ_code_to_name <- purrr::set_names(KSJShapeProperty$name, KSJShapeProperty$code)
+  KSJ_code_to_name <- purrr::set_names(KSJMetadata_code$name, KSJMetadata_code$code)
 
   # some column names cannot be converted, so fill it with the original name
   colnames_readable_not_tidy <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
@@ -177,7 +177,7 @@ suggest_useful_links <- function(x) {
     purrr::discard(is.na) %>%
     unique
 
-  useful_links <- KSJIdentifierDescriptionURL %>%
+  useful_links <- KSJMetadata_description_url %>%
     dplyr::filter(.data$identifier %in% identifiers) %>%
     dplyr::pull(.data$url) %>%
     unique

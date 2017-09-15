@@ -125,7 +125,7 @@ translateKSJData <- function(x, quiet = TRUE) {
   if (inherits(x, "sf")) {
     translateKSJData_one(x, layer_name, quiet)
   } else {
-    purrr::map(result,
+    purrr::map(x,
                translateKSJData_one,
                quiet = quiet)
 

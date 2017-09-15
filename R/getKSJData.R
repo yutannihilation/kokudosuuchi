@@ -22,14 +22,12 @@
 #' names(l)
 #' str(l, max.level = 1)
 #'
-#' l_raw <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip",
-#'                     translate_colnames = FALSE)
-#' translateKSJColnames(l_raw)
+#' l_translated <- translateKSJColnames(l)
+#' names(l)
 #' }
 #'
 #' @export
 getKSJData <- function(zip_file,
-                       try_translate_colnames = TRUE,
                        cache_dir = tempdir(),
                        encoding = "CP932") {
 
@@ -76,15 +74,9 @@ getKSJData <- function(zip_file,
   # suggest useful links
   suggest_useful_links(basename(shp_files_utf8))
 
-  # translate colnames to human readable ones
-  if (try_translate_colnames) {
-    result <- purrr::imap(result,
-                          translateKSJColnames,
-                          quiet = TRUE)
-  }
-
   result
 }
+
 
 
 download_KSJ_zip <- function(zip_url, cache_dir) {
@@ -130,7 +122,18 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 #' @param layer_name Layer name to filter codes.
 #' @param quiet If \code{TRUE}, suppress messages.
 #' @export
-translateKSJColnames <- function(x, layer_name = NULL, quiet = FALSE) {
+translateKSJColnames <- function(x, layer_name = NULL, quiet = TRUE) {
+  if (inherits(x, "sf")) {
+    translateKSJColnames_one(x, layer_name, quiet)
+  } else {
+    purrr::imap(result,
+                translateKSJColnames_one,
+                quiet = quiet)
+
+  }
+}
+
+translateKSJColnames_one <- function(x, layer_name = NULL, quiet = TRUE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
   if (!exists("KSJMetadata_code")) {
     data("KSJMetadata_code", package = "kokudosuuchi")

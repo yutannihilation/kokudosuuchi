@@ -123,7 +123,7 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 #' @export
 translateKSJData <- function(x, quiet = TRUE) {
   if (inherits(x, "sf")) {
-    translateKSJData_one(x, layer_name, quiet)
+    translateKSJData_one(x, quiet)
   } else {
     purrr::map(x,
                translateKSJData_one,

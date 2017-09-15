@@ -2,19 +2,15 @@
 % Please edit documentation in R/getKSJData.R
 \name{getKSJData}
 \alias{getKSJData}
-\alias{translateKSJColnames}
+\alias{translateKSJData}
 \title{Get JPGIS2.1 Data}
 \usage{
-getKSJData(zip_file, translate_colnames = TRUE, cache_dir = tempdir(),
-  encoding = "CP932")
+getKSJData(zip_file, cache_dir = tempdir(), encoding = "CP932")
 
-translateKSJColnames(x, quiet = FALSE)
+translateKSJData(x, quiet = TRUE)
 }
 \arguments{
 \item{zip_file}{Either a URL, a path to a zip file, or a path to a directory which contains shape files.}
-
-\item{translate_colnames}{If \code{TRUE}, try to use human-readable column names.
-See \link{KSJShapeProperty} for more information about the corresponding table.}
 
 \item{cache_dir}{Path to a directory for caching zip files.}
 
@@ -23,6 +19,9 @@ See \link{KSJShapeProperty} for more information about the corresponding table.}
 \item{x}{Object of class \link[sf]{sf}}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
+
+\item{try_translate_colnames}{If \code{TRUE}, try to use human-readable column names.
+See \link{KSJShapeProperty} for more information about the corresponding table.}
 }
 \description{
 \code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function
@@ -36,9 +35,8 @@ l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd
 names(l)
 str(l, max.level = 1)
 
-l_raw <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip",
-                    translate_colnames = FALSE)
-translateKSJColnames(l_raw)
+l_translated <- translateKSJData(l)
+names(l)
 }
 
 }

@@ -36,3 +36,24 @@ test_that("translateKSJData() works for both a sf object and a list of sf object
   expect_equal(colnames(translateKSJData(sf_list)[[1]]), colnames_expected)
   expect_s3_class(translateKSJData(sf_list)[[1]], "sf")
 })
+
+
+test_that("translateKSJData() works for clnames with years", {
+  sf_obj <- sf::st_sf(
+    A22_000001 = 1,
+    A22_000002 = 2,
+    A22_000003 = 3,
+    A22_012013 = 4,
+    A22_012012 = 5,
+    geometry   = sf::st_sfc(sf::st_point(1:2))
+  )
+
+  colnames_expected <- c("\u89b3\u6e2c\u70b9\u540d",
+                         "\u89b3\u6e2c\u70b9\u306e\u6240\u5728\u5730",
+                         "\u89b3\u6e2c\u70b9\u306e\u7ba1\u7406\u8005",
+                         "\u5404\u5e74\u5ea6\u5225\u6700\u6df1\u7a4d\u96ea2013\u5e74\u5ea6",
+                         "\u5404\u5e74\u5ea6\u5225\u6700\u6df1\u7a4d\u96ea2012\u5e74\u5ea6",
+                         "geometry")
+
+  expect_equal(colnames(translateKSJData(sf_obj)), colnames_expected)
+})

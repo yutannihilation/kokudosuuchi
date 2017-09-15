@@ -135,9 +135,8 @@ translateKSJColnames <- function(x, layer_name = NULL, quiet = TRUE) {
 
 translateKSJColnames_one <- function(x, layer_name = NULL, quiet = TRUE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
-  if (!exists("KSJMetadata_code")) {
-    data("KSJMetadata_code", package = "kokudosuuchi")
-  }
+  make_sure_data_is_loaded("KSJMetadata_code")
+  make_sure_data_is_loaded("KSJMetadata_code_year_cols")
 
   colnames_orig <- colnames(x)
 
@@ -196,9 +195,7 @@ translateKSJColnames_one <- function(x, layer_name = NULL, quiet = TRUE) {
 
 suggest_useful_links <- function(x) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
-  if (!exists("KSJMetadata_description_url")) {
-    data("KSJMetadata_description_url", package = "kokudosuuchi")
-  }
+  make_sure_data_is_loaded("KSJMetadata_description_url")
 
   # extract codes from x
   identifiers <- x %>%

@@ -34,4 +34,5 @@ test_that("translateKSJData() works for both a sf object and a list of sf object
 
   expect_equal(colnames(translateKSJData(sf_obj)), colnames_expected)
   expect_equal(colnames(translateKSJData(sf_list)[[1]]), colnames_expected)
+  expect_s3_class(translateKSJData(sf_list)[[1]], "sf")
 })

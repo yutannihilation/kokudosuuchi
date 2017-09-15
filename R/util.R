@@ -9,7 +9,3 @@ make_sure_data_is_loaded <- function(x) {
     do.call(data, list(x, package = "kokudosuuchi"))
   }
 }
-
-is_duplicated <- function(x) {
-  duplicated(x) | duplicated(x, fromLast = TRUE)
-}

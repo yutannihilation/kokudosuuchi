@@ -75,6 +75,6 @@ translateKSJData_one <- function(x, quiet = TRUE) {
 
 translate_year_cols <- function(x) {
   purrr::reduce(purrr::transpose(KSJMetadata_code_year_cols),
-                ~ stringi::stri_replace_first_fixed(.x, .y$pattern, .y$replacement),
+                ~ stringr::str_replace(.x, .y$pattern, .y$replacement),
                 .init = x)
 }

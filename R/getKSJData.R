@@ -123,7 +123,7 @@ suggest_useful_links <- function(x) {
 
   # extract codes from x
   identifiers <- x %>%
-    stringi::stri_extract_first_regex(identifier_regex) %>%
+    stringr::str_extract(identifier_regex) %>%
     purrr::discard(is.na) %>%
     unique
 

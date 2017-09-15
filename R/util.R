@@ -1,7 +1,7 @@
 # Utilities
 
 as_param <- function(x) {
-  stringi::stri_c(as.character(x), collapse = ",")
+  stringr::str_c(as.character(x), collapse = ",")
 }
 
 make_sure_data_is_loaded <- function(x) {

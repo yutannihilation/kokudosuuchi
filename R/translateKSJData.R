@@ -65,6 +65,16 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
   }
 
-  colnames(x) <- colnames_readable
+  # colnames like A22_012000 can be translated into names like "foo 2000 year"
+  colnames_readable_w_years <- translate_year_cols(colnames_readable)
+
+  colnames(x) <- colnames_readable_w_years
   x
+}
+
+
+translate_year_cols <- function(x) {
+  purrr::reduce(purrr::transpose(KSJMetadata_code_year_cols),
+                ~ stringr::str_replace(.x, .y$pattern, .y$replacement),
+                .init = x)
 }

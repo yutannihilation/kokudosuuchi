@@ -22,7 +22,7 @@
 #' names(l)
 #' str(l, max.level = 1)
 #'
-#' l_translated <- translateKSJColnames(l)
+#' l_translated <- translateKSJData(l)
 #' names(l)
 #' }
 #'
@@ -122,18 +122,18 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 #' @param layer_name Layer name to filter codes.
 #' @param quiet If \code{TRUE}, suppress messages.
 #' @export
-translateKSJColnames <- function(x, layer_name = NULL, quiet = TRUE) {
+translateKSJData <- function(x, layer_name = NULL, quiet = TRUE) {
   if (inherits(x, "sf")) {
-    translateKSJColnames_one(x, layer_name, quiet)
+    translateKSJData_one(x, layer_name, quiet)
   } else {
     purrr::imap(result,
-                translateKSJColnames_one,
+                translateKSJData_one,
                 quiet = quiet)
 
   }
 }
 
-translateKSJColnames_one <- function(x, layer_name = NULL, quiet = TRUE) {
+translateKSJData_one <- function(x, layer_name = NULL, quiet = TRUE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
   make_sure_data_is_loaded("KSJMetadata_code")
   make_sure_data_is_loaded("KSJMetadata_code_year_cols")
@@ -151,7 +151,7 @@ translateKSJColnames_one <- function(x, layer_name = NULL, quiet = TRUE) {
   }
 
   # try to filter codes with the tag extracted from the layer name
-  code_duplicated_indices <- duplicated(code_filtered$code) | duplicated(code_filtered$code, fromLast = TRUE)
+  code_duplicated_indices <- is_duplicated(code_filtered$code)
   if (any(code_duplicated_indices) && !is.null(layer_name)) {
     # construct regex pattern from the possible tags
     tag_pattern <- paste(unique(code_filtered$tag), collapse = "|")
@@ -164,7 +164,7 @@ translateKSJColnames_one <- function(x, layer_name = NULL, quiet = TRUE) {
                                    code_duplicated_indices || (.data$tag %in% !! tag_from_layer_name))
 
     # if some codes are still ambiguous, show warnings and remove them
-    code_duplicated_indices <- duplicated(code_filtered$code) | duplicated(code_filtered$code, fromLast = TRUE)
+    code_duplicated_indices <- is_duplicated(code_filtered$code)
     if (any(code_duplicated_indices) && !quiet) {
       code_duplicated <- code_filtered[code_duplicated_indices, ] %>%
         group_by(.data$code) %>%

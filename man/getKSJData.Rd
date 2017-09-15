@@ -2,12 +2,12 @@
 % Please edit documentation in R/getKSJData.R
 \name{getKSJData}
 \alias{getKSJData}
-\alias{translateKSJColnames}
+\alias{translateKSJData}
 \title{Get JPGIS2.1 Data}
 \usage{
 getKSJData(zip_file, cache_dir = tempdir(), encoding = "CP932")
 
-translateKSJColnames(x, layer_name = NULL, quiet = TRUE)
+translateKSJData(x, layer_name = NULL, quiet = TRUE)
 }
 \arguments{
 \item{zip_file}{Either a URL, a path to a zip file, or a path to a directory which contains shape files.}
@@ -37,7 +37,7 @@ l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd
 names(l)
 str(l, max.level = 1)
 
-l_translated <- translateKSJColnames(l)
+l_translated <- translateKSJData(l)
 names(l)
 }
 

@@ -119,21 +119,20 @@ rename_shp_files_to_utf8 <- function(shp_files) {
 
 #' @rdname getKSJData
 #' @param x Object of class \link[sf]{sf}
-#' @param layer_name Layer name to filter codes.
 #' @param quiet If \code{TRUE}, suppress messages.
 #' @export
-translateKSJData <- function(x, layer_name = NULL, quiet = TRUE) {
+translateKSJData <- function(x, quiet = TRUE) {
   if (inherits(x, "sf")) {
     translateKSJData_one(x, layer_name, quiet)
   } else {
-    purrr::imap(result,
-                translateKSJData_one,
-                quiet = quiet)
+    purrr::map(result,
+               translateKSJData_one,
+               quiet = quiet)
 
   }
 }
 
-translateKSJData_one <- function(x, layer_name = NULL, quiet = TRUE) {
+translateKSJData_one <- function(x, quiet = TRUE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
   make_sure_data_is_loaded("KSJMetadata_code")
   make_sure_data_is_loaded("KSJMetadata_code_year_cols")
@@ -143,38 +142,34 @@ translateKSJData_one <- function(x, layer_name = NULL, quiet = TRUE) {
   code_filtered <- dplyr::filter(KSJMetadata_code, .data$code %in% !! colnames_orig)
 
   if (nrow(code_filtered) == 0L) {
-    if (!quiet) {
-      warning("No corresponding names are found for theese codes: ",
-              paste(colnames_orig, collapse = ", "))
-    }
+    if (!quiet) warning("No corresponding colnames are found for the codes.")
     return(x)
   }
 
-  # try to filter codes with the tag extracted from the layer name
-  code_duplicated_indices <- is_duplicated(code_filtered$code)
-  if (any(code_duplicated_indices) && !is.null(layer_name)) {
-    # construct regex pattern from the possible tags
-    tag_pattern <- paste(unique(code_filtered$tag), collapse = "|")
-    # extract the tag from the layer name
-    tag_from_layer_name <- stringi::stri_extract_first_regex(layer_name, tag_pattern)
-    # filter by tag
-    code_filtered <- dplyr::filter(code_filtered,
-                                   # if the code is not duplicated, no problem
-                                   # if the code is duplicated use only ones of the extracted tag
-                                   code_duplicated_indices || (.data$tag %in% !! tag_from_layer_name))
-
-    # if some codes are still ambiguous, show warnings and remove them
-    code_duplicated_indices <- is_duplicated(code_filtered$code)
-    if (any(code_duplicated_indices) && !quiet) {
-      code_duplicated <- code_filtered[code_duplicated_indices, ] %>%
-        group_by(.data$code) %>%
-        summarise(candidates = paste0(.data$name, collapse = ", "))
-
-      warn_msg <- sprintf("\tcode: %s (candidates: %s)\n", code_duplicated$code, code_duplicated$candidates)
-      warning("Cannot determine the layer name with these codes :\n", warn_msg)
-
-      code_filtered <- code_filtered[!code_duplicated_indices, ]
+  # try to choose the right one from the number of matched colnames
+  if (any(duplicated(code_filtered$code))) {
+    if (any(is.na(code_filtered$item_id)) ||
+        length(unique(code_filtered$item_id)) == 1) {
+      # abort if code_filtered cannot be split
+      if (!quiet) warning("Cannot determine which colnames to use for  the codes")
+      return(x)
     }
+
+    code_split <- split(code_filtered, code_filtered$item_id)
+    # if colnames_orig does not contain any of the codes, that set of colnames is probably wrong.
+    code_with_all_colnames <- purrr::discard(code_split, ~ any(! .$code %in% colnames_orig))
+
+    if (length(code_with_all_colnames) == 0) {
+      # abort if there are no candidates
+      if (!quiet) warning("Cannot determine which colnames to use for  the codes")
+      return(x)
+    }
+
+    # the set of colnames that has most rows are most probable.
+    index_most_probable_colnames <- which.max(
+      purrr::map_int(code_with_all_colnames, nrow)
+    )
+    code_filtered <- code_with_all_colnames[[index_most_probable_colnames]]
   }
 
   KSJ_code_to_name <- purrr::set_names(code_filtered$name, code_filtered$code)
@@ -185,7 +180,7 @@ translateKSJData_one <- function(x, layer_name = NULL, quiet = TRUE) {
   colnames_readable <- tibble::tidy_names(colnames_readable_not_tidy, quiet = TRUE)
 
   if (!quiet) {
-    message("The colnames are translated:")
+    message("The colnames are translated as bellow:")
     message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
   }
 

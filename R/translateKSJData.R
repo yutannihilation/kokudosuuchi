@@ -26,7 +26,9 @@ translateKSJData_one <- function(x, quiet = TRUE) {
   code_filtered <- KSJMetadata_code %>%
     dplyr::group_by(.data$identifier, .data$item_id) %>%
     dplyr::filter(any(.data$code %in% !! colnames_orig)) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    # TODO: remove this workaround when yutannihilation/kokudosuuchiUtils#29 is fixed
+    dplyr::distinct()
 
   if (nrow(code_filtered) == 0L) {
     if (!quiet) warning("No corresponding colnames are found for the codes.")

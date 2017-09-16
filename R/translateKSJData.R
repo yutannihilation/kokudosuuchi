@@ -32,7 +32,7 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     if (any(is.na(code_filtered$item_id)) ||
         length(unique(code_filtered$item_id)) == 1) {
       # abort if code_filtered cannot be split
-      if (!quiet) warning("Cannot determine which colnames to use for  the codes")
+      if (!quiet) warning("Cannot determine which colnames to use for the codes")
       return(x)
     }
 
@@ -41,15 +41,21 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     code_with_all_colnames <- purrr::discard(code_split, ~ any(! .$code %in% colnames_orig))
 
     if (length(code_with_all_colnames) == 0) {
-      # abort if there are no candidates
-      if (!quiet) warning("Cannot determine which colnames to use for  the codes")
+      # abort if there are more-than-one candidates
+      if (!quiet) warning("Cannot determine which colnames to use for the codes")
       return(x)
     }
 
     # the set of colnames that has most rows are most probable.
-    index_most_probable_colnames <- which.max(
-      purrr::map_int(code_with_all_colnames, nrow)
-    )
+    # TODO: for some cases like L03-a, this assumption fails.
+    nrows <- purrr::map_int(code_with_all_colnames, nrow)
+    index_most_probable_colnames <- nrows == max(nrows)
+    if (length(index_most_probable_colnames) > 2) {
+      # abort if there are more-than-one candidates
+      if (!quiet) warning("Cannot determine which colnames to use for the codes")
+      return(x)
+    }
+
     code_filtered <- code_with_all_colnames[[index_most_probable_colnames]]
   }
 

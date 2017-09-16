@@ -17,10 +17,18 @@ translateKSJData_one <- function(x, quiet = TRUE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
   make_sure_data_is_loaded("KSJMetadata_code")
   make_sure_data_is_loaded("KSJMetadata_code_year_cols")
+  make_sure_data_is_loaded("KSJMetadata_code_correspondence_tables")
 
   colnames_orig <- colnames(x)
 
-  code_filtered <- dplyr::filter(KSJMetadata_code, .data$code %in% !! colnames_orig)
+  # Get candidates for the colnames -------------------------
+
+  code_filtered <- KSJMetadata_code %>%
+    dplyr::group_by(.data$identifier, .data$item_id) %>%
+    dplyr::filter(any(.data$code %in% !! colnames_orig)) %>%
+    dplyr::ungroup() %>%
+    # TODO: remove this workaround when yutannihilation/kokudosuuchiUtils#29 is fixed
+    dplyr::distinct()
 
   if (nrow(code_filtered) == 0L) {
     if (!quiet) warning("No corresponding colnames are found for the codes.")
@@ -32,26 +40,46 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     if (any(is.na(code_filtered$item_id)) ||
         length(unique(code_filtered$item_id)) == 1) {
       # abort if code_filtered cannot be split
-      if (!quiet) warning("Cannot determine which colnames to use for  the codes")
+      if (!quiet) warning("Cannot determine which colnames to use for the codes")
       return(x)
     }
 
     code_split <- split(code_filtered, code_filtered$item_id)
-    # if colnames_orig does not contain any of the codes, that set of colnames is probably wrong.
-    code_with_all_colnames <- purrr::discard(code_split, ~ any(! .$code %in% colnames_orig))
 
-    if (length(code_with_all_colnames) == 0) {
-      # abort if there are no candidates
-      if (!quiet) warning("Cannot determine which colnames to use for  the codes")
+    # More matches and less nrows are better.
+    # TODO: for some cases like L03-a, this assumption fails.
+    matches <- purrr::map_int(code_split, ~ sum(.$code %in% colnames_orig))
+    code_most_matches <- code_split[matches == max(matches)]
+
+    nrows <- purrr::map_int(code_most_matches, nrow)
+    code_least_nrows <- code_most_matches[nrows == min(nrows)]
+
+    if (length(code_least_nrows) > 1) {
+      # abort if there are more-than-one candidates
+      if (!quiet) warning("Cannot determine which colnames to use for the codes")
       return(x)
     }
 
-    # the set of colnames that has most rows are most probable.
-    index_most_probable_colnames <- which.max(
-      purrr::map_int(code_with_all_colnames, nrow)
-    )
-    code_filtered <- code_with_all_colnames[[index_most_probable_colnames]]
+    code_filtered <- code_least_nrows[[1]]
   }
+
+  # Translate data if there are correspondence tables -----------------------------
+  cts <- code_filtered %>%
+    dplyr::filter(!is.na(.data$correspondence_table)) %>%
+    dplyr::mutate(matched_col = dplyr::coalesce(match(.data$code, !! colnames_orig),
+                                                match(.data$name, !! colnames_orig))) %>%
+    dplyr::filter(!is.na(.data$matched_col))
+
+  if (nrow(cts) > 0) {
+    x[, cts$matched_col] <- purrr::pmap(cts,
+                                       function(matched_col, correspondence_table, ...) {
+                                          data <- x[[matched_col]]
+                                          table <- KSJMetadata_code_correspondence_tables[[correspondence_table]]
+                                          table[data]
+                                        })
+  }
+
+  # Translate colnames -------------------------
 
   KSJ_code_to_name <- purrr::set_names(code_filtered$name, code_filtered$code)
 

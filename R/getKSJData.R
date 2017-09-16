@@ -54,22 +54,19 @@ getKSJData <- function(zip_file,
 
   shp_files <- list.files(temp_data_dir, pattern = ".*\\.shp", recursive = TRUE, full.names = TRUE)
 
-  # CP932 layer names cannot be handled on non-CP932 systems so we need to rename them
-  shp_files_utf8 <- rename_shp_files_to_utf8(shp_files)
-
   # set names to make each layer named
-  shp_files_utf8 <- rlang::set_names(shp_files_utf8,
-                                     tools::file_path_sans_ext(basename(shp_files_utf8)))
+  shp_files <- rlang::set_names(shp_files,
+                                tools::file_path_sans_ext(basename(shp_files)))
 
   # read all data
-  result <- purrr::map(shp_files_utf8,
+  result <- purrr::map(shp_files,
                        sf::read_sf,
                        # All data is encoded with Shift_JIS as described here:
                        # http://nlftp.mlit.go.jp/ksj/old/old_data.html
                        options = glue::glue("ENCODING={encoding}"))
 
   # suggest useful links
-  suggest_useful_links(basename(shp_files_utf8))
+  suggest_useful_links(basename(shp_files))
 
   result
 }
@@ -93,24 +90,6 @@ download_KSJ_zip <- function(zip_url, cache_dir) {
   }
 
   zip_file
-}
-
-
-rename_shp_files_to_utf8 <- function(shp_files) {
-  if (all(stringi::stri_enc_isutf8(shp_files))) return(shp_files)
-
-  shp_files_dirname <- dirname(shp_files)
-  shp_files_basename <- basename(shp_files)
-  # assume the original names are cp932
-  shp_files_utf8 <- file.path(shp_files_dirname,
-                              iconv(shp_files_basename, from = "CP932", to = "UTF-8"))
-
-  # nothing happens here on windows because a CP932 string without encoding and its UTF-8 version
-  # marked as UTF-8 are identical for the OS. (e.g. file.rename(x, enc2utf8(x)) does nothing).
-  file.rename(shp_files, shp_files_utf8)
-
-  # return renamed names
-  shp_files_utf8
 }
 
 

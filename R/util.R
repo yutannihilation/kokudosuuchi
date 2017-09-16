@@ -6,6 +6,6 @@ as_param <- function(x) {
 
 make_sure_data_is_loaded <- function(x) {
   if (!exists(x)) {
-    do.call(data, list(x, package = "kokudosuuchi"))
+    do.call(utils::data, list(x, package = "kokudosuuchi"))
   }
 }

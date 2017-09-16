@@ -7,9 +7,6 @@
 #'
 #' @param zip_file
 #'   Either a URL, a path to a zip file, or a path to a directory which contains shape files.
-#' @param try_translate_colnames
-#'   If \code{TRUE}, try to use human-readable column names.
-#'   See \link{KSJShapeProperty} for more information about the corresponding table.
 #' @param cache_dir
 #'   Path to a directory for caching zip files.
 #' @param encoding

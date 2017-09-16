@@ -1,7 +1,8 @@
 # Suppres notes with R CMD check; see http://stackoverflow.com/a/12429344/5397672
 globalVariables("KSJMetadata_code")
+globalVariables("KSJMetadata_code_year_cols")
 globalVariables("KSJMetadata_description_url")
-globalVariables("KSJShapeProperty")
+globalVariables("KSJMetadata_code_correspondence_tables")
 globalVariables("KSJPrefCodes")
 
 #' Corresponding Table Of Shapefile Properties
@@ -12,6 +13,18 @@ globalVariables("KSJPrefCodes")
 #' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}, \url{http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls}
 "KSJMetadata_code"
 
+#' @rdname KSJMetadata_code
+#' @format A list of named character vectors to translate various codes.
+#'
+#' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}
+"KSJMetadata_code_correspondence_tables"
+
+#' @rdname KSJMetadata_code
+#' @format A data.frame with regex to extract years.
+#'
+#' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}
+"KSJMetadata_code_year_cols"
+
 #' Corresponding Table Of Identifier Descriptions
 #'
 #' @name KSJMetadata_description_url
@@ -20,18 +33,10 @@ globalVariables("KSJPrefCodes")
 #' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}
 "KSJMetadata_description_url"
 
-
-#' @rdname KSJMetadata_code
-#' @format A data.frame with codes and names
-#' @description This data is deprecated. Use \link{KSJMetadata_code} instead.
-#'
-#' @source \url{http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls}
-"KSJShapeProperty"
-
 #' Corresponding Table Of Names And Codes Of Prefectures
 #'
 #' @name KSJPrefCodes
-#' @format A data.frame with prefecture names and codes
+#' @format A data.frame with prefecture names and codes.
 #'
 #' @source \url{http://nlftp.mlit.go.jp/ksj/gml/codelist/PrefCd.html}
 "KSJPrefCodes"

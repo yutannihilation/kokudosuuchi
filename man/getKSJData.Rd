@@ -19,9 +19,6 @@ translateKSJData(x, quiet = TRUE)
 \item{x}{Object of class \link[sf]{sf}}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
-
-\item{try_translate_colnames}{If \code{TRUE}, try to use human-readable column names.
-See \link{KSJShapeProperty} for more information about the corresponding table.}
 }
 \description{
 \code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function

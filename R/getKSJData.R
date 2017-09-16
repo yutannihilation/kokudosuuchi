@@ -75,7 +75,7 @@ getKSJData <- function(zip_file,
 
 download_KSJ_zip <- function(zip_url, cache_dir) {
   # if it doesn't esist, create it.
-  if (!file.exists(cache_dir)) dir.create(cache_dir)
+  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
   # if it is not directory, something is wrong...
   if (!is_dir(cache_dir)) stop(glue::glue("{cache_dir} is not directory!"))
 

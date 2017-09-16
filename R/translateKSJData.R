@@ -105,7 +105,3 @@ translate_year_cols <- function(x) {
                 ~ stringr::str_replace(.x, .y$pattern, .y$replacement),
                 .init = x)
 }
-
-translate_one_col <- function(x, ...) {
-
-}

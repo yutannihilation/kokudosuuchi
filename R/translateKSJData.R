@@ -73,7 +73,7 @@ translateKSJData_one <- function(x, quiet = TRUE) {
   if (nrow(cts) > 0) {
     x[, cts$matched_col] <- purrr::pmap(cts,
                                        function(matched_col, correspondence_table, ...) {
-                                          data <- x[[matched_col]]
+                                          data <- as.character(x[[matched_col]])
                                           table <- KSJMetadata_code_correspondence_tables[[correspondence_table]]
                                           table[data]
                                         })

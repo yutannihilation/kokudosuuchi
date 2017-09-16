@@ -38,7 +38,7 @@ test_that("translateKSJData() works for both a sf object and a list of sf object
 })
 
 
-test_that("translateKSJData() works for clnames with years", {
+test_that("translateKSJData() works for colnames with years", {
   sf_obj <- sf::st_sf(
     A22_000001 = 1,
     A22_000002 = 2,
@@ -56,4 +56,30 @@ test_that("translateKSJData() works for clnames with years", {
                          "geometry")
 
   expect_equal(colnames(translateKSJData(sf_obj)), colnames_expected)
+})
+
+
+test_that("translateKSJData() works for ", {
+  d <- data.frame(
+    P12_001 = 10006L,
+    P12_002 = "a",
+    P12_003 = "06",
+    P12_004 = "06204",
+    P12_005 = "b",
+    P12_006 = "c",
+    P12_007 = -1L,
+    stringsAsFactors = FALSE)
+
+  d_trans <- translateKSJData_one(d)
+  expect_equal(colnames(d_trans),
+               c("\u89b3\u5149\u8cc7\u6e90_ID",
+                 "\u89b3\u5149\u8cc7\u6e90\u540d",
+                 "\u90fd\u9053\u5e9c\u770c\u30b3\u30fc\u30c9",
+                 "\u884c\u653f\u30b3\u30fc\u30c9",
+                 "\u7a2e\u5225\u540d\u79f0",
+                 "\u6240\u5728\u5730\u4f4f\u6240",
+                 "\u89b3\u5149\u8cc7\u6e90\u5206\u985e\u30b3\u30fc\u30c9"))
+
+  expect_equal(d_trans[[4]], "\u5c71\u5f62\u770c\u9152\u7530\u5e02")
+  expect_equal(d_trans[[7]], NA_character_)
 })

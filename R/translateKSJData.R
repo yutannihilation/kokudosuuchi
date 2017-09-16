@@ -23,7 +23,10 @@ translateKSJData_one <- function(x, quiet = TRUE) {
 
   # Get candidates for the colnames -------------------------
 
-  code_filtered <- dplyr::filter(KSJMetadata_code, .data$code %in% !! colnames_orig)
+  code_filtered <- KSJMetadata_code %>%
+    dplyr::group_by(.data$identifier, .data$item_id) %>%
+    dplyr::filter(any(.data$code %in% !! colnames_orig)) %>%
+    dplyr::ungroup()
 
   if (nrow(code_filtered) == 0L) {
     if (!quiet) warning("No corresponding colnames are found for the codes.")
@@ -40,26 +43,22 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     }
 
     code_split <- split(code_filtered, code_filtered$item_id)
-    # if colnames_orig does not contain any of the codes, that set of colnames is probably wrong.
-    code_with_all_colnames <- purrr::discard(code_split, ~ any(! .$code %in% colnames_orig))
 
-    if (length(code_with_all_colnames) == 0) {
-      # abort if there are more-than-one candidates
-      if (!quiet) warning("Cannot determine which colnames to use for the codes")
-      return(x)
-    }
-
-    # the set of colnames that has most rows are most probable.
+    # More matches and less nrows are better.
     # TODO: for some cases like L03-a, this assumption fails.
-    nrows <- purrr::map_int(code_with_all_colnames, nrow)
-    index_most_probable_colnames <- which(nrows == max(nrows))
-    if (length(index_most_probable_colnames) > 1) {
+    matches <- purrr::map_int(code_split, ~ sum(.$code %in% colnames_orig))
+    code_most_matches <- code_split[matches == max(matches)]
+
+    nrows <- purrr::map_int(code_most_matches, nrow)
+    code_least_nrows <- code_most_matches[nrows == min(nrows)]
+
+    if (length(code_least_nrows) > 1) {
       # abort if there are more-than-one candidates
       if (!quiet) warning("Cannot determine which colnames to use for the codes")
       return(x)
     }
 
-    code_filtered <- code_with_all_colnames[[index_most_probable_colnames]]
+    code_filtered <- code_least_nrows[[1]]
   }
 
   # Translate data if there are correspondence tables -----------------------------

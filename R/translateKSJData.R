@@ -53,7 +53,7 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     # TODO: for some cases like L03-a, this assumption fails.
     nrows <- purrr::map_int(code_with_all_colnames, nrow)
     index_most_probable_colnames <- which(nrows == max(nrows))
-    if (length(index_most_probable_colnames) > 2) {
+    if (length(index_most_probable_colnames) > 1) {
       # abort if there are more-than-one candidates
       if (!quiet) warning("Cannot determine which colnames to use for the codes")
       return(x)

@@ -133,10 +133,12 @@
 <div id="gis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#gis" class="anchor"></a>国土数値情報のGISデータ取得</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">max.print =</span> <span class="dv">20</span>)
-<span class="kw"><a href="reference/getKSJData.html">getKSJData</a></span>(<span class="st">"http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip"</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/getKSJData.html">getKSJData</a></span>(<span class="st">"http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip"</span>,
+                <span class="dt">cache_dir =</span> <span class="st">"cached_zip"</span>)
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Details about this data may be found at http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html</span>
+<span class="co">#&gt; Details about this data can be found at http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html</span>
+
+d
 <span class="co">#&gt; $`P12a-14_06`</span>
 <span class="co">#&gt; Simple feature collection with 10 features and 7 fields</span>
 <span class="co">#&gt; geometry type:  POINT</span>
@@ -145,20 +147,20 @@
 <span class="co">#&gt; epsg (SRID):    NA</span>
 <span class="co">#&gt; proj4string:    +proj=longlat +ellps=GRS80 +no_defs</span>
 <span class="co">#&gt; # A tibble: 10 x 8</span>
-<span class="co">#&gt;    都道府県コード                   行政コード 資源名称..3</span>
-<span class="co">#&gt;             &lt;int&gt;                        &lt;chr&gt;       &lt;chr&gt;</span>
-<span class="co">#&gt;  1          10009                       飯豊山          06</span>
-<span class="co">#&gt;  2          10010                       鳥海山          06</span>
-<span class="co">#&gt;  3          10005                         月山          06</span>
-<span class="co">#&gt;  4          10006                       最上川          06</span>
-<span class="co">#&gt;  5          10007                   蔵王の樹氷          06</span>
-<span class="co">#&gt;  6          10003               立石寺（山寺）          06</span>
-<span class="co">#&gt;  7          10004                 出羽三山神社          06</span>
-<span class="co">#&gt;  8          10002                   花笠まつり          06</span>
-<span class="co">#&gt;  9          10008 銀山温泉の旅館街と共同浴場群          06</span>
-<span class="co">#&gt; 10          10001 蔵王温泉の酸性泉と源泉浴場群          06</span>
-<span class="co">#&gt; # ... with 5 more variables: 資源名称..4 &lt;chr&gt;, 種別名称 &lt;chr&gt;,</span>
-<span class="co">#&gt; #   P12_006 &lt;chr&gt;, P12_007 &lt;int&gt;, geometry &lt;S3: sfc_POINT&gt;</span>
+<span class="co">#&gt;    P12_001                      P12_002 P12_003             P12_004</span>
+<span class="co">#&gt;      &lt;int&gt;                        &lt;chr&gt;   &lt;chr&gt;               &lt;chr&gt;</span>
+<span class="co">#&gt;  1   10009                       飯豊山      06               06401</span>
+<span class="co">#&gt;  2   10010                       鳥海山      06               06461</span>
+<span class="co">#&gt;  3   10005                         月山      06               06203</span>
+<span class="co">#&gt;  4   10006                       最上川      06 06204、06367、06428</span>
+<span class="co">#&gt;  5   10007                   蔵王の樹氷      06               06207</span>
+<span class="co">#&gt;  6   10003               立石寺（山寺）      06               06201</span>
+<span class="co">#&gt;  7   10004                 出羽三山神社      06               06203</span>
+<span class="co">#&gt;  8   10002                   花笠まつり      06               06201</span>
+<span class="co">#&gt;  9   10008 銀山温泉の旅館街と共同浴場群      06               06212</span>
+<span class="co">#&gt; 10   10001 蔵王温泉の酸性泉と源泉浴場群      06               06201</span>
+<span class="co">#&gt; # ... with 4 more variables: P12_005 &lt;chr&gt;, P12_006 &lt;chr&gt;, P12_007 &lt;int&gt;,</span>
+<span class="co">#&gt; #   geometry &lt;S3: sfc_POINT&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $`P12b-14_06`</span>
 <span class="co">#&gt; Simple feature collection with 1 feature and 7 fields</span>
@@ -168,9 +170,9 @@
 <span class="co">#&gt; epsg (SRID):    NA</span>
 <span class="co">#&gt; proj4string:    +proj=longlat +ellps=GRS80 +no_defs</span>
 <span class="co">#&gt; # A tibble: 1 x 8</span>
-<span class="co">#&gt;   都道府県コード 行政コード 資源名称..3         資源名称..4   種別名称</span>
-<span class="co">#&gt;            &lt;int&gt;      &lt;chr&gt;       &lt;chr&gt;               &lt;chr&gt;      &lt;chr&gt;</span>
-<span class="co">#&gt; 1          10006     最上川          06 06204、06367、06428 河川・峡谷</span>
+<span class="co">#&gt;   P12_001 P12_002 P12_003             P12_004    P12_005</span>
+<span class="co">#&gt;     &lt;int&gt;   &lt;chr&gt;   &lt;chr&gt;               &lt;chr&gt;      &lt;chr&gt;</span>
+<span class="co">#&gt; 1   10006  最上川      06 06204、06367、06428 河川・峡谷</span>
 <span class="co">#&gt; # ... with 3 more variables: P12_006 &lt;chr&gt;, P12_007 &lt;int&gt;, geometry &lt;S3:</span>
 <span class="co">#&gt; #   sfc_LINESTRING&gt;</span>
 <span class="co">#&gt; </span>
@@ -182,12 +184,70 @@
 <span class="co">#&gt; epsg (SRID):    NA</span>
 <span class="co">#&gt; proj4string:    +proj=longlat +ellps=GRS80 +no_defs</span>
 <span class="co">#&gt; # A tibble: 2 x 8</span>
-<span class="co">#&gt;   都道府県コード     行政コード 資源名称..3 資源名称..4         種別名称</span>
-<span class="co">#&gt;            &lt;int&gt;          &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;            &lt;chr&gt;</span>
-<span class="co">#&gt; 1          10003 立石寺（山寺）          06       06201 神社・寺院・教会</span>
-<span class="co">#&gt; 2          10004   出羽三山神社          06       06203 神社・寺院・教会</span>
+<span class="co">#&gt;   P12_001        P12_002 P12_003 P12_004          P12_005</span>
+<span class="co">#&gt;     &lt;int&gt;          &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt;</span>
+<span class="co">#&gt; 1   10003 立石寺（山寺）      06   06201 神社・寺院・教会</span>
+<span class="co">#&gt; 2   10004   出羽三山神社      06   06203 神社・寺院・教会</span>
 <span class="co">#&gt; # ... with 3 more variables: P12_006 &lt;chr&gt;, P12_007 &lt;int&gt;, geometry &lt;S3:</span>
 <span class="co">#&gt; #   sfc_POLYGON&gt;</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/getKSJData.html">translateKSJData</a></span>(d)
+<span class="co">#&gt; Warning in `[&lt;-.data.frame`(`*tmp*`, , cts$matched_col, value =</span>
+<span class="co">#&gt; list(structure("山形県", .Names = "06"), : replacement element 3 has 5 rows</span>
+<span class="co">#&gt; to replace 1 rows</span>
+<span class="co">#&gt; Warning in `[&lt;-.data.frame`(`*tmp*`, , cts$matched_col, value =</span>
+<span class="co">#&gt; list(structure(c("山形県", : replacement element 3 has 5 rows to replace 2</span>
+<span class="co">#&gt; rows</span>
+<span class="co">#&gt; $`P12a-14_06`</span>
+<span class="co">#&gt; Simple feature collection with 10 features and 7 fields</span>
+<span class="co">#&gt; geometry type:  POINT</span>
+<span class="co">#&gt; dimension:      XY</span>
+<span class="co">#&gt; bbox:           xmin: 139.706 ymin: 37.8562 xmax: 140.5295 ymax: 39.09917</span>
+<span class="co">#&gt; epsg (SRID):    NA</span>
+<span class="co">#&gt; proj4string:    +proj=longlat +ellps=GRS80 +no_defs</span>
+<span class="co">#&gt; # A tibble: 10 x 8</span>
+<span class="co">#&gt;    観光資源_ID                   観光資源名 都道府県コード</span>
+<span class="co">#&gt;          &lt;int&gt;                        &lt;chr&gt;          &lt;chr&gt;</span>
+<span class="co">#&gt;  1       10009                       飯豊山         山形県</span>
+<span class="co">#&gt;  2       10010                       鳥海山         山形県</span>
+<span class="co">#&gt;  3       10005                         月山         山形県</span>
+<span class="co">#&gt;  4       10006                       最上川         山形県</span>
+<span class="co">#&gt;  5       10007                   蔵王の樹氷         山形県</span>
+<span class="co">#&gt;  6       10003               立石寺（山寺）         山形県</span>
+<span class="co">#&gt;  7       10004                 出羽三山神社         山形県</span>
+<span class="co">#&gt;  8       10002                   花笠まつり         山形県</span>
+<span class="co">#&gt;  9       10008 銀山温泉の旅館街と共同浴場群         山形県</span>
+<span class="co">#&gt; 10       10001 蔵王温泉の酸性泉と源泉浴場群         山形県</span>
+<span class="co">#&gt; # ... with 5 more variables: 行政コード &lt;chr&gt;, 種別名称 &lt;chr&gt;,</span>
+<span class="co">#&gt; #   所在地住所 &lt;chr&gt;, 観光資源分類コード &lt;chr&gt;, geometry &lt;S3: sfc_POINT&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`P12b-14_06`</span>
+<span class="co">#&gt; Simple feature collection with 1 feature and 7 fields</span>
+<span class="co">#&gt; geometry type:  LINESTRING</span>
+<span class="co">#&gt; dimension:      XY</span>
+<span class="co">#&gt; bbox:           xmin: 139.808 ymin: 38.72274 xmax: 140.1937 ymax: 38.92187</span>
+<span class="co">#&gt; epsg (SRID):    NA</span>
+<span class="co">#&gt; proj4string:    +proj=longlat +ellps=GRS80 +no_defs</span>
+<span class="co">#&gt; # A tibble: 1 x 8</span>
+<span class="co">#&gt;   観光資源_ID 観光資源名 都道府県コード 行政コード   種別名称</span>
+<span class="co">#&gt;         &lt;int&gt;      &lt;chr&gt;          &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;</span>
+<span class="co">#&gt; 1       10006     最上川         山形県       &lt;NA&gt; 河川・峡谷</span>
+<span class="co">#&gt; # ... with 3 more variables: 所在地住所 &lt;chr&gt;, 観光資源分類コード &lt;chr&gt;,</span>
+<span class="co">#&gt; #   geometry &lt;S3: sfc_LINESTRING&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`P12c-14_06`</span>
+<span class="co">#&gt; Simple feature collection with 2 features and 7 fields</span>
+<span class="co">#&gt; geometry type:  POLYGON</span>
+<span class="co">#&gt; dimension:      XY</span>
+<span class="co">#&gt; bbox:           xmin: 139.9805 ymin: 38.31176 xmax: 140.4351 ymax: 38.70308</span>
+<span class="co">#&gt; epsg (SRID):    NA</span>
+<span class="co">#&gt; proj4string:    +proj=longlat +ellps=GRS80 +no_defs</span>
+<span class="co">#&gt; # A tibble: 2 x 8</span>
+<span class="co">#&gt;   観光資源_ID     観光資源名 都道府県コード   行政コード         種別名称</span>
+<span class="co">#&gt;         &lt;int&gt;          &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;            &lt;chr&gt;</span>
+<span class="co">#&gt; 1       10003 立石寺（山寺）         山形県 山形県山形市 神社・寺院・教会</span>
+<span class="co">#&gt; 2       10004   出羽三山神社         山形県 山形県鶴岡市 神社・寺院・教会</span>
+<span class="co">#&gt; # ... with 3 more variables: 所在地住所 &lt;chr&gt;, 観光資源分類コード &lt;chr&gt;,</span>
+<span class="co">#&gt; #   geometry &lt;S3: sfc_POLYGON&gt;</span></code></pre></div>
 </div>
 </div>
 </div>
@@ -213,7 +273,7 @@
 </ul>
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/yutannihilation/kokudosuuchi"><img src="https://travis-ci.org/yutannihilation/kokudosuuchi.svg?branch=master" alt="Travis-CI Build Status"></a></li>
+<li><a href="https://circleci.com/gh/yutannihilation/kokudosuuchi"><img src="https://circleci.com/gh/yutannihilation/kokudosuuchi.svg?style=svg" alt="CircleCI"></a></li>
 <li><a href="https://ci.appveyor.com/project/yutannihilation/kokudosuuchi"><img src="https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
 <li><a href="https://cran.r-project.org/package=kokudosuuchi"><img src="http://www.r-pkg.org/badges/version/kokudosuuchi" alt="CRAN_Status_Badge"></a></li>
 </ul>

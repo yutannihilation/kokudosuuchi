@@ -74,6 +74,12 @@ getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
 ### 国土数値情報のGISデータ取得
 
 ```{r}
-options(max.print = 20)
-getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip")
+d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip",
+                cache_dir = "cached_zip")
+
+d
+```
+
+```{r}
+translateKSJData(d)
 ```

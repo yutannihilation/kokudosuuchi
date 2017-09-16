@@ -3,20 +3,25 @@
 \docType{data}
 \name{KSJMetadata_code}
 \alias{KSJMetadata_code}
-\alias{KSJShapeProperty}
+\alias{KSJMetadata_code_correspondence_tables}
+\alias{KSJMetadata_code_year_cols}
 \title{Corresponding Table Of Shapefile Properties}
 \format{A data.frame with code and names}
 \source{
 \url{http://nlftp.mlit.go.jp/ksj/index.html}, \url{http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls}
 
-\url{http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls}
+\url{http://nlftp.mlit.go.jp/ksj/index.html}
+
+\url{http://nlftp.mlit.go.jp/ksj/index.html}
 }
 \usage{
 KSJMetadata_code
 
-KSJShapeProperty
+KSJMetadata_code_correspondence_tables
+
+KSJMetadata_code_year_cols
 }
 \description{
-This data is deprecated. Use \link{KSJMetadata_code} instead.
+Corresponding Table Of Shapefile Properties
 }
 \keyword{datasets}

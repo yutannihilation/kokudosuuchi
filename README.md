@@ -147,12 +147,6 @@ d
 
 ``` r
 translateKSJData(d)
-#> Warning in `[<-.data.frame`(`*tmp*`, , cts$matched_col, value =
-#> list(structure("山形県", .Names = "06"), : replacement element 3 has 5 rows
-#> to replace 1 rows
-#> Warning in `[<-.data.frame`(`*tmp*`, , cts$matched_col, value =
-#> list(structure(c("山形県", : replacement element 3 has 5 rows to replace 2
-#> rows
 #> $`P12a-14_06`
 #> Simple feature collection with 10 features and 7 fields
 #> geometry type:  POINT

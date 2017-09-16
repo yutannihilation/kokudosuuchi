@@ -135,6 +135,7 @@
 <a href="#gis" class="anchor"></a>国土数値情報のGISデータ取得</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/getKSJData.html">getKSJData</a></span>(<span class="st">"http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip"</span>,
                 <span class="dt">cache_dir =</span> <span class="st">"cached_zip"</span>)
+<span class="co">#&gt; Using the cached zip file: cached_zip/P12-14_06_GML.zip</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Details about this data can be found at http://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P12-v2_2.html</span>
 
@@ -191,12 +192,6 @@ d
 <span class="co">#&gt; # ... with 3 more variables: P12_006 &lt;chr&gt;, P12_007 &lt;int&gt;, geometry &lt;S3:</span>
 <span class="co">#&gt; #   sfc_POLYGON&gt;</span></code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/getKSJData.html">translateKSJData</a></span>(d)
-<span class="co">#&gt; Warning in `[&lt;-.data.frame`(`*tmp*`, , cts$matched_col, value =</span>
-<span class="co">#&gt; list(structure("山形県", .Names = "06"), : replacement element 3 has 5 rows</span>
-<span class="co">#&gt; to replace 1 rows</span>
-<span class="co">#&gt; Warning in `[&lt;-.data.frame`(`*tmp*`, , cts$matched_col, value =</span>
-<span class="co">#&gt; list(structure(c("山形県", : replacement element 3 has 5 rows to replace 2</span>
-<span class="co">#&gt; rows</span>
 <span class="co">#&gt; $`P12a-14_06`</span>
 <span class="co">#&gt; Simple feature collection with 10 features and 7 fields</span>
 <span class="co">#&gt; geometry type:  POINT</span>

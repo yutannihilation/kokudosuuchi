@@ -17,8 +17,11 @@ translateKSJData_one <- function(x, quiet = TRUE) {
   # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
   make_sure_data_is_loaded("KSJMetadata_code")
   make_sure_data_is_loaded("KSJMetadata_code_year_cols")
+  make_sure_data_is_loaded("KSJMetadata_code_correspondence_tables")
 
   colnames_orig <- colnames(x)
+
+  # Get candidates for the colnames -------------------------
 
   code_filtered <- dplyr::filter(KSJMetadata_code, .data$code %in% !! colnames_orig)
 
@@ -49,7 +52,7 @@ translateKSJData_one <- function(x, quiet = TRUE) {
     # the set of colnames that has most rows are most probable.
     # TODO: for some cases like L03-a, this assumption fails.
     nrows <- purrr::map_int(code_with_all_colnames, nrow)
-    index_most_probable_colnames <- nrows == max(nrows)
+    index_most_probable_colnames <- which(nrows == max(nrows))
     if (length(index_most_probable_colnames) > 2) {
       # abort if there are more-than-one candidates
       if (!quiet) warning("Cannot determine which colnames to use for the codes")
@@ -58,6 +61,24 @@ translateKSJData_one <- function(x, quiet = TRUE) {
 
     code_filtered <- code_with_all_colnames[[index_most_probable_colnames]]
   }
+
+  # Translate data if there are correspondence tables -----------------------------
+  cts <- code_filtered %>%
+    dplyr::filter(!is.na(.data$correspondence_table)) %>%
+    dplyr::mutate(matched_col = dplyr::coalesce(match(.data$code, !! colnames_orig),
+                                                match(.data$name, !! colnames_orig))) %>%
+    dplyr::filter(!is.na(.data$matched_col))
+
+  if (nrow(cts) > 0) {
+    x[, cts$matched_col] <- purrr::pmap(cts,
+                                       function(matched_col, correspondence_table, ...) {
+                                          data <- x[[matched_col]]
+                                          table <- KSJMetadata_code_correspondence_tables[[correspondence_table]]
+                                          table[data]
+                                        })
+  }
+
+  # Translate colnames -------------------------
 
   KSJ_code_to_name <- purrr::set_names(code_filtered$name, code_filtered$code)
 
@@ -83,4 +104,8 @@ translate_year_cols <- function(x) {
   purrr::reduce(purrr::transpose(KSJMetadata_code_year_cols),
                 ~ stringr::str_replace(.x, .y$pattern, .y$replacement),
                 .init = x)
+}
+
+translate_one_col <- function(x, ...) {
+
 }

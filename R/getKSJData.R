@@ -52,7 +52,7 @@ getKSJData <- function(zip_file,
     copy_files_recursively(zip_file, temp_data_dir)
   }
 
-  shp_files <- list.files(temp_data_dir, pattern = ".*\\.shp", recursive = TRUE, full.names = TRUE)
+  shp_files <- list.files(temp_data_dir, pattern = ".*\\.shp$", recursive = TRUE, full.names = TRUE)
 
   # set names to make each layer named
   shp_files <- rlang::set_names(shp_files,

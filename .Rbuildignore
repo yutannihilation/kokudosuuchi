@@ -11,3 +11,4 @@
 ^docs$
 ^cached_zip$
 ^downloaded_html$
+^urls\.csv$

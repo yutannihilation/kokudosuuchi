@@ -19,9 +19,9 @@ This is valid only when \code{areaType} is \code{3}.}
 
 \item{fiscalyear}{Fiscal year. (e.g. \code{"2014"}, \code{"2014,2015"}, \code{"2005-2015"}, \code{"2000,2005-2015"})}
 
-\item{appId}{Application ID. Currently, no per-user appId is proveded. \code{"ksjapibeta1"} is the only choice.}
+\item{appId}{Application ID. Currently, no per-user appId is provided. \code{"ksjapibeta1"} is the only choice.}
 
-\item{lang}{Language. Currently \code{J} (Japansese) is the only choice.}
+\item{lang}{Language. Currently \code{J} (Japanese) is the only choice.}
 
 \item{dataformat}{Data format. Currently \code{1} (JPGIS2.1) is the only choice.}
 }

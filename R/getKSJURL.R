@@ -8,8 +8,8 @@
 #' @param meshCode Mesh code. This is valid only when \code{areaType} is \code{4}.
 #' @param metroArea Metro-area code. This is valid only when \code{areaType} is \code{2}.
 #' @param fiscalyear Fiscal year. (e.g. \code{"2014"}, \code{"2014,2015"}, \code{"2005-2015"}, \code{"2000,2005-2015"})
-#' @param appId Application ID. Currently, no per-user appId is proveded. \code{"ksjapibeta1"} is the only choice.
-#' @param lang Language. Currently \code{J} (Japansese) is the only choice.
+#' @param appId Application ID. Currently, no per-user appId is provided. \code{"ksjapibeta1"} is the only choice.
+#' @param lang Language. Currently \code{J} (Japanese) is the only choice.
 #' @param dataformat Data format. Currently \code{1} (JPGIS2.1) is the only choice.
 #'
 #' @examples

@@ -2,8 +2,8 @@
 #'
 #' Get summary information via Kokudo Suuchi API.
 #'
-#' @param appId Application ID. Currently, no per-user appId is proveded. \code{"ksjapibeta1"} is the only choice.
-#' @param lang Language. Currently \code{J} (Japansese) is the only choice.
+#' @param appId Application ID. Currently, no per-user appId is provided. \code{"ksjapibeta1"} is the only choice.
+#' @param lang Language. Currently \code{J} (Japanese) is the only choice.
 #' @param dataformat Data format. Currently \code{1} (JPGIS2.1) is the only choice.
 #'
 #' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}

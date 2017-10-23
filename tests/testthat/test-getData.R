@@ -1,6 +1,7 @@
 context("getData")
 
 cache_dir <- "../../cached_zip"
+if (!file.exists(cache_dir)) cache_dir <- tempfile()
 
 test_that("getKSJData works", {
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/L01/L01-01/L01-01_36_GML.zip",

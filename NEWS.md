@@ -1,3 +1,6 @@
+# kokudosuuchi 0.4.0.9000
+
+
 # kokudosuuchi 0.4.0
 
 * Added a `NEWS.md` file to track changes to the package.

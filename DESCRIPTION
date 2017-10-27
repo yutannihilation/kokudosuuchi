@@ -1,8 +1,8 @@
 Package: kokudosuuchi
 Type: Package
 Title: R Interface to 'Kokudo Suuchi' API
-Version: 0.4.0.9000
-Date: 2017-10-04
+Version: 0.4.1.1
+Date: 2017-10-27
 Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
 Description: Provides an interface to 'Kokudo Suuchi' API, the GIS data service of the Japanese government.
     See <http://nlftp.mlit.go.jp/ksj-e/index.html> for more information.
@@ -13,7 +13,6 @@ Depends:
     R (>= 2.10)
 Imports:
     curl,
-    digest,
     dplyr,
     glue,
     httr,

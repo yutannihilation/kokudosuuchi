@@ -4,6 +4,8 @@ cache_dir <- "../../cached_zip"
 if (!file.exists(cache_dir)) cache_dir <- tempfile()
 
 test_that("getKSJData works", {
+  skip_on_cran()
+
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/L01/L01-01/L01-01_36_GML.zip",
                   cache_dir = cache_dir)
 
@@ -22,6 +24,8 @@ verify_p12_14_06_gml <- function(d) {
 }
 
 test_that("getKSJData with UTF-8 layers works", {
+  skip_on_cran()
+
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip",
                   cache_dir = cache_dir)
 
@@ -29,6 +33,8 @@ test_that("getKSJData with UTF-8 layers works", {
 })
 
 test_that("getKSJData with UTF-8 layers with cached one works", {
+  skip_on_cran()
+
   expect_message({d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip",
                                   cache_dir = cache_dir)},
                  "Using the cached zip file")
@@ -41,6 +47,8 @@ zip_file <- file.path(cache_dir, basename(zip_url))
 curl::curl_download(zip_url, destfile = zip_file)
 
 test_that("getKSJData with UTF-8 layers with a zip file works", {
+  skip_on_cran()
+
   d <- getKSJData(zip_file)
 
   verify_p12_14_06_gml(d)
@@ -50,6 +58,8 @@ data_dir <- tempfile()
 utils::unzip(zip_file, exdir = data_dir)
 
 test_that("getKSJData with UTF-8 layers with a directory works", {
+  skip_on_cran()
+
   d <- getKSJData(data_dir)
 
   verify_p12_14_06_gml(d)
@@ -60,6 +70,8 @@ dir.create(data_dir2)
 file.rename(data_dir, file.path(data_dir2, "nested"))
 
 test_that("getKSJData with UTF-8 layers with a nested directory works", {
+  skip_on_cran()
+
   d <- getKSJData(data_dir2)
 
   verify_p12_14_06_gml(d)
@@ -67,7 +79,8 @@ test_that("getKSJData with UTF-8 layers with a nested directory works", {
 
 
 test_that("getKSJData randomly works", {
-  skip_on_travis()
+  if (identical(Sys.getenv("CIRCLECI"), "true")) skip("On CircleCI")
+  skip_on_appveyor()
   skip_on_cran()
 
   ksj_urls <- getKSJURL(identifier = sample(c("A11", "A15", "A16", "A17", "A19", "A19s", "A24", "A30a5",

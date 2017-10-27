@@ -36,5 +36,7 @@ result <-
   )
 
 test_that("multiplication works", {
+  skip_on_cran()
+
   expect_equal(getKSJURL("W05", prefCode = c(27, 28)), result)
 })

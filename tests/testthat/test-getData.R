@@ -1,10 +1,13 @@
 context("getData")
 
 cache_dir <- "../../cached_zip"
-if (!file.exists(cache_dir)) cache_dir <- tempfile()
+if (!file.exists(cache_dir)) {
+  cache_dir <- tempfile()
+  # dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
+}
 
 test_that("getKSJData works", {
-  skip_on_cran()
+  # skip_on_cran()
 
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/L01/L01-01/L01-01_36_GML.zip",
                   cache_dir = cache_dir)

@@ -7,7 +7,7 @@ if (!file.exists(cache_dir)) {
 }
 
 test_that("getKSJData works", {
-  # skip_on_cran()
+  skip_on_cran()
 
   d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/L01/L01-01/L01-01_36_GML.zip",
                   cache_dir = cache_dir)

@@ -1,5 +1,8 @@
 context("getData")
 
+# Since test incorpolated with real API can be unstable, just skip
+skip_on_cran()
+
 cache_dir <- "../../cached_zip"
 if (!file.exists(cache_dir)) cache_dir <- tempfile()
 
@@ -68,7 +71,6 @@ test_that("getKSJData with UTF-8 layers with a nested directory works", {
 
 test_that("getKSJData randomly works", {
   skip_on_travis()
-  skip_on_cran()
 
   ksj_urls <- getKSJURL(identifier = sample(c("A11", "A15", "A16", "A17", "A19", "A19s", "A24", "A30a5",
                                               "A35b", "A35c", "C23", "G02", "G04-a", "G04-c", "G04-d", "L01",

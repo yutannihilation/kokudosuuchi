@@ -1,5 +1,8 @@
 context("API")
 
+# Since test incorpolated with real API can be unstable, just skip
+skip_on_cran()
+
 result <-
   structure(
     list(

@@ -31,6 +31,8 @@ defaults: &defaults
     - run:
         name: Check package
         command: R CMD check "${PKG_TARBALL}" --as-cran --no-manual
+        environment:
+          NOT_CRAN: true
 
     - run:
         name: Check failures

@@ -1,5 +1,6 @@
-# kokudosuuchi 0.4.0.9000
+# kokudosuuchi 0.4.1
 
+* Fix test errors on CRAN
 
 # kokudosuuchi 0.4.0
 

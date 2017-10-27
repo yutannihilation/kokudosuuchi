@@ -5,8 +5,6 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 notes
+0 errors | 0 warnings | 1 note
 
-## Resubmission
-
-This release adds some functionalities and metadata, and refactors internals.
+* This is a maintenance release to fix test errors on CRAN.

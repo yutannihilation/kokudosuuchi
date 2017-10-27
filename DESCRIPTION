@@ -1,7 +1,7 @@
 Package: kokudosuuchi
 Type: Package
 Title: R Interface to 'Kokudo Suuchi' API
-Version: 0.4.1.1
+Version: 0.4.1
 Date: 2017-10-27
 Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
 Description: Provides an interface to 'Kokudo Suuchi' API, the GIS data service of the Japanese government.

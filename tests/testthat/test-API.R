@@ -1,8 +1,5 @@
 context("API")
 
-# Since test incorpolated with real API can be unstable, just skip
-skip_on_cran()
-
 result <-
   structure(
     list(
@@ -39,5 +36,7 @@ result <-
   )
 
 test_that("multiplication works", {
+  skip_on_cran()
+
   expect_equal(getKSJURL("W05", prefCode = c(27, 28)), result)
 })

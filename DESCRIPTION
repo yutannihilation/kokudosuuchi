@@ -23,7 +23,7 @@ Imports:
     stringr,
     tibble,
     tools,
-    xml2
+    xml2 (>= 1.2.0)
 Suggests:
     readr,
     testthat

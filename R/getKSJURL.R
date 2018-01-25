@@ -37,7 +37,8 @@ getKSJURL <- function(identifier, prefCode = NULL, meshCode = NULL, metroArea = 
                    query = purrr::compact(query))
 
   res_text <- httr::content(res, as = "text", encoding = "UTF-8")
-  res_list <- xml2::as_list(xml2::read_xml(res_text))
+  # xml2 >= 1.2.0 includes the root node
+  res_list <- xml2::as_list(xml2::read_xml(res_text))$KSJ_URL_INF
 
   # Error
   if(res_list$RESULT$STATUS[[1]] %in% c("100", "200")){

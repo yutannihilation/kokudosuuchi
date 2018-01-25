@@ -19,7 +19,8 @@ getKSJSummary <- function(appId = "ksjapibeta1", lang = "J", dataformat = 1) {
             query = purrr::compact(query))
 
   res_text <- httr::content(res, as = "text", encoding = "UTF-8")
-  res_list <- xml2::as_list(xml2::read_xml(res_text))
+  # xml2 >= 1.2.0 includes the root node
+  res_list <- xml2::as_list(xml2::read_xml(res_text))$KSJ_SUMMARY_INF
 
   # Error
   if(res_list$RESULT$STATUS[[1]] %in% c("100", "200")){

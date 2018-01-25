@@ -1,4 +1,6 @@
-# kokudosuuchi 0.4.1.9000
+# kokudosuuchi 0.4.2
+
+* Fix errors due to the breaking change introduced in xml2 v1.2.0 (#6)
 
 # kokudosuuchi 0.4.1
 

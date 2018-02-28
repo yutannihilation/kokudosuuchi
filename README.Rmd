@@ -18,7 +18,7 @@ kokudosuuchi
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&svg=true)](https://ci.appveyor.com/project/yutannihilation/kokudosuuchi)
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
 
-__(Sorry, English version of README is not availavle for now.)__
+__(Sorry, English version of README is not available for now.)__
 
 国土数値情報ダウンロードサービス Web APIの情報を取得するRパッケージです。
 

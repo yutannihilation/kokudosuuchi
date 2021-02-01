@@ -1,6 +1,4 @@
-#' Kokudo Suuchi Joho - Download Japanese National Land Numerical Information
-#'
-#' Use the Kokudo Suuchi Joho API
+#' Utilities for 'Kokudo Suuchi'
 #'
 #' @docType package
 #' @name kokudosuuchi

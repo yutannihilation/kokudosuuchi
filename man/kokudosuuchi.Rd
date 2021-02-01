@@ -3,11 +3,7 @@
 \docType{package}
 \name{kokudosuuchi}
 \alias{kokudosuuchi}
-\alias{kokudosuuchi-package}
-\title{Kokudo Suuchi Joho - Download Japanese National Land Numerical Information}
-\description{
-Use the Kokudo Suuchi Joho API
-}
+\title{Utilities for 'Kokudo Suuchi'}
 \seealso{
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }

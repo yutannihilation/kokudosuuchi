@@ -27,14 +27,10 @@
 getKSJData <- function(zip_file,
                        cache_dir = tempdir(),
                        encoding = "CP932") {
+  .Deprecated("read_KSJ_Data")
 
   if (!rlang::is_scalar_character(zip_file)) {
     stop("zip_file must be eighter a character of URL, path to file, or path to directory!")
-  }
-
-  # if zip_file is a URL, download it
-  if (is_url(zip_file)) {
-    zip_file <- download_KSJ_zip(zip_file, cache_dir)
   }
 
   if (!file.exists(zip_file)) {
@@ -69,27 +65,6 @@ getKSJData <- function(zip_file,
   suggest_useful_links(basename(shp_files))
 
   result
-}
-
-
-
-download_KSJ_zip <- function(zip_url, cache_dir) {
-  # if it doesn't esist, create it.
-  dir.create(cache_dir, showWarnings = FALSE, recursive = TRUE)
-  # if it is not directory, something is wrong...
-  if (!is_dir(cache_dir)) stop(glue::glue("{cache_dir} is not directory!"))
-
-  zip_file <- file.path(cache_dir, basename(zip_url))
-
-  if (file.exists(zip_file)) {
-    message(glue::glue("Using the cached zip file: {zip_file}"))
-  } else {
-    tmp_zip_file <- tempfile(fileext = ".zip")
-    curl::curl_download(zip_url, destfile = tmp_zip_file)
-    file.rename(tmp_zip_file, zip_file)
-  }
-
-  zip_file
 }
 
 

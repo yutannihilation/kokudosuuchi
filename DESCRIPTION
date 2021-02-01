@@ -1,32 +1,26 @@
 Package: kokudosuuchi
 Type: Package
-Title: R Interface to 'Kokudo Suuchi' API
-Version: 0.4.2.9000
-Date: 2018-01-26
+Title: Utilities for 'Kokudo Suuchi'
+Version: 0.9.9.9999
+Date: 2021-02-01
 Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
-Description: Provides an interface to 'Kokudo Suuchi' API, the GIS data service of the Japanese government.
-    See <http://nlftp.mlit.go.jp/ksj-e/index.html> for more information.
+Description: Provides utilities for 'Kokudo Suuchi', the GIS data service of the Japanese government.
+    See <https://nlftp.mlit.go.jp/index.html> for more information.
 URL: https://github.com/yutannihilation/kokudosuuchi
 BugReports: https://github.com/yutannihilation/kokudosuuchi/issues
 License: MIT + file LICENSE
 Depends:
     R (>= 2.10)
 Imports:
-    curl,
-    dplyr,
-    glue,
-    httr,
-    purrr (>= 0.2),
-    rlang,
-    sf,
     shiny,
-    stringr,
-    tibble,
-    tools,
-    xml2 (>= 1.2.0)
+    rlang,
+    glue,
+    purrr,
+    sf,
+    stringr
 Suggests:
     readr,
     testthat
 LazyData: TRUE
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 7.1.1
 Encoding: UTF-8

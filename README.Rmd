@@ -13,37 +13,25 @@ knitr::opts_chunk$set(
 ```
 kokudosuuchi
 ============
-	
-[![CircleCI](https://circleci.com/gh/yutannihilation/kokudosuuchi.svg?style=svg)](https://circleci.com/gh/yutannihilation/kokudosuuchi)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/yutannihilation/kokudosuuchi?branch=master&svg=true)](https://ci.appveyor.com/project/yutannihilation/kokudosuuchi)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/kokudosuuchi)](https://cran.r-project.org/package=kokudosuuchi)
 
 __(Sorry, English version of README is not available for now.)__
 
-国土数値情報ダウンロードサービス Web APIの情報を取得するRパッケージです。
-
-
-## 国土数値情報ダウンロードサービス Web APIとは
-
-2014/12から国土交通省国土政策局が提供しているGISで利用可能な国土数値情報を取得できるAPIです。本パッケージはバージョン1.0bに対応しています。
-
-公式ページ：http://nlftp.mlit.go.jp/ksj/api/about_api.html
+国土数値情報ダウンロードサービスからダウンロードしたデータを読み込むRパッケージです。
 
 
 ## 利用上の注意
 
-APIの利用やAPIで得られるURL先のGISデータの利用にあたっては、国土数値情報ダウンロードサービスの利用約款、及び、同Web APIの利用規約をご確認の上ご利用ください。
+APIの利用やAPIで得られるURL先のGISデータの利用にあたっては、国土数値情報ダウンロードサービスの利用約款の利用規約をご確認の上ご利用ください。
 
-* http://nlftp.mlit.go.jp/ksj/other/yakkan.html
-* http://nlftp.mlit.go.jp/ksj/api/about_api.html
+* <https://nlftp.mlit.go.jp/ksj/other/agreement.html>
 
 
 ## インストール方法
 
-kokudosuuchiはCRANからインストールできます。
+kokudosuuchiはCRANからインストールできますが、国土数値情報APIが廃止される以前のものなのでおすすめしません。
 
 ```{r, eval=FALSE}
-install.packages("kokudosuuchi")
+# install.packages("kokudosuuchi")
 ```
 
 開発版をインストールするには`devtools::install_github()`でインストールしてください。
@@ -54,32 +42,4 @@ devtools::install_github("yutannihilation/kokudosuuchi")
 
 ## 使用方法
 
-詳しいパラメータの意味は[公式ドキュメント](http://nlftp.mlit.go.jp/ksj/api/specification_api_ksj.pdf)（PDF）をご参照ください
-
-### 国土数値情報の概要情報取得
-
-```{r}
-library(kokudosuuchi)
-
-getKSJSummary()
-```
-
-### 国土数値情報のURL情報取得
-
-```{r}
-# prefCodeが3で、年が2000-2010の河川のデータ
-getKSJURL("W05", prefCode = 3, fiscalyear = 2000:2010)
-```
-
-### 国土数値情報のGISデータ取得
-
-```{r}
-d <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/P12/P12-14/P12-14_06_GML.zip",
-                cache_dir = "cached_zip")
-
-d
-```
-
-```{r}
-translateKSJData(d)
-```
+（開発中）

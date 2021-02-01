@@ -4,7 +4,9 @@
 \name{KSJMetadata_description_url}
 \alias{KSJMetadata_description_url}
 \title{Corresponding Table Of Identifier Descriptions}
-\format{A data.frame with identifier and URLs of the description pages}
+\format{
+A data.frame with identifier and URLs of the description pages
+}
 \source{
 \url{http://nlftp.mlit.go.jp/ksj/index.html}
 }

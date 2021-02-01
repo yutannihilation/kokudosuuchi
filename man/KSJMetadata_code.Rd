@@ -6,7 +6,13 @@
 \alias{KSJMetadata_code_correspondence_tables}
 \alias{KSJMetadata_code_year_cols}
 \title{Corresponding Table Of Shapefile Properties}
-\format{A data.frame with code and names}
+\format{
+A data.frame with code and names
+
+A list of named character vectors to translate various codes.
+
+A data.frame with regex to extract years.
+}
 \source{
 \url{http://nlftp.mlit.go.jp/ksj/index.html}, \url{http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls}
 

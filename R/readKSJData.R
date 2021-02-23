@@ -123,5 +123,11 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
 extract_KSJ_id <- function(x) {
   x <- stringr::str_extract(x, "^(KS-META-)?[A-Z][0-9]{2}[a-z]?[0-9]?(-[a-z])?(-[cu])?")
   x <- stringr::str_remove(x, "^KS-META-")
+
+  # A19s-a is a variant of A19s
+  if (identical(x, "A19s-a")) {
+    x <- "A19s"
+  }
+
   x
 }

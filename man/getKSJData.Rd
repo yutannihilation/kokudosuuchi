@@ -14,22 +14,6 @@ getKSJData(zip_file, cache_dir = tempdir(), encoding = "CP932")
 \item{encoding}{Encoding of the data.}
 }
 \description{
-\code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function
-does not use API; directly download ZIP file and load the data by \link[sf:st_read]{read_sf}.
-\code{translateKSJColnames} translates the column names of data (e.g. W05_001) into human readable ones.
-By default, this is automatically done in \code{getKSJData}.
+\code{getKSJData()} is deprecated.
 }
-\examples{
-\dontrun{
-l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip")
-names(l)
-str(l, max.level = 1)
-
-l_translated <- translateKSJData(l)
-names(l)
-}
-
-}
-\seealso{
-\url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
-}
+\keyword{internal}

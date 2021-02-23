@@ -17,3 +17,4 @@
 ^_pkgdown\.yml$
 ^pkgdown$
 ^tests/testthat/zip$
+^CRAN-RELEASE$

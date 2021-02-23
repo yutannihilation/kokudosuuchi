@@ -1,108 +1,226 @@
+#' `translateKSJData()` translates colnames and codelists into human-readable
+#' labels.
+#'
 #' @rdname readKSJData
-#' @param x Object of class [sf][sf::sf]
-#' @param quiet If `TRUE`, suppress messages.
+#' @param x
+#'   A list of [sf][sf::sf] objects.
+#' @param id
+#'   An ID of the dataset (e.g. `A03`). This can be automatically detected if `x`
+#'   is loaded by [`readKSJData()`].
+#' @param variant
+#'   A type of variant in case the translation cannot be determined only by `id`.
+#' @param quiet
+#'   If `TRUE`, suppress messages.
 #' @export
-translateKSJData <- function(x, quiet = TRUE) {
-  if (inherits(x, "sf")) {
-    translateKSJData_one(x, quiet)
-  } else {
-    purrr::map(x,
-               translateKSJData_one,
-               quiet = quiet)
-
-  }
-}
-
-translateKSJData_one <- function(x, quiet = TRUE) {
-  # when called by :: and package is not loaded to namespace, we have to make sure the data is loaded
-  make_sure_data_is_loaded("KSJMetadata_code")
-  make_sure_data_is_loaded("KSJMetadata_code_year_cols")
-  make_sure_data_is_loaded("KSJMetadata_code_correspondence_tables")
-
-  colnames_orig <- colnames(x)
-
-  # Get candidates for the colnames -------------------------
-
-  code_filtered <- KSJMetadata_code %>%
-    dplyr::group_by(.data$identifier, .data$item_id) %>%
-    dplyr::filter(any(.data$code %in% !! colnames_orig)) %>%
-    dplyr::ungroup() %>%
-    # TODO: remove this workaround when yutannihilation/kokudosuuchiUtils#29 is fixed
-    dplyr::distinct()
-
-  if (nrow(code_filtered) == 0L) {
-    if (!quiet) warning("No corresponding colnames are found for the codes.")
-    return(x)
+translateKSJData <- function(x, id = NULL, variant = NULL, quiet = TRUE,
+                             translate_colnames = TRUE, translate_codelist = TRUE) {
+  id <- id %||% attr(x, "id")
+  if (is.null(id)) {
+    abort("`id` must be supplied either as `id` argument or as an attribute of `x`")
   }
 
-  # try to choose the right one from the number of matched colnames
-  if (any(duplicated(code_filtered$code))) {
-    if (any(is.na(code_filtered$item_id)) ||
-        length(unique(code_filtered$item_id)) == 1) {
-      # abort if code_filtered cannot be split
-      if (!quiet) warning("Cannot determine which colnames to use for the codes")
-      return(x)
-    }
+  variant <- variant %||% attr(x, "variant")
 
-    code_split <- split(code_filtered, code_filtered$item_id)
+  matching_fun <- get0(paste0("match_", id), ifnotfound = NULL)
 
-    # More matches and less nrows are better.
-    # TODO: for some cases like L03-a, this assumption fails.
-    matches <- purrr::map_int(code_split, ~ sum(.$code %in% colnames_orig))
-    code_most_matches <- code_split[matches == max(matches)]
-
-    nrows <- purrr::map_int(code_most_matches, nrow)
-    code_least_nrows <- code_most_matches[nrows == min(nrows)]
-
-    if (length(code_least_nrows) > 1) {
-      # abort if there are more-than-one candidates
-      if (!quiet) warning("Cannot determine which colnames to use for the codes")
-      return(x)
-    }
-
-    code_filtered <- code_least_nrows[[1]]
+  if (is.null(matching_fun)) {
+    matching_fun <- switch (.matching_types[id],
+                            positional = match_by_position,
+                            exact      = match_by_name
+    )
   }
 
-  # Translate data if there are correspondence tables -----------------------------
-  cts <- code_filtered %>%
-    dplyr::filter(!is.na(.data$correspondence_table)) %>%
-    dplyr::mutate(matched_col = dplyr::coalesce(match(.data$code, !! colnames_orig),
-                                                match(.data$name, !! colnames_orig))) %>%
-    dplyr::filter(!is.na(.data$matched_col))
-
-  if (nrow(cts) > 0) {
-    x[, cts$matched_col] <- purrr::pmap(cts,
-                                       function(matched_col, correspondence_table, ...) {
-                                          data <- as.character(x[[matched_col]])
-                                          table <- KSJMetadata_code_correspondence_tables[[correspondence_table]]
-                                          table[data]
-                                        })
+  if (is.null(matching_fun)) {
+    abort("Not implemented")
   }
 
-  # Translate colnames -------------------------
+  x <- lapply(x, matching_fun, id = id, variant = variant, translate_codelist = translate_codelist)
 
-  KSJ_code_to_name <- purrr::set_names(code_filtered$name, code_filtered$code)
-
-  # some column names cannot be converted, so fill it with the original name
-  colnames_readable_not_tidy <- dplyr::coalesce(KSJ_code_to_name[colnames_orig], colnames_orig)
-  # TODO: some codes share the same name (e.g. P12_003 and P12_004)
-  colnames_readable <- tibble::tidy_names(colnames_readable_not_tidy, quiet = TRUE)
-
-  if (!quiet) {
-    message("The colnames are translated as bellow:")
-    message(paste(colnames_orig, colnames_readable, sep = " => ", collapse = "\n"))
-  }
-
-  # colnames like A22_012000 can be translated into names like "foo 2000 year"
-  colnames_readable_w_years <- translate_year_cols(colnames_readable)
-
-  colnames(x) <- colnames_readable_w_years
   x
 }
 
+ok_with_no_translation <- list(
+  A10 = c("OBJECTID", "Shape_Leng", "Shape_Area"),
+  A11 = c("OBJECTID", "Shape_Leng", "Shape_Area"),
+  A12 = c("OBJECTID", "Shape_Leng", "Shape_Area"),
+  A13 = c("OBJECTID", "Shape_Leng", "Shape_Area", "ET_ID", "ET_Source"),
+  A15 = c("ORIG_FID"),
+  # unexpected columns...
+  A19 = c("A19_010", "A19_011", "A19_012", "A19_013"),
+  A19s = c("LINK"),
+  A37 = c("A37_330002"),
+  P20 = c("\u30ec\u30d9\u30eb", "\u5099\u8003", "\u7def\u5ea6", "\u7d4c\u5ea6", "NO"),
+  P21 = c("\u691c\u67fbID"),
+  P22 = c("IDO", "KEIDO", "TreeCode", "PosStat", "Origna", "ORigna"),
+  W05 = c("W05_000")
+)
 
-translate_year_cols <- function(x) {
-  purrr::reduce(purrr::transpose(KSJMetadata_code_year_cols),
-                ~ stringr::str_replace(.x, .y$pattern, .y$replacement),
-                .init = x)
+assert_all_translated <- function(new_names, old_names, id) {
+  no_translated_cols <- intersect(new_names, old_names)
+  exclude_cols <- c(ok_with_no_translation[[id]], "geometry")
+  no_translated_cols <- setdiff(no_translated_cols, exclude_cols)
+
+  if (length(no_translated_cols) > 0) {
+    msg <- glue::glue(
+      "There are some columns yet to be translated: ",
+      paste(no_translated_cols, collapse = ",")
+    )
+    warn(msg)
+  }
+}
+
+translate_one_column <- function(d, pos, codelist_id) {
+  if (length(pos) != 1) {
+    rlang::abort(paste("Invalid pos:", paste(pos, collapse = ", ")))
+  }
+
+  code_orig <- code <- d[[pos]]
+  target <- colnames(d)[pos]
+
+  tbl <- .codelist[[codelist_id]]
+
+  # if the data is integer, do matching in integer so that e.g. "01" matches 1
+  if (is.numeric(code) ||
+      # Note: all(NA, na.rm = TRUE) returns TRUE, so we need to eliminate the cases when all codes are NA.
+      (any(!is.na(code)) && all(!stringr::str_detect(code, "\\D"), na.rm = TRUE))) {
+    # TODO: detect the conversion failures
+    tbl$code <- as.character(as.integer(tbl$code))
+
+    # code is also needs to be character, otherwise codelist_translation[code]
+    # will subset the data by position, not by name
+    code <- as.character(as.integer(code))
+  }
+
+  # codelist_translation <- setNames(tbl$label, tbl$code)
+
+  # Some column (e.g. A03_007) contains comma-separated list of codes
+  if (any(stringr::str_detect(code, ","), na.rm = TRUE)) {
+    label <- lapply(stringr::str_split(code, ","), function(x) {
+      x <- x[!is.na(x) & x != ""]
+
+      matched_code <- match(x, tbl$code)
+      mismatched_code <- unique(x[is.na(matched_code) & !is.na(x)])
+      if (length(mismatched_code) > 0) {
+        mismatched_code <- paste(mismatched_code, collapse = ", ")
+        msg <- glue::glue("Failed to translate these codes in {target}: {mismatched_code}")
+        # TODO: AdminAreaCd has many missing codes, because they actually disappeared
+        if (identical(codelist_id, "AdminAreaCd")) {
+          rlang::warn(msg)
+        } else {
+          rlang::abort(msg)
+        }
+      }
+
+      tbl$label[matched_code]
+    })
+  } else {
+    matched_code <- match(code, tbl$code)
+
+    mismatched_code <- unique(code_orig[is.na(matched_code) & !is.na(code_orig)])
+    if (length(mismatched_code) > 0) {
+      mismatched_code <- paste(mismatched_code, collapse = ", ")
+      msg <- glue::glue("Failed to translate these codes in {target}: {mismatched_code}")
+      if (identical(codelist_id, "AdminAreaCd")) {
+        rlang::warn(msg)
+      } else {
+        rlang::abort(msg)
+      }
+    }
+
+    label <- tbl$label[matched_code]
+  }
+
+  # overwrite the target column with human-readable labels
+  d[[pos]] <- label
+  # append the original codes right after the original position
+  nm <- rlang::sym(glue::glue("{target}_code"))
+  dplyr::mutate(d, "{{ nm }}" := code_orig, .after = all_of(pos))
+}
+
+match_by_position <- function(d, id, dc = NULL, variant = NULL, translate_codelist = TRUE, skip_check = FALSE) {
+  if (is.null(dc)) {
+    if (id %in% names(.col_info)) {
+      dc <- .col_info[[id]]
+    } else {
+      dc <- .col_info$other[.col_info$other$id == id, ]
+    }
+  }
+
+  readable_names <- dc$name
+  codelist_id <- dc$codelist_id
+
+  old_names <- colnames(d)
+
+  # exlude columns that don't need to be translated
+  old_names <- setdiff(old_names, c(ok_with_no_translation[[id]], "geometry"))
+
+  ncol <- length(old_names)
+
+  if (!isTRUE(skip_check) && length(readable_names) != ncol) {
+    msg <- glue::glue(
+      "The numbers of columns don't match. ",
+      "expected: ", nrow(dc), ", actual: ", ncol
+    )
+    rlang::abort(msg)
+
+    readable_names <- readable_names[1:ncol]
+    codelist_id <- codelist_id[1:ncol]
+  }
+
+  colnames(d)[seq_along(readable_names)] <- readable_names
+
+  pos_codelist_id <- which(!is.na(codelist_id))
+  for (i in seq_along(pos_codelist_id)) {
+    pos <- pos_codelist_id[i]
+    # Note: `+ i` is needed because the columns are shifted
+    d <- translate_one_column(d, pos + i - 1L, codelist_id[pos])
+  }
+
+  d
+}
+
+match_by_name <- function(d, id, variant = NULL, dc = NULL, translate_codelist = TRUE, skip_check = FALSE) {
+  if (is.null(dc)) {
+    if (id %in% names(.col_info)) {
+      dc <- .col_info[[id]]
+    } else {
+      dc <- .col_info$other[.col_info$other$id == id, ]
+    }
+  }
+
+  old_names <- colnames(d)
+  matched <- match(old_names, dc$code)
+
+  pos_in_data <- which(!is.na(matched))
+  pos_new <- matched[!is.na(matched)]
+
+  colnames(d)[pos_in_data] <- dc$name[pos_new]
+
+  if (!skip_check) {
+    assert_all_translated(colnames(d), old_names, id)
+  }
+
+  if (!isTRUE(translate_codelist)) {
+    return(d)
+  }
+
+  # Shrink the index to only those with non-NA codelist_id
+  idx_codelist_exists <- which(!is.na(dc$codelist_id[pos_new]))
+  pos_in_data <- pos_in_data[idx_codelist_exists]
+  pos_new <- pos_new[idx_codelist_exists]
+
+  # As new names will be inserted, the index will shift, so preserve names at this point
+  colnames_codelist <- colnames(d)[pos_in_data]
+
+  for (i in seq_along(colnames_codelist)) {
+    target <- colnames_codelist[i]
+    codelist_id <- dc$codelist_id[pos_new[i]]
+
+    # current position of the column
+    pos <- which(colnames(d) == target)
+
+    d <- translate_one_column(d, pos, codelist_id)
+  }
+
+  d
 }

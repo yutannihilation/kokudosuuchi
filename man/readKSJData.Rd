@@ -7,12 +7,15 @@
 \usage{
 readKSJData(x, encoding = "CP932")
 
-translateKSJData(x, quiet = TRUE)
+translateKSJData(x, id = NULL, variant = NULL, quiet = TRUE)
 }
 \arguments{
-\item{x}{Object of class \link[sf:sf]{sf}}
+\item{x}{A list of \link[sf:sf]{sf} objects.}
 
 \item{encoding}{Encoding of the data.}
+
+\item{id}{An ID of the dataset (e.g. \code{A03}). This can be automatically detected if \code{x}
+is loaded by \code{\link[=readKSJData]{readKSJData()}}.}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
 }

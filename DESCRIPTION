@@ -10,7 +10,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-3385-7233"))
 Description: Provides utilities for 'Kokudo Suuchi', the GIS data service of the Japanese government.
     See <https://nlftp.mlit.go.jp/index.html> for more information.
-URL: https://yutannihilation.github.io/kokudosuuchi, https://github.com/yutannihilation/kokudosuuchi
+URL: https://yutannihilation.github.io/kokudosuuchi/, https://github.com/yutannihilation/kokudosuuchi
 BugReports: https://github.com/yutannihilation/kokudosuuchi/issues
 License: MIT + file LICENSE
 Depends:

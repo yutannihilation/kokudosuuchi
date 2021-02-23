@@ -77,3 +77,5 @@ translateKSJData(d)
 
 `translateKSJData()`による変換は、機械的な処理なので間違いがある可能性もあります（もし間違いを発見されましたら、[issues](https://github.com/yutannihilation/kokudosuuchi/issues)などからお知らせいただけるとありがたいです）。
 データの詳細については必ず国土数値情報ダウンロードサービスをご確認ください。
+
+メタデータは、[kokudosuuchi-metadata](https://github.com/yutannihilation/kokudosuuchi-metadata)レポジトリで管理しています。

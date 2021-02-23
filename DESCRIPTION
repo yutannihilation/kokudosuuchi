@@ -22,7 +22,6 @@ Imports:
     stringr,
     tibble
 Suggests:
-    readr,
     testthat
 LazyData: TRUE
 RoxygenNote: 7.1.1

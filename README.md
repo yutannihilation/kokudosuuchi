@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/yutannihilation/kokudosuuchi/workflows/R-CMD-check/badge.svg)](https://github.com/yutannihilation/kokudosuuchi/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/kokudosuuchi)](https://CRAN.R-project.org/package=kokudosuuchi)
 <!-- badges: end -->
 
 **(Sorry, English version of README is not available for now.)**
@@ -20,7 +22,7 @@
 
 ## インストール方法
 
-kokudosuuchiはCRANからインストールできますが、国土数値情報APIが廃止される以前のものなのでおすすめしません。
+kokudosuuchiはCRANからインストールできます。
 
 ``` r
 # install.packages("kokudosuuchi")

@@ -104,8 +104,6 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
     if (identical(src, dst)) {
       next
     }
-    msg <- glue::glue("Renaming {src} to {dst}")
-    inform(msg)
 
     file.rename(src, dst)
     if (!file.exists(dst)) {

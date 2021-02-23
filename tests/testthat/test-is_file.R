@@ -1,5 +1,3 @@
-context("is_file")
-
 test_that("is_file() and is_dir() works fine with a file", {
   x <- tempfile()
   file.create(x)

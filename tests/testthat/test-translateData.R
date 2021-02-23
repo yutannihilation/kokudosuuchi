@@ -1,85 +1,33 @@
-context("translateData")
+test_that("readKSJData() works", {
+  skip_on_ci()
+  skip_on_cran()
 
-test_that("translateKSJData_one() works for duplicated columns", {
-  d <- data.frame(A10_001 = 1, A10_002 = 2, A10_003 = 3, A10_004 = 4)
+  d <- readKSJData("zip/P11-10_36_GML.zip")
+  expect_snapshot(translateKSJData(d))
+  expect_snapshot(translateKSJData(d, translate_colnames = FALSE))
+  expect_snapshot(translateKSJData(d, translate_codelist = FALSE))
 
-  expect_equal(colnames(translateKSJData_one(d)),
-               c("\u90fd\u9053\u5e9c\u770c\u30b3\u30fc\u30c9",
-                 "\u632f\u8208\u5c40\u30b3\u30fc\u30c9",
-                 "\u81ea\u7136\u516c\u5712\u533a\u5206\u30b3\u30fc\u30c9",
-                 "\u81ea\u7136\u516c\u5712\u5730\u57df\u533a\u5206\u30b3\u30fc\u30c9"))
+  d_A03 <- readKSJData("zip/A03-03_SYUTO-tky_GML.zip")
+  expect_snapshot(translateKSJData(d_A03))
 
-  expect_equal(colnames(translateKSJData_one(d[, 1:3])),
-               c("\u90fd\u9053\u5e9c\u770c\u30b3\u30fc\u30c9",
-                 "\u652f\u5e81\u533a\u5206\u30b3\u30fc\u30c9",
-                 "\u81ea\u7136\u516c\u5712\u5730\u57df\u533a\u5206\u30b3\u30fc\u30c9"))
+  d_A22_m <- readKSJData("zip/A22-m-14_34_GML.zip")
+  expect_snapshot(translateKSJData(d_A22_m))
 
-  d2 <- dplyr::rename(d, geometry = A10_004)
-  expect_equal(colnames(translateKSJData_one(d2)),
-               c("\u90fd\u9053\u5e9c\u770c\u30b3\u30fc\u30c9",
-                 "\u652f\u5e81\u533a\u5206\u30b3\u30fc\u30c9",
-                 "\u81ea\u7136\u516c\u5712\u5730\u57df\u533a\u5206\u30b3\u30fc\u30c9",
-                 "geometry"))
-})
+  d_A37 <- readKSJData("zip/A37-15_45_GML.zip")
+  expect_snapshot(translateKSJData(d_A37))
 
-test_that("translateKSJData() works for both a sf object and a list of sf objects", {
-  sf_obj <- sf::st_sf(A10_001 = 1, A10_002 = 2, A10_003 = 3, A10_004 = 4, geometry = sf::st_sfc(sf::st_point(c(1,1))))
-  sf_list <- list(a = sf_obj)
+  d_C02 <- readKSJData("zip/C02-14_GML.zip")
+  expect_snapshot(translateKSJData(d_C02))
 
-  colnames_expected <- c("\u90fd\u9053\u5e9c\u770c\u30b3\u30fc\u30c9",
-                         "\u632f\u8208\u5c40\u30b3\u30fc\u30c9",
-                         "\u81ea\u7136\u516c\u5712\u533a\u5206\u30b3\u30fc\u30c9",
-                         "\u81ea\u7136\u516c\u5712\u5730\u57df\u533a\u5206\u30b3\u30fc\u30c9",
-                         "geometry")
+  d_L01 <- readKSJData("zip/L01-20_30_GML.zip")
+  expect_snapshot(translateKSJData(d_L01))
 
-  expect_equal(colnames(translateKSJData(sf_obj)), colnames_expected)
-  expect_equal(colnames(translateKSJData(sf_list)[[1]]), colnames_expected)
-  expect_s3_class(translateKSJData(sf_list)[[1]], "sf")
-})
+  d_N04 <- readKSJData("zip/N04-04_4934-jgd_GML.zip")
+  expect_snapshot(translateKSJData(d_N04))
 
+  d_P17 <- readKSJData("zip/P17-12_29_GML.zip")
+  expect_snapshot(translateKSJData(d_P17))
 
-test_that("translateKSJData() works for colnames with years", {
-  sf_obj <- sf::st_sf(
-    A22_000001 = 1,
-    A22_000002 = 2,
-    A22_000003 = 3,
-    A22_012013 = 4,
-    A22_012012 = 5,
-    geometry   = sf::st_sfc(sf::st_point(1:2))
-  )
-
-  colnames_expected <- c("\u89b3\u6e2c\u70b9\u540d",
-                         "\u89b3\u6e2c\u70b9\u306e\u6240\u5728\u5730",
-                         "\u89b3\u6e2c\u70b9\u306e\u7ba1\u7406\u8005",
-                         "\u5404\u5e74\u5ea6\u5225\u6700\u6df1\u7a4d\u96ea2013\u5e74\u5ea6",
-                         "\u5404\u5e74\u5ea6\u5225\u6700\u6df1\u7a4d\u96ea2012\u5e74\u5ea6",
-                         "geometry")
-
-  expect_equal(colnames(translateKSJData(sf_obj)), colnames_expected)
-})
-
-
-test_that("translateKSJData() works for ", {
-  d <- data.frame(
-    P12_001 = 10006L,
-    P12_002 = "a",
-    P12_003 = "06",
-    P12_004 = "06204",
-    P12_005 = "b",
-    P12_006 = "c",
-    P12_007 = -1L,
-    stringsAsFactors = FALSE)
-
-  d_trans <- translateKSJData_one(d)
-  expect_equal(colnames(d_trans),
-               c("\u89b3\u5149\u8cc7\u6e90_ID",
-                 "\u89b3\u5149\u8cc7\u6e90\u540d",
-                 "\u90fd\u9053\u5e9c\u770c\u30b3\u30fc\u30c9",
-                 "\u884c\u653f\u30b3\u30fc\u30c9",
-                 "\u7a2e\u5225\u540d\u79f0",
-                 "\u6240\u5728\u5730\u4f4f\u6240",
-                 "\u89b3\u5149\u8cc7\u6e90\u5206\u985e\u30b3\u30fc\u30c9"))
-
-  expect_equal(d_trans[[4]], "\u5c71\u5f62\u770c\u9152\u7530\u5e02")
-  expect_equal(d_trans[[7]], NA_character_)
+  d_P21 <- readKSJData("zip/P21-12_15_GML.zip")
+  expect_snapshot(translateKSJData(d_P21))
 })

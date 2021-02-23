@@ -4,7 +4,7 @@
 #' @name kokudosuuchi
 #' @importFrom dplyr %>%
 #' @import rlang
-#' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
+#' @seealso <http://nlftp.mlit.go.jp/ksj/api/about_api.html>
 "_PACKAGE"
 
 # The following block is used by usethis to automatically manage

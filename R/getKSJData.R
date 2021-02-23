@@ -1,9 +1,9 @@
 #' Get JPGIS2.1 Data
 #'
-#' \code{getKSJData} tries to download and load spatial data from Kokudo Suuchi service. Note that this function
-#' does not use API; directly download ZIP file and load the data by \link[sf]{read_sf}.
-#' \code{translateKSJColnames} translates the column names of data (e.g. W05_001) into human readable ones.
-#' By default, this is automatically done in \code{getKSJData}.
+#' `getKSJData` tries to download and load spatial data from Kokudo Suuchi service. Note that this function
+#' does not use API; directly download ZIP file and load the data by [read_sf][sf::read_sf].
+#' `translateKSJColnames` translates the column names of data (e.g. W05_001) into human readable ones.
+#' By default, this is automatically done in `getKSJData`.
 #'
 #' @param zip_file
 #'   Either a URL, a path to a zip file, or a path to a directory which contains shape files.
@@ -12,7 +12,7 @@
 #' @param encoding
 #'   Encoding of the data.
 #'
-#' @seealso \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
+#' @seealso <http://nlftp.mlit.go.jp/ksj/api/about_api.html>
 #' @examples
 #' \dontrun{
 #' l <- getKSJData("http://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip")

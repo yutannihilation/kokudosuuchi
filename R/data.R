@@ -9,19 +9,19 @@ globalVariables("KSJMetadata_code_correspondence_tables")
 #' @name KSJMetadata_code
 #' @format A data.frame with code and names
 #'
-#' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}, \url{http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls}
+#' @source <http://nlftp.mlit.go.jp/ksj/index.html>, <http://nlftp.mlit.go.jp/ksj/gml/shape_property_table.xls>
 "KSJMetadata_code"
 
 #' @rdname KSJMetadata_code
 #' @format A list of named character vectors to translate various codes.
 #'
-#' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}
+#' @source <http://nlftp.mlit.go.jp/ksj/index.html>
 "KSJMetadata_code_correspondence_tables"
 
 #' @rdname KSJMetadata_code
 #' @format A data.frame with regex to extract years.
 #'
-#' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}
+#' @source <http://nlftp.mlit.go.jp/ksj/index.html>
 "KSJMetadata_code_year_cols"
 
 #' Corresponding Table Of Identifier Descriptions
@@ -29,7 +29,7 @@ globalVariables("KSJMetadata_code_correspondence_tables")
 #' @name KSJMetadata_description_url
 #' @format A data.frame with identifier and URLs of the description pages
 #'
-#' @source \url{http://nlftp.mlit.go.jp/ksj/index.html}
+#' @source <http://nlftp.mlit.go.jp/ksj/index.html>
 "KSJMetadata_description_url"
 
 

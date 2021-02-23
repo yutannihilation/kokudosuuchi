@@ -1,6 +1,6 @@
 #' @rdname getKSJData
-#' @param x Object of class \link[sf]{sf}
-#' @param quiet If \code{TRUE}, suppress messages.
+#' @param x Object of class [sf][sf::sf]
+#' @param quiet If `TRUE`, suppress messages.
 #' @export
 translateKSJData <- function(x, quiet = TRUE) {
   if (inherits(x, "sf")) {

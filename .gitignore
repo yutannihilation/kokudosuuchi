@@ -8,3 +8,4 @@ cached_zip
 # downloaded htmls
 downloaded_html
 tests/testthat/zip
+docs

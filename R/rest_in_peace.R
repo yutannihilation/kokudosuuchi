@@ -1,8 +1,9 @@
-#' Rest in peace, kokudo suuchi API...
+#' Rest in peace, 'Kokudo Suuchi' API...
 #'
 #' @rdname RIP_API
 #' @param ... Ignored.
 #'
+#' @keywords internal
 #' @export
 getKSJSummary <- function(...) {
   .Defunct()

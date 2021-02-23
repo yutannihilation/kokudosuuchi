@@ -4,7 +4,7 @@
 \alias{getKSJSummary}
 \alias{getKSJURL}
 \alias{choose_prefecture_code}
-\title{Rest in peace, kokudo suuchi API...}
+\title{Rest in peace, 'Kokudo Suuchi' API...}
 \usage{
 getKSJSummary(...)
 
@@ -16,5 +16,6 @@ choose_prefecture_code(...)
 \item{...}{Ignored.}
 }
 \description{
-Rest in peace, kokudo suuchi API...
+Rest in peace, 'Kokudo Suuchi' API...
 }
+\keyword{internal}

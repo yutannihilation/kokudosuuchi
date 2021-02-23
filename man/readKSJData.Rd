@@ -12,6 +12,7 @@ translateKSJData(
   id = NULL,
   variant = NULL,
   quiet = TRUE,
+  translate_colnames = TRUE,
   translate_codelist = TRUE
 )
 }
@@ -26,6 +27,8 @@ is loaded by \code{\link[=readKSJData]{readKSJData()}}.}
 \item{variant}{A type of variant in case the translation cannot be determined only by \code{id}.}
 
 \item{quiet}{If \code{TRUE}, suppress messages.}
+
+\item{translate_colnames}{If \code{TRUE}, translate colnames to human readable labels.}
 
 \item{translate_codelist}{If \code{TRUE}, translate codes to human readable labels.}
 }

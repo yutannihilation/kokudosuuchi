@@ -3,8 +3,7 @@
 
 translate_SectionTypeCd <- function(code, variant) {
   tbl <- .codelist[[glue::glue("SectionTypeCd_{variant}")]]
-  codelist_translation <- setNames(tbl$label, tbl$code)
-  codelist_translation[code]
+  tbl$label[match(code, tbl$code)]
 }
 
 match_A03 <- function(d, id, variant, translate_colnames = TRUE, translate_codelist = TRUE) {

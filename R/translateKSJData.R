@@ -202,8 +202,6 @@ translate_one_column <- function(d, pos, codelist_id) {
     code <- as.character(as.integer(code))
   }
 
-  # codelist_translation <- setNames(tbl$label, tbl$code)
-
   # Some column (e.g. A03_007) contains comma-separated list of codes
   if (any(stringr::str_detect(code, ","), na.rm = TRUE)) {
     label <- lapply(stringr::str_split(code, ","), function(x) {

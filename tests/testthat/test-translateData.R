@@ -3,6 +3,7 @@
 test_that("readKSJData() works", {
   skip_on_ci()
   skip_on_cran()
+  skip_if_not(dir.exists("zip"))
 
   d <- readKSJData("zip/P11-10_36_GML.zip")
   expect_snapshot(translateKSJData(d))

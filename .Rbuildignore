@@ -16,3 +16,4 @@
 ^\.github$
 ^_pkgdown\.yml$
 ^pkgdown$
+^tests/testthat/zip$

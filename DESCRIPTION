@@ -1,7 +1,7 @@
 Package: kokudosuuchi
 Type: Package
 Title: Utilities for 'Kokudo Suuchi'
-Version: 0.9.9.9999
+Version: 1.0.0
 Authors@R: 
     person(given = "Hiroaki",
            family = "Yutani",

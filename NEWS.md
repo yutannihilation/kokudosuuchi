@@ -1,3 +1,5 @@
+# kokudosuuchi (development version)
+
 # kokudosuuchi 1.0.0
 
 ## Breaking change

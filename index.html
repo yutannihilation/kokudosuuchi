@@ -161,8 +161,7 @@
 <li>カラム名</li>
 <li>コードリスト型の列のコード</li>
 </ul>
-<p>を人間が読める情報に翻訳します。具体的には、国土数値情報ダウンロードサービス上に記載されているメタデータとの紐づけを行います。</p>
-<p>なお、機械的な処理なので、間違いがある可能性もあります（もし間違いを発見されましたら、<a href="https://github.com/yutannihilation/kokudosuuchi/issues">issues</a>からお知らせいただけるとありがたいです）。 データの詳細については国土数値情報ダウンロードサービスをご確認ください。</p>
+<p>を人間が読める情報に変換します。具体的には、国土数値情報ダウンロードサービス上に記載されているメタデータとの紐づけを行います。 コードリスト型の列の変換は、コードに対応するラベルの列と、元のコードの列（列名の後ろに<code>_code</code>が付きます）の2つができます。 以下の例で言うと、（列名が長すぎて表示されていませんが、）先頭の<code>標準地コード_見出し番号</code>がラベルの列、その次の<code>標準地コード_見出し番号_code</code>が元のコードの列です。</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/translateKSJData.html">translateKSJData</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>
 <span class="co">#&gt; $`L01-20_30`</span>
@@ -214,6 +213,11 @@
 <span class="co">#&gt; #   属性移動H15 &lt;chr&gt;, 属性移動H16 &lt;chr&gt;, 属性移動H17 &lt;chr&gt;, 属性移動H18 &lt;chr&gt;,</span>
 <span class="co">#&gt; #   属性移動H19 &lt;chr&gt;, 属性移動H20 &lt;chr&gt;, …</span></code></pre></div>
 </div>
+</div>
+<div id="注意点" class="section level2">
+<h2 class="hasAnchor">
+<a href="#%E6%B3%A8%E6%84%8F%E7%82%B9" class="anchor"></a>注意点</h2>
+<p><code><a href="reference/translateKSJData.html">translateKSJData()</a></code>による変換は、機械的な処理なので間違いがある可能性もあります（もし間違いを発見されましたら、<a href="https://github.com/yutannihilation/kokudosuuchi/issues">issues</a>などからお知らせいただけるとありがたいです）。 データの詳細については必ず国土数値情報ダウンロードサービスをご確認ください。</p>
 </div>
 </div>
   </div>

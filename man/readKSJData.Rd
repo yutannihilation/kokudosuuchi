@@ -24,7 +24,7 @@ download.file(url, zip_file)
 # Load all data as sf objects
 d <- readKSJData(zip_file)
 
-# Translate colnames and 'codelist' type columns.
+# Translate colnames and 'codelist' type columns
 translateKSJData(d)
 }
 

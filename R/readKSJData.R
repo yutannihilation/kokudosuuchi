@@ -124,13 +124,18 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
 }
 
 extract_KSJ_id <- function(x) {
+  # A19s-a is a variant of A19s
+  if (stringr::str_detect(x, "A19s-a")) {
+    return("A19s")
+  }
+
+  # filename of A18s-a is "A18s_a"
+  if (stringr::str_detect(x, "A18s_a")) {
+    return("A18s-a")
+  }
+
   x <- stringr::str_extract(x, "^(KS-META-)?[A-Z][0-9]{2}[a-z]?[0-9]?(-[a-z])?(-[cu])?")
   x <- stringr::str_remove(x, "^KS-META-")
-
-  # A19s-a is a variant of A19s
-  if (identical(x, "A19s-a")) {
-    x <- "A19s"
-  }
 
   x
 }

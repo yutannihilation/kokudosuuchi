@@ -7,4 +7,8 @@ test_that("extract_KSJ_id() works", {
 
   # A19s-a is a variant of A19s
   expect_equal(extract_KSJ_id("A19s-a-10_28_GML"), "A19s")
+
+  expect_equal(extract_KSJ_id("KS-META-A16-15_04"), "A16")
+  expect_equal(extract_KSJ_id("KS-META-A18s_a_22_02"), "A18s-a")
+  expect_equal(extract_KSJ_id("KS-META-A22-m-14_34"), "A22-m")
 })

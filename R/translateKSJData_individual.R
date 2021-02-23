@@ -1,10 +1,17 @@
 # If the data needs special treatment, write individual logics in this file.
 
-match_A03 <- function(d, id, variant, translate_codelist = TRUE) {
+
+translate_SectionTypeCd <- function(code, variant) {
+  tbl <- .codelist[[glue::glue("SectionTypeCd_{variant}")]]
+  codelist_translation <- setNames(tbl$label, tbl$code)
+  codelist_translation[code]
+}
+
+match_A03 <- function(d, id, variant, translate_colnames = TRUE, translate_codelist = TRUE) {
   idx_SectionTypeCd <- which(colnames(d) == "A03_006")
   idx_SectionCd <- which(colnames(d) == "A03_007")
 
-  d <- match_by_name(d, id, translate_codelist = translate_codelist)
+  d <- match_by_name(d, id, translate_colnames = translate_colnames, translate_codelist = translate_codelist)
 
   if (!isTRUE(translate_codelist)) {
     return(d)
@@ -15,23 +22,24 @@ match_A03 <- function(d, id, variant, translate_codelist = TRUE) {
   d
 }
 
-translate_SectionTypeCd <- function(code, variant) {
-  tbl <- .codelist[[glue::glue("SectionTypeCd_{variant}")]]
-  codelist_translation <- setNames(tbl$label, tbl$code)
-  codelist_translation[code]
+replace_year <- function(d, prefix, format) {
+  idx <- stringr::str_detect(colnames(d), paste0(prefix, "[12][0-9]{3}"))
+  year <- stringr::str_sub(colnames(d)[idx], -4L)
+  colnames(d)[idx] <- glue::glue(format)
+  d
 }
 
 # A22-m has two types of colnames; by exact match and by pattern
-`match_A22-m` <- function(d, id, variant = NULL, translate_codelist = TRUE) {
+`match_A22-m` <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
   old_names <- colnames(d)
 
-  d <- match_by_name(d, id, skip_check = TRUE)
+  d <- match_by_name(d, id,
+                     translate_colnames = translate_colnames,
+                     translate_codelist = translate_codelist,
+                     skip_check = TRUE)
 
-  replace_year <- function(d, prefix, format) {
-    idx <- stringr::str_detect(colnames(d), paste0(prefix, "[12][0-9]{3}"))
-    year <- stringr::str_sub(colnames(d)[idx], -4L)
-    colnames(d)[idx] <- glue::glue(format)
-    d
+  if (!isTRUE(translate_colnames)) {
+    return(d)
   }
 
   d <- replace_year(d, "A22_01", "\u6700\u6df1\u7a4d\u96ea_{year}\u5e74\u5ea6")
@@ -55,16 +63,16 @@ translate_SectionTypeCd <- function(code, variant) {
   d
 }
 
-`match_A37` <- function(d, id, variant = NULL, translate_codelist = TRUE) {
+`match_A37` <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
   old_names <- colnames(d)
 
-  d <- match_by_name(d, id, skip_check = TRUE)
+  d <- match_by_name(d, id,
+                     translate_colnames = translate_colnames,
+                     translate_codelist = translate_codelist,
+                     skip_check = TRUE)
 
-  replace_year <- function(d, prefix, format) {
-    idx <- stringr::str_detect(colnames(d), paste0(prefix, "[12][0-9]{3}"))
-    year <- stringr::str_sub(colnames(d)[idx], -4L)
-    colnames(d)[idx] <- glue::glue(format)
-    d
+  if (!isTRUE(translate_colnames)) {
+    return(d)
   }
 
   d <- replace_year(d, "A37_34", "\u6551\u6025\u8eca\u51fa\u52d5\u4ef6\u6570_{year}\u5e74")
@@ -78,19 +86,28 @@ translate_SectionTypeCd <- function(code, variant) {
 }
 
 
-match_C02 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
+match_C02 <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
   # Some columns are mistakenly named as "C12_..." whereas they should be "C02_..."
   colnames(d) <- stringr::str_replace(colnames(d), "^C12_", "C02_")
-  match_by_name(d, id)
+  match_by_name(d, id,
+                translate_colnames = translate_colnames,
+                translate_codelist = translate_codelist)
 }
 
 # This function cannot handle old data
-match_L01 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
-  dc <- d_col_info[d_col_info$id == id, ]
+match_L01 <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
+  dc <- .col_info$other[.col_info$other$id == id, ]
 
   old_names <- colnames(d)
 
-  d <- match_by_position(d, id, dc = dc, translate_codelist = translate_codelist, skip_check = TRUE)
+  d <- match_by_position(d, id, dc = dc,
+                         translate_colnames = translate_colnames,
+                         translate_codelist = translate_codelist,
+                         skip_check = TRUE)
+
+  if (!isTRUE(translate_colnames)) {
+    return(d)
+  }
 
   # confirm the last positionally matched column is Sentei Nenji bits
   nenji_bits <- stringr::str_detect(d[["\u9078\u5b9a\u5e74\u6b21\u30d3\u30c3\u30c8"]], "^[01]+$")
@@ -107,13 +124,17 @@ match_L01 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
   col_price <- paste0("\u8abf\u67fb\u4fa1\u683c_", seq(1983, nendo))
   col_move  <- paste0("\u5c5e\u6027\u79fb\u52d5_", seq(1984, nendo))
 
-  # compensation for inserted rows
-  inserted_rows <- sum(!is.na(dc$codelist_id))
+  # If translate_codelist is TRUE, compensation is needed for inserted rows
+  if (!isTRUE(translate_codelist)) {
+    inserted_rows <- 0
+  } else {
+    inserted_rows <- sum(!is.na(dc$codelist_id))
+  }
   idx_col_price <- length(dc$name) + inserted_rows + seq_along(col_price)
   idx_col_move  <- max(idx_col_price) + seq_along(col_move)
 
   if (max(idx_col_move) != ncol(d) - 1L) {
-    abort("The number of columns doesn't match with the expectation")
+    warn("The number of columns doesn't match with the expectation")
   }
 
   is_probably_move <- function(i) {
@@ -135,11 +156,11 @@ match_L01 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
 
 match_L02 <- match_L01
 
-`match_L03-a` <- function(d, id, variant = NULL, translate_codelist = TRUE) d
-`match_L03-b` <- function(d, id, variant = NULL, translate_codelist = TRUE) d
-`match_L03-b-u` <- function(d, id, variant = NULL, translate_codelist = TRUE) d
+`match_L03-a` <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) d
+`match_L03-b` <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) d
+`match_L03-b-u` <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) d
 
-match_N04 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
+match_N04 <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
   # geometry column is not counted
   ncol <- ncol(d) - 1L
 
@@ -151,7 +172,9 @@ match_N04 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
     abort("Unexpected number of columns")
   }
 
-  match_by_name(d, id, dc = dc)
+  match_by_name(d, id, dc = dc,
+                translate_colnames = translate_colnames,
+                translate_codelist = translate_codelist)
 }
 
 `match_S05-a` <- match_N04
@@ -160,9 +183,16 @@ match_N04 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
 match_A42     <- match_N04
 
 # P17 has ranged columns
-match_P17 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
+match_P17 <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
   old_names <- colnames(d)
-  d <- match_by_name(d, id, skip_check = TRUE)
+  d <- match_by_name(d, id,
+                     translate_colnames = translate_colnames,
+                     translate_codelist = translate_codelist,
+                     skip_check = TRUE)
+
+  if (!isTRUE(translate_colnames)) {
+    return(d)
+  }
 
   idx <- which(stringr::str_detect(colnames(d), paste0("^", id)))
 
@@ -186,18 +216,20 @@ match_P17 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
 
 match_P18 <- match_P17
 
-match_P21 <- function(d, id, variant = NULL, translate_codelist = TRUE) {
+match_P21 <- function(d, id, variant = NULL, translate_colnames = TRUE, translate_codelist = TRUE) {
   colnames <- colnames(d)
   # wrong colname?
   idx <- stringr::str_detect(colnames, "^P21[A-Z]_00$")
   if (any(idx)) {
     # Uncomment this when moving to kokudosuuchi
 
-    # msg <- glue::glue("Found invalid colname(s): {colnames[idx]}")
-    # warn(msg)
+    msg <- glue::glue("Found invalid colname(s): {colnames[idx]}")
+    warn(msg)
 
     colnames(d)[idx] <- stringr::str_replace(colnames[idx], "\\d+$", sprintf("%03d", which(idx)))
   }
 
-  match_by_name(d, id)
+  match_by_name(d, id,
+                translate_colnames = translate_colnames,
+                translate_codelist = translate_codelist)
 }

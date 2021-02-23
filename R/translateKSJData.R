@@ -11,11 +11,13 @@
 #'   A type of variant in case the translation cannot be determined only by `id`.
 #' @param quiet
 #'   If `TRUE`, suppress messages.
+#' @param translate_colnames
+#'   If `TRUE`, translate colnames to human readable labels.
 #' @param translate_codelist
 #'   If `TRUE`, translate codes to human readable labels.
 #' @export
 translateKSJData <- function(x, id = NULL, variant = NULL, quiet = TRUE,
-                             translate_codelist = TRUE) {
+                             translate_colnames = TRUE, translate_codelist = TRUE) {
   id <- id %||% attr(x, "id")
   if (is.null(id)) {
     abort("`id` must be supplied either as `id` argument or as an attribute of `x`")
@@ -36,7 +38,10 @@ translateKSJData <- function(x, id = NULL, variant = NULL, quiet = TRUE,
     abort("Not implemented")
   }
 
-  x <- lapply(x, matching_fun, id = id, variant = variant, translate_codelist = translate_codelist)
+  x <- lapply(x, matching_fun,
+              id = id, variant = variant,
+              translate_colnames = translate_colnames,
+              translate_codelist = translate_codelist)
 
   x
 }
@@ -70,6 +75,109 @@ assert_all_translated <- function(new_names, old_names, id) {
     warn(msg)
   }
 }
+
+match_by_position <- function(d, id,
+                              dc = NULL, variant = NULL,
+                              translate_colnames = TRUE,
+                              translate_codelist = TRUE,
+                              skip_check = FALSE) {
+  if (is.null(dc)) {
+    if (id %in% names(.col_info)) {
+      dc <- .col_info[[id]]
+    } else {
+      dc <- .col_info$other[.col_info$other$id == id, ]
+    }
+  }
+
+  readable_names <- dc$name
+  codelist_id <- dc$codelist_id
+
+  old_names <- colnames(d)
+
+  # exlude columns that don't need to be translated
+  old_names <- setdiff(old_names, c(ok_with_no_translation[[id]], "geometry"))
+
+  ncol <- length(old_names)
+
+  if (!isTRUE(skip_check) && length(readable_names) != ncol) {
+    msg <- glue::glue(
+      "The numbers of columns don't match. ",
+      "expected: ", nrow(dc), ", actual: ", ncol
+    )
+    abort(msg)
+  }
+
+  if (!isTRUE(!translate_colnames)) {
+    colnames(d)[seq_along(readable_names)] <- readable_names
+  }
+
+  if (!isTRUE(translate_codelist)) {
+    return(d)
+  }
+
+  pos_codelist_id <- which(!is.na(codelist_id))
+  for (i in seq_along(pos_codelist_id)) {
+    pos <- pos_codelist_id[i]
+    # Note: `+ i` is needed because the columns are shifted
+    d <- translate_one_column(d, pos + i - 1L, codelist_id[pos])
+  }
+
+  d
+}
+
+match_by_name <- function(d, id,
+                          variant = NULL, dc = NULL,
+                          translate_colnames = TRUE,
+                          translate_codelist = TRUE,
+                          skip_check = FALSE) {
+  if (is.null(dc)) {
+    if (id %in% names(.col_info)) {
+      dc <- .col_info[[id]]
+    } else {
+      dc <- .col_info$other[.col_info$other$id == id, ]
+    }
+  }
+
+  old_names <- colnames(d)
+  matched <- match(old_names, dc$code)
+
+  pos_in_data <- which(!is.na(matched))
+  pos_new <- matched[!is.na(matched)]
+
+
+  if (!isTRUE(!translate_colnames)) {
+    colnames(d)[pos_in_data] <- dc$name[pos_new]
+  }
+
+  if (!skip_check) {
+    assert_all_translated(colnames(d), old_names, id)
+  }
+
+  if (!isTRUE(translate_codelist)) {
+    return(d)
+  }
+
+  # Shrink the index to only those with non-NA codelist_id
+  idx_codelist_exists <- which(!is.na(dc$codelist_id[pos_new]))
+  pos_in_data <- pos_in_data[idx_codelist_exists]
+  pos_new <- pos_new[idx_codelist_exists]
+
+  # As new names will be inserted, the index will shift, so preserve names at this point
+  colnames_codelist <- colnames(d)[pos_in_data]
+
+  for (i in seq_along(colnames_codelist)) {
+    target <- colnames_codelist[i]
+    codelist_id <- dc$codelist_id[pos_new[i]]
+
+    # current position of the column
+    pos <- which(colnames(d) == target)
+
+    d <- translate_one_column(d, pos, codelist_id)
+  }
+
+  d
+}
+
 
 translate_one_column <- function(d, pos, codelist_id) {
   if (length(pos) != 1) {
@@ -128,89 +236,4 @@ translate_one_column <- function(d, pos, codelist_id) {
   # append the original codes right after the original position
   nm <- sym(glue::glue("{target}_code"))
   tibble::add_column(d, "{{ nm }}" := code_orig, .after = pos)
-}
-
-match_by_position <- function(d, id, dc = NULL, variant = NULL, translate_codelist = TRUE, skip_check = FALSE) {
-  if (is.null(dc)) {
-    if (id %in% names(.col_info)) {
-      dc <- .col_info[[id]]
-    } else {
-      dc <- .col_info$other[.col_info$other$id == id, ]
-    }
-  }
-
-  readable_names <- dc$name
-  codelist_id <- dc$codelist_id
-
-  old_names <- colnames(d)
-
-  # exlude columns that don't need to be translated
-  old_names <- setdiff(old_names, c(ok_with_no_translation[[id]], "geometry"))
-
-  ncol <- length(old_names)
-
-  if (!isTRUE(skip_check) && length(readable_names) != ncol) {
-    msg <- glue::glue(
-      "The numbers of columns don't match. ",
-      "expected: ", nrow(dc), ", actual: ", ncol
-    )
-    abort(msg)
-  }
-
-  colnames(d)[seq_along(readable_names)] <- readable_names
-
-  pos_codelist_id <- which(!is.na(codelist_id))
-  for (i in seq_along(pos_codelist_id)) {
-    pos <- pos_codelist_id[i]
-    # Note: `+ i` is needed because the columns are shifted
-    d <- translate_one_column(d, pos + i - 1L, codelist_id[pos])
-  }
-
-  d
-}
-
-match_by_name <- function(d, id, variant = NULL, dc = NULL, translate_codelist = TRUE, skip_check = FALSE) {
-  if (is.null(dc)) {
-    if (id %in% names(.col_info)) {
-      dc <- .col_info[[id]]
-    } else {
-      dc <- .col_info$other[.col_info$other$id == id, ]
-    }
-  }
-
-  old_names <- colnames(d)
-  matched <- match(old_names, dc$code)
-
-  pos_in_data <- which(!is.na(matched))
-  pos_new <- matched[!is.na(matched)]
-
-  colnames(d)[pos_in_data] <- dc$name[pos_new]
-
-  if (!skip_check) {
-    assert_all_translated(colnames(d), old_names, id)
-  }
-
-  if (!isTRUE(translate_codelist)) {
-    return(d)
-  }
-
-  # Shrink the index to only those with non-NA codelist_id
-  idx_codelist_exists <- which(!is.na(dc$codelist_id[pos_new]))
-  pos_in_data <- pos_in_data[idx_codelist_exists]
-  pos_new <- pos_new[idx_codelist_exists]
-
-  # As new names will be inserted, the index will shift, so preserve names at this point
-  colnames_codelist <- colnames(d)[pos_in_data]
-
-  for (i in seq_along(colnames_codelist)) {
-    target <- colnames_codelist[i]
-    codelist_id <- dc$codelist_id[pos_new[i]]
-
-    # current position of the column
-    pos <- which(colnames(d) == target)
-
-    d <- translate_one_column(d, pos, codelist_id)
-  }
-
-  d
 }

@@ -1,3 +1,5 @@
+# NOTE: To enable this test, I need to download zip files to "tests/testthat/zip" manually...
+
 test_that("readKSJData() works", {
   skip_on_ci()
   skip_on_cran()

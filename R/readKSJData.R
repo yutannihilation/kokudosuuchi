@@ -9,10 +9,16 @@
 #'
 #' @examples
 #' \dontrun{
+#' # Download a ZIP file from kokudosuuchi website
 #' zip_file <- tempfile(fileext = ".zip")
 #' url <- "https://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip"
 #' download.file(url, zip_file)
-#' readKSJData(zip_file)
+#'
+#' # Load all data as sf objects
+#' d <- readKSJData(zip_file)
+#'
+#' # Translate colnames and 'codelist' type columns.
+#' translateKSJData(d)
 #' }
 #'
 #' @export

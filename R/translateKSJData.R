@@ -1,20 +1,21 @@
-#' `translateKSJData()` translates colnames and codelists into human-readable
-#' labels.
+#' Translate JPGIS2.1 Data
 #'
-#' @rdname readKSJData
+#' `translateKSJData()` translates colnames and 'codelist'-type of columns to
+#' human-readable labels.
+#'
 #' @param x
 #'   A list of [sf][sf::sf] objects.
 #' @param id
-#'   An ID of the dataset (e.g. `A03`). This can be automatically detected if `x`
-#'   is loaded by [`readKSJData()`].
+#'   An ID of the dataset (e.g. `A03`). This can be `NULL` if `x` is loaded
+#'   by [`readKSJData()`].
 #' @param variant
 #'   A type of variant in case the translation cannot be determined only by `id`.
 #' @param quiet
 #'   If `TRUE`, suppress messages.
 #' @param translate_colnames
-#'   If `TRUE`, translate colnames to human readable labels.
+#'   If `TRUE`, translate colnames to human-readable labels.
 #' @param translate_codelist
-#'   If `TRUE`, translate codes to human readable labels.
+#'   If `TRUE`, translate codes to human-readable labels.
 #' @export
 translateKSJData <- function(x, id = NULL, variant = NULL, quiet = TRUE,
                              translate_colnames = TRUE, translate_codelist = TRUE) {

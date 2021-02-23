@@ -11,9 +11,11 @@
 #'   A type of variant in case the translation cannot be determined only by `id`.
 #' @param quiet
 #'   If `TRUE`, suppress messages.
+#' @param translate_codelist
+#'   If `TRUE`, translate codes to human readable labels.
 #' @export
 translateKSJData <- function(x, id = NULL, variant = NULL, quiet = TRUE,
-                             translate_colnames = TRUE, translate_codelist = TRUE) {
+                             translate_codelist = TRUE) {
   id <- id %||% attr(x, "id")
   if (is.null(id)) {
     abort("`id` must be supplied either as `id` argument or as an attribute of `x`")
@@ -71,7 +73,7 @@ assert_all_translated <- function(new_names, old_names, id) {
 
 translate_one_column <- function(d, pos, codelist_id) {
   if (length(pos) != 1) {
-    rlang::abort(paste("Invalid pos:", paste(pos, collapse = ", ")))
+    abort(paste("Invalid pos:", paste(pos, collapse = ", ")))
   }
 
   code_orig <- code <- d[[pos]]
@@ -103,12 +105,7 @@ translate_one_column <- function(d, pos, codelist_id) {
       if (length(mismatched_code) > 0) {
         mismatched_code <- paste(mismatched_code, collapse = ", ")
         msg <- glue::glue("Failed to translate these codes in {target}: {mismatched_code}")
-        # TODO: AdminAreaCd has many missing codes, because they actually disappeared
-        if (identical(codelist_id, "AdminAreaCd")) {
-          rlang::warn(msg)
-        } else {
-          rlang::abort(msg)
-        }
+        warn(msg)
       }
 
       tbl$label[matched_code]
@@ -120,11 +117,7 @@ translate_one_column <- function(d, pos, codelist_id) {
     if (length(mismatched_code) > 0) {
       mismatched_code <- paste(mismatched_code, collapse = ", ")
       msg <- glue::glue("Failed to translate these codes in {target}: {mismatched_code}")
-      if (identical(codelist_id, "AdminAreaCd")) {
-        rlang::warn(msg)
-      } else {
-        rlang::abort(msg)
-      }
+      warn(msg)
     }
 
     label <- tbl$label[matched_code]
@@ -133,8 +126,8 @@ translate_one_column <- function(d, pos, codelist_id) {
   # overwrite the target column with human-readable labels
   d[[pos]] <- label
   # append the original codes right after the original position
-  nm <- rlang::sym(glue::glue("{target}_code"))
-  dplyr::mutate(d, "{{ nm }}" := code_orig, .after = all_of(pos))
+  nm <- sym(glue::glue("{target}_code"))
+  tibble::add_column(d, "{{ nm }}" := code_orig, .after = pos)
 }
 
 match_by_position <- function(d, id, dc = NULL, variant = NULL, translate_codelist = TRUE, skip_check = FALSE) {
@@ -161,10 +154,7 @@ match_by_position <- function(d, id, dc = NULL, variant = NULL, translate_codeli
       "The numbers of columns don't match. ",
       "expected: ", nrow(dc), ", actual: ", ncol
     )
-    rlang::abort(msg)
-
-    readable_names <- readable_names[1:ncol]
-    codelist_id <- codelist_id[1:ncol]
+    abort(msg)
   }
 
   colnames(d)[seq_along(readable_names)] <- readable_names

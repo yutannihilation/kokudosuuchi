@@ -16,11 +16,11 @@ License: MIT + file LICENSE
 Depends:
     R (>= 2.10)
 Imports:
-    rlang,
     glue,
-    purrr,
+    rlang,
     sf,
-    stringr
+    stringr,
+    tibble
 Suggests:
     readr,
     testthat

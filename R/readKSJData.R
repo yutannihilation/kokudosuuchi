@@ -49,11 +49,11 @@ readKSJData <- function(x, encoding = "CP932") {
   )
 
   # read all data
-  res <- purrr::map(shp_files,
-                    sf::read_sf,
-                    # All data is encoded with Shift_JIS as described here:
-                    # http://nlftp.mlit.go.jp/ksj/old/old_data.html
-                    options = glue::glue("ENCODING={encoding}")
+  res <- lapply(shp_files,
+                sf::read_sf,
+                # All data is encoded with Shift_JIS as described here:
+                # http://nlftp.mlit.go.jp/ksj/old/old_data.html
+                options = glue::glue("ENCODING={encoding}")
   )
 
   id_short <- extract_KSJ_id(id)
@@ -98,11 +98,12 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
   utf8_names <- paste(path, utf8_names, sep = .Platform$file.sep)
 
   # Rename
-  purrr::walk2(orig_names, utf8_names, function(src, dst) {
+  for (i in seq_along(orig_names)) {
+    src <- orig_names[i]
+    dst <- utf8_names[i]
     if (identical(src, dst)) {
-      return()
+      next
     }
-
     msg <- glue::glue("Renaming {src} to {dst}")
     inform(msg)
 
@@ -111,12 +112,14 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
       msg <- glue::glue("Failed to rename to {dst}")
       abort(msg)
     }
-  })
+  }
 
   # If it's a directory, apply recursively
   utf8_names <- utf8_names[file.info(utf8_names)$isdir]
   if (length(utf8_names) > 0) {
-    purrr::walk(utf8_names, rename_to_utf8_recursively, max_depth = max_depth - 1L)
+    for (nm in utf8_names) {
+      rename_to_utf8_recursively(nm, max_depth = max_depth - 1L)
+    }
   }
 }
 

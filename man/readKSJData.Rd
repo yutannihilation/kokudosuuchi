@@ -7,7 +7,13 @@
 \usage{
 readKSJData(x, encoding = "CP932")
 
-translateKSJData(x, id = NULL, variant = NULL, quiet = TRUE)
+translateKSJData(
+  x,
+  id = NULL,
+  variant = NULL,
+  quiet = TRUE,
+  translate_codelist = TRUE
+)
 }
 \arguments{
 \item{x}{A list of \link[sf:sf]{sf} objects.}
@@ -17,7 +23,11 @@ translateKSJData(x, id = NULL, variant = NULL, quiet = TRUE)
 \item{id}{An ID of the dataset (e.g. \code{A03}). This can be automatically detected if \code{x}
 is loaded by \code{\link[=readKSJData]{readKSJData()}}.}
 
+\item{variant}{A type of variant in case the translation cannot be determined only by \code{id}.}
+
 \item{quiet}{If \code{TRUE}, suppress messages.}
+
+\item{translate_codelist}{If \code{TRUE}, translate codes to human readable labels.}
 }
 \description{
 \code{readKSJData()} is an utility to read data downloaded from 'Kokudo Suuchi' service.

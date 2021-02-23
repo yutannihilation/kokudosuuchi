@@ -2,7 +2,6 @@
 #'
 #' @docType package
 #' @name kokudosuuchi
-#' @importFrom dplyr %>%
 #' @import rlang
 #' @seealso <http://nlftp.mlit.go.jp/ksj/api/about_api.html>
 "_PACKAGE"

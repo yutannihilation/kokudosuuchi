@@ -3,7 +3,7 @@
 ## Breaking change
 
 * kokudosuuchi drops all functionality related to the 'Kokudo Suuchi' API as the
-  API is no longer provided. Instead, a new function `read_ksj_data()` is
+  API is no longer provided. Instead, a new function `readKSJdata()` is
   implemented to make it ease to read various geospatial data provided by
   'Kokudo Suuchi'.
 

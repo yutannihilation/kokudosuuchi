@@ -13,3 +13,4 @@
 ^downloaded_html$
 ^urls\.csv$
 ^revdep$
+^\.github$

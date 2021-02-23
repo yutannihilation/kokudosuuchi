@@ -13,6 +13,9 @@ knitr::opts_chunk$set(
 ```
 kokudosuuchi
 ============
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/yutannihilation/kokudosuuchi/workflows/R-CMD-check/badge.svg)](https://github.com/yutannihilation/kokudosuuchi/actions)
+<!-- badges: end -->
 
 __(Sorry, English version of README is not available for now.)__
 
@@ -21,7 +24,7 @@ __(Sorry, English version of README is not available for now.)__
 
 ## 利用上の注意
 
-APIの利用やAPIで得られるURL先のGISデータの利用にあたっては、国土数値情報ダウンロードサービスの利用約款の利用規約をご確認の上ご利用ください。
+国土数値情報ダウンロードサービス提供のデータは、規約をご確認の上ご利用ください。
 
 * <https://nlftp.mlit.go.jp/ksj/other/agreement.html>
 
@@ -42,4 +45,32 @@ devtools::install_github("yutannihilation/kokudosuuchi")
 
 ## 使用方法
 
-（開発中）
+### `readKSJData()`
+
+国土数値情報ダウンロードサービスからダウンロードしてきたZIPファイル（もしくはそれを展開したディレクトリ）を指定すると、データを`sf`形式で読み込みます。
+
+```{r load_data}
+library(kokudosuuchi)
+
+d <- readKSJData("tests/testthat/zip/L01-20_30_GML.zip")
+d
+```
+
+
+### `translateKSJData()`
+
+国土数値情報ダウンロードサービスのデータの
+
+* カラム名
+* コードリスト型の列のコード
+
+を人間が読める情報に翻訳します。具体的には、国土数値情報ダウンロードサービス上に記載されているメタデータとの紐づけを行います。
+
+なお、機械的な処理なので、間違いがある可能性もあります（もし間違いを発見されましたら、[issues](https://github.com/yutannihilation/kokudosuuchi/issues)からお知らせいただけるとありがたいです）。
+データの詳細については国土数値情報ダウンロードサービスをご確認ください。
+
+```{r translate}
+translateKSJData(d)
+```
+
+

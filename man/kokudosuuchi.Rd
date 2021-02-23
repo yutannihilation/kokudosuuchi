@@ -13,6 +13,6 @@ Provides utilities for 'Kokudo Suuchi', the GIS data service of the Japanese gov
 \url{http://nlftp.mlit.go.jp/ksj/api/about_api.html}
 }
 \author{
-\strong{Maintainer}: Hiroaki Yutani \email{yutani.ini@gmail.com}
+\strong{Maintainer}: Hiroaki Yutani \email{yutani.ini@gmail.com} (\href{https://orcid.org/0000-0002-3385-7233}{ORCID})
 
 }

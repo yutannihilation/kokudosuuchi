@@ -1,40 +1,49 @@
 #' Read JPGIS2.1 Data
 #'
-#' @param zip_file
-#'   A path to ZIP file downloaded from Kokudo Suuchi service.
-#' @param cache_dir
-#'   Path to a directory for caching zip files.
+#' `readKSJData()` is an utility to read data downloaded from 'Kokudo Suuchi' service.
+#'
+#' @param x
+#'   A path to a ZIP file or to a directory that contains the extracted files.
 #' @param encoding
 #'   Encoding of the data.
 #'
+#' @examples
+#' \dontrun{
+#' zip_file <- tempfile(fileext = ".zip")
+#' url <- "https://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip"
+#' download.file(url, zip_file)
+#' readKSJData(zip_file)
+#' }
+#'
 #' @export
-read_ksj_data <- function(zip_file, cache_dir = NULL, encoding = "CP932") {
-  if (!is_scalar_character(zip_file)) {
-    stop("zip_file must be length one of character vector")
+readKSJData <- function(x, encoding = "CP932") {
+  if (!is_scalar_character(x)) {
+    abort("`zip_file` must be length one of character vector")
   }
 
-  if (!file.exists(zip_file)) {
-    stop(glue::glue("{zip_file} doesn't exist"))
+  if (!file.exists(x)) {
+    abort(glue::glue("{x} doesn't exist"))
   }
 
-  id <- tools::file_path_sans_ext(basename(zip_file))
+  id <- tools::file_path_sans_ext(basename(x))
 
-  cache <- file.path(cache_dir, id)
-
-  if (file.exists(cache)) {
-    if (!dir.exists(cache)) {
-      rlang::abort(cache, " is a file")
+  # If x is a ZIP file, extract it, otherwise raise an error
+  if (is_file(x)) {
+    if (!endsWith(x, ".zip")) {
+      abort(glue::glue("{x} must be a path to a ZIP file or to a directory."))
     }
-  } else {
-    dir.create(cache)
-    unzip(zip_file, exdir = cache)
-    rename_to_utf8_recursively(cache)
+
+    exdir <- tempfile()
+    on.exit(unlink(exdir, recursive = TRUE))
+    utils::unzip(x, exdir = exdir)
+    rename_to_utf8_recursively(exdir)
+    x <- exdir
   }
 
-  shp_files <- list.files(cache, pattern = ".*\\.shp$", recursive = TRUE, full.names = TRUE)
+  shp_files <- list.files(x, pattern = ".*\\.shp$", recursive = TRUE, full.names = TRUE)
 
   # set names to make each layer named
-  shp_files <- rlang::set_names(
+  shp_files <- set_names(
     shp_files,
     tools::file_path_sans_ext(basename(shp_files))
   )
@@ -47,7 +56,18 @@ read_ksj_data <- function(zip_file, cache_dir = NULL, encoding = "CP932") {
                     options = glue::glue("ENCODING={encoding}")
   )
 
-  id_short <- stringr::str_extract(id, "^[A-Z][0-9]{2}[a-z]?[0-9]?(-[a-z])?(-[cu])?")
+  id_short <- extract_KSJ_id(id)
+
+  # If ZIP file is renamed to another one, try to guess from XML file
+  if (is.na(id_short)) {
+    meta_xml_files <- list.files(x, pattern = "KS-META.*\\.xml$", recursive = TRUE)
+    id_short <- unique(extract_KSJ_id(meta_xml_files))
+    if (is.na(id_short) || length(id_short) != 1) {
+      # TODO
+      abort("Cannot determine ID")
+    }
+  }
+
   attr(res, "id") <- id_short
 
   if (identical(id_short, "A03")) {
@@ -84,12 +104,12 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
     }
 
     msg <- glue::glue("Renaming {src} to {dst}")
-    rlang::inform(msg)
+    inform(msg)
 
     file.rename(src, dst)
     if (!file.exists(dst)) {
       msg <- glue::glue("Failed to rename to {dst}")
-      rlang::abort(msg)
+      abort(msg)
     }
   })
 
@@ -98,4 +118,10 @@ rename_to_utf8_recursively <- function(path, max_depth = 10L) {
   if (length(utf8_names) > 0) {
     purrr::walk(utf8_names, rename_to_utf8_recursively, max_depth = max_depth - 1L)
   }
+}
+
+extract_KSJ_id <- function(x) {
+  x <- stringr::str_extract(x, "^(KS-META-)?[A-Z][0-9]{2}[a-z]?[0-9]?(-[a-z])?(-[cu])?")
+  x <- stringr::str_remove(x, "^KS-META-")
+  x
 }

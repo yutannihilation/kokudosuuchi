@@ -2,8 +2,12 @@ Package: kokudosuuchi
 Type: Package
 Title: Utilities for 'Kokudo Suuchi'
 Version: 0.9.9.9999
-Date: 2021-02-01
-Authors@R: person("Hiroaki", "Yutani", , "yutani.ini@gmail.com", c("aut", "cre"))
+Authors@R: 
+    person(given = "Hiroaki",
+           family = "Yutani",
+           role = c("aut", "cre"),
+           email = "yutani.ini@gmail.com",
+           comment = c(ORCID = "0000-0002-3385-7233"))
 Description: Provides utilities for 'Kokudo Suuchi', the GIS data service of the Japanese government.
     See <https://nlftp.mlit.go.jp/index.html> for more information.
 URL: https://github.com/yutannihilation/kokudosuuchi
@@ -12,7 +16,6 @@ License: MIT + file LICENSE
 Depends:
     R (>= 2.10)
 Imports:
-    shiny,
     rlang,
     glue,
     purrr,

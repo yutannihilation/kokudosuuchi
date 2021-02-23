@@ -1,4 +1,4 @@
-#' @rdname getKSJData
+#' @rdname readKSJData
 #' @param x Object of class [sf][sf::sf]
 #' @param quiet If `TRUE`, suppress messages.
 #' @export

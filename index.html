@@ -104,7 +104,7 @@
 </h3>
 <p>国土数値情報ダウンロードサービスからダウンロードしてきたZIPファイル（もしくはそれを展開したディレクトリ）を指定すると、データを<code>sf</code>形式で読み込みます。</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yutannihilation.github.io/kokudosuuchi">kokudosuuchi</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yutannihilation.github.io/kokudosuuchi/">kokudosuuchi</a></span><span class="op">)</span>
 
 <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/readKSJData.html">readKSJData</a></span><span class="op">(</span><span class="st">"tests/testthat/zip/L01-20_30_GML.zip"</span><span class="op">)</span>
 <span class="va">d</span>
@@ -218,6 +218,7 @@
 <h2 class="hasAnchor">
 <a href="#%E6%B3%A8%E6%84%8F%E7%82%B9" class="anchor"></a>注意点</h2>
 <p><code><a href="reference/translateKSJData.html">translateKSJData()</a></code>による変換は、機械的な処理なので間違いがある可能性もあります（もし間違いを発見されましたら、<a href="https://github.com/yutannihilation/kokudosuuchi/issues">issues</a>などからお知らせいただけるとありがたいです）。 データの詳細については必ず国土数値情報ダウンロードサービスをご確認ください。</p>
+<p>メタデータは、<a href="https://github.com/yutannihilation/kokudosuuchi-metadata">kokudosuuchi-metadata</a>レポジトリで管理しています。</p>
 </div>
 </div>
   </div>

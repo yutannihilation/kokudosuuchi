@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Read JPGIS2.1 Data — readKSJData • kokudosuuchi</title>
+<title>Translate JPGIS2.1 Data — translateKSJData • kokudosuuchi</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Read JPGIS2.1 Data — readKSJData" />
-<meta property="og:description" content="readKSJData() is an utility to read data downloaded from 'Kokudo Suuchi' service." />
+<meta property="og:title" content="Translate JPGIS2.1 Data — translateKSJData" />
+<meta property="og:description" content="translateKSJData() translates colnames and 'codelist'-type of columns to
+human-readable labels." />
 
 
 
@@ -111,46 +112,56 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Read JPGIS2.1 Data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/yutannihilation/kokudosuuchi/blob/master/R/readKSJData.R'><code>R/readKSJData.R</code></a></small>
-    <div class="hidden name"><code>readKSJData.Rd</code></div>
+    <h1>Translate JPGIS2.1 Data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/yutannihilation/kokudosuuchi/blob/master/R/translateKSJData.R'><code>R/translateKSJData.R</code></a></small>
+    <div class="hidden name"><code>translateKSJData.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>readKSJData()</code> is an utility to read data downloaded from 'Kokudo Suuchi' service.</p>
+    <p><code>translateKSJData()</code> translates colnames and 'codelist'-type of columns to
+human-readable labels.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>readKSJData</span><span class='op'>(</span><span class='va'>x</span>, encoding <span class='op'>=</span> <span class='st'>"CP932"</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>translateKSJData</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  id <span class='op'>=</span> <span class='cn'>NULL</span>,
+  variant <span class='op'>=</span> <span class='cn'>NULL</span>,
+  quiet <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  translate_colnames <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  translate_codelist <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A path to a ZIP file or to a directory that contains the extracted files.</p></td>
+      <td><p>A list of <a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a> objects.</p></td>
     </tr>
     <tr>
-      <th>encoding</th>
-      <td><p>Encoding of the data.</p></td>
+      <th>id</th>
+      <td><p>An ID of the dataset (e.g. <code>A03</code>). This can be <code>NULL</code> if <code>x</code> is loaded
+by <code><a href='readKSJData.html'>readKSJData()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>variant</th>
+      <td><p>A type of variant in case the translation cannot be determined only by <code>id</code>.</p></td>
+    </tr>
+    <tr>
+      <th>quiet</th>
+      <td><p>If <code>TRUE</code>, suppress messages.</p></td>
+    </tr>
+    <tr>
+      <th>translate_colnames</th>
+      <td><p>If <code>TRUE</code>, translate colnames to human-readable labels.</p></td>
+    </tr>
+    <tr>
+      <th>translate_codelist</th>
+      <td><p>If <code>TRUE</code>, translate codes to human-readable labels.</p></td>
     </tr>
     </table>
 
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Download a ZIP file from kokudosuuchi website</span>
-<span class='va'>zip_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='op'>(</span>fileext <span class='op'>=</span> <span class='st'>".zip"</span><span class='op'>)</span>
-<span class='va'>url</span> <span class='op'>&lt;-</span> <span class='st'>"https://nlftp.mlit.go.jp/ksj/gml/data/W07/W07-09/W07-09_3641-jgd_GML.zip"</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/download.file.html'>download.file</a></span><span class='op'>(</span><span class='va'>url</span>, <span class='va'>zip_file</span><span class='op'>)</span>
-
-<span class='co'># Load all data as sf objects</span>
-<span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'>readKSJData</span><span class='op'>(</span><span class='va'>zip_file</span><span class='op'>)</span>
-
-<span class='co'># Translate colnames and 'codelist' type columns.</span>
-<span class='fu'><a href='translateKSJData.html'>translateKSJData</a></span><span class='op'>(</span><span class='va'>d</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
